@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Addon;
 use App\Models\Mountain;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\Request;
@@ -56,8 +57,16 @@ class ExpeditionController extends Controller
             abort(404);
         }
 
+        $mountainModel = Mountain::where('slug', $slug)
+            ->with(['routes', 'priceTiers', 'meetingPoints', 'expeditions'])
+            ->first();
+
+        $addons = Addon::where('is_active', true)->get();
+
         return view('customer.detail', [
             'expedition' => $expedition,
+            'mountainModel' => $mountainModel,
+            'addons' => $addons,
         ]);
     }
 

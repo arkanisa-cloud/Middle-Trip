@@ -634,7 +634,15 @@
     </footer>
 
     <!-- Booking Modal: Pesan Tiket (Matches referensi modal-pemesanan.html & DESIGN.md) -->
-    <div id="bookingModal" class="fixed inset-0 bg-black/60 backdrop-blur-xs flex items-center justify-center z-50 opacity-0 pointer-events-none transition-opacity duration-300 px-4 py-6 overflow-y-auto">
+    <div id="bookingModal" 
+        x-data="bookingModalComponent({
+            expeditionId: {{ $mountainModel?->expeditions()->where('status', 'open')->first()?->id ?? 1 }},
+            routeId: {{ $mountainModel?->primaryRoute?->id ?? 1 }},
+            basePrice: {{ $mountainModel?->base_price ?? $expedition['price'] }},
+            bookingFee: {{ $mountainModel?->booking_fee_per_pax ?? 150000 }},
+            maxQuota: {{ $mountainModel?->expeditions()->where('status', 'open')->first()?->quota_max ?? 10 }}
+        })"
+        class="fixed inset-0 bg-black/60 backdrop-blur-xs flex items-center justify-center z-50 opacity-0 pointer-events-none transition-opacity duration-300 px-4 py-6 overflow-y-auto">
         <div class="bg-surface-card rounded-[28px] p-6 sm:p-8 max-w-4xl w-full shadow-2xl transform scale-95 transition-all duration-300 my-auto border border-hairline relative max-h-[92vh] overflow-y-auto custom-scrollbar">
             
             <!-- Modal Header -->
@@ -1176,6 +1184,22 @@
                     closeJalurDropdown();
                 }
             }
+        });
+
+        // Register Alpine.js Component for Booking Modal
+        document.addEventListener('alpine:init', () => {
+            Alpine.data('bookingModalComponent', (config) => ({
+                paxCount: 1,
+                basePrice: config.basePrice || 500000,
+                bookingFee: config.bookingFee || 150000,
+                maxQuota: config.maxQuota || 10,
+                init() {
+                    updateCalculations();
+                },
+                changePax(delta) {
+                    changePax(delta);
+                }
+            }));
         });
 
         // Booking Modal State & Logic (referensi modal-pemesanan.html)
