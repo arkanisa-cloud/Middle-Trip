@@ -636,21 +636,29 @@
     <!-- Booking Modal: Pesan Tiket (Matches referensi modal-pemesanan.html & DESIGN.md) -->
     <div id="bookingModal" 
         x-data="bookingModalComponent({
-            expeditionId: {{ $mountainModel?->expeditions()->where('status', 'open')->first()?->id ?? 1 }},
+            defaultTripType: 'open',
+            openExpeditionId: {{ $openExpedition?->id ?? $mountainModel?->expeditions()->where('status', 'open')->first()?->id ?? 1 }},
+            privateExpeditionId: {{ $privateExpedition?->id ?? $mountainModel?->expeditions()->where('type', 'private')->first()?->id ?? $openExpedition?->id ?? 1 }},
             routeId: {{ $mountainModel?->primaryRoute?->id ?? 1 }},
+            routes: @json($mountainModel?->routes ?? []),
+            priceTiers: @json($mountainModel?->priceTiers ?? []),
+            meetingPoints: @json($mountainModel?->meetingPoints ?? []),
+            addons: @json($addons ?? []),
+            bookingFeePerPax: {{ $mountainModel?->booking_fee_per_pax ?? 150000 }},
             basePrice: {{ $mountainModel?->base_price ?? $expedition['price'] }},
-            bookingFee: {{ $mountainModel?->booking_fee_per_pax ?? 150000 }},
-            maxQuota: {{ $mountainModel?->expeditions()->where('status', 'open')->first()?->quota_max ?? 10 }}
+            maxQuota: {{ $openExpedition?->quota_max ?? 10 }},
+            departureDateOpen: '{{ $openExpedition?->departure_date ? \Carbon\Carbon::parse($openExpedition->departure_date)->translatedFormat('d F Y') : $expedition['departure_date'] }}',
+            departureDatePrivate: '{{ $privateExpedition?->departure_date ? \Carbon\Carbon::parse($privateExpedition->departure_date)->translatedFormat('d F Y') : $expedition['departure_date'] }}'
         })"
         class="fixed inset-0 bg-black/60 backdrop-blur-xs flex items-center justify-center z-50 opacity-0 pointer-events-none transition-opacity duration-300 px-4 py-6 overflow-y-auto">
         <div class="bg-surface-card rounded-[28px] p-6 sm:p-8 max-w-4xl w-full shadow-2xl transform scale-95 transition-all duration-300 my-auto border border-hairline relative max-h-[92vh] overflow-y-auto custom-scrollbar">
             
             <!-- Modal Header -->
-            <div class="flex items-start justify-between pb-4 border-b border-hairline mb-6">
+            <div class="flex items-start justify-between pb-4 border-b border-hairline mb-5">
                 <div>
-                    <h2 class="text-xl sm:text-2xl font-extrabold text-ink-heading tracking-tight">Pesan Tiket</h2>
-                    <p id="modal-expedition-subtitle" class="text-xs text-muted font-medium mt-0.5">
-                        {{ $expedition['title'] }} • Open Trip
+                    <h2 class="text-xl sm:text-2xl font-extrabold text-ink-heading tracking-tight">Pesan Tiket Ekspedisi</h2>
+                    <p class="text-xs text-muted font-medium mt-0.5">
+                        {{ $expedition['title'] }} • <span class="font-bold uppercase text-primary" x-text="tripType + ' Trip'"></span>
                     </p>
                 </div>
                 <button 
@@ -663,120 +671,165 @@
                 </button>
             </div>
 
+            <!-- Segmented Pill Selector: Open Trip vs Private Trip -->
+            <div class="grid grid-cols-2 p-1.5 bg-neutral-100/80 rounded-2xl mb-6 gap-2">
+                <button 
+                    type="button" 
+                    @click="setTripType('open')" 
+                    :class="tripType === 'open' ? 'bg-white text-emerald-800 shadow-xs font-bold border border-emerald-200' : 'text-neutral-500 hover:text-neutral-800 font-medium'"
+                    class="py-2.5 px-4 rounded-xl text-xs flex flex-col items-center justify-center transition cursor-pointer text-center">
+                    <span class="text-xs font-bold flex items-center gap-1.5">
+                        <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+                        Open Trip
+                    </span>
+                    <span class="text-[10px] text-emerald-600 font-medium mt-0.5">Bayar DP Rp 150k • Bertahap</span>
+                </button>
+                <button 
+                    type="button" 
+                    @click="setTripType('private')" 
+                    :class="tripType === 'private' ? 'bg-white text-primary shadow-xs font-bold border border-primary/20' : 'text-neutral-500 hover:text-neutral-800 font-medium'"
+                    class="py-2.5 px-4 rounded-xl text-xs flex flex-col items-center justify-center transition cursor-pointer text-center">
+                    <span class="text-xs font-bold flex items-center gap-1.5">
+                        <span class="w-2 h-2 rounded-full bg-primary"></span>
+                        Private Trip
+                    </span>
+                    <span class="text-[10px] text-primary font-medium mt-0.5">Bayar 100% Langsung • Tanpa DP</span>
+                </button>
+            </div>
+
             <!-- Modal Content: 2 Columns Layout (7 cols Left & 5 cols Right) -->
             <div class="grid grid-cols-1 md:grid-cols-12 gap-7 sm:gap-8 items-start">
                 
-                <!-- LEFT COLUMN: Tiket Details, Meeting Point, Tambahan (7 Cols) -->
+                <!-- LEFT COLUMN: Tiket Details, Meeting Point, Tambahan & Form Peserta (7 Cols) -->
                 <div class="md:col-span-7 space-y-6 text-xs">
                     
-                    <!-- Section: Details & Participant Counter -->
-                    <div class="space-y-2">
-                        <h4 class="font-bold text-ink-heading text-xs uppercase tracking-wider">Details</h4>
-                        <div class="flex items-center justify-between flex-wrap gap-2">
-                            <span class="text-body-strong font-medium text-xs">
-                                Harga Saat Ini : <span id="modal-base-price-text" class="text-ink-heading font-bold">{{ $expedition['price_formatted'] }}/orang</span>
-                            </span>
-                            
-                            <!-- Stepper Counter -->
-                            <div class="inline-flex items-center gap-2 bg-surface-subtle border border-hairline px-2 py-1 rounded-full">
-                                <button 
-                                    type="button" 
-                                    onclick="changePax(-1)" 
-                                    class="w-6 h-6 rounded-full bg-primary text-white flex items-center justify-center hover:bg-primary-hover active:scale-95 transition-all font-bold text-xs cursor-pointer shadow-2xs"
-                                    aria-label="Kurangi Peserta"
-                                >
-                                    −
-                                </button>
-                                <span id="paxCountDisplay" class="font-bold text-ink-heading text-xs min-w-14 text-center">1 Orang</span>
-                                <button 
-                                    type="button" 
-                                    onclick="changePax(1)" 
-                                    class="w-6 h-6 rounded-full bg-primary text-white flex items-center justify-center hover:bg-primary-hover active:scale-95 transition-all font-bold text-xs cursor-pointer shadow-2xs"
-                                    aria-label="Tambah Peserta"
-                                >
-                                    +
-                                </button>
-                            </div>
+                    <!-- Section: Dynamic Price Tier Guide -->
+                    <div class="space-y-1.5" x-show="priceTiers.length > 0">
+                        <div class="flex items-center justify-between">
+                            <h4 class="font-bold text-ink-heading text-xs uppercase tracking-wider">Matriks Harga Dinamis</h4>
+                            <span class="text-[10px] text-muted">Semakin ramai, semakin murah per orang!</span>
                         </div>
-                        <p class="text-[11px] text-muted-soft">Semakin banyak peserta kuota semakin murah</p>
+                        <div class="grid grid-cols-3 gap-2">
+                            <template x-for="(tier, idx) in priceTiers" :key="idx">
+                                <div 
+                                    :class="paxCount >= tier.min_pax && paxCount <= tier.max_pax ? 'border-primary bg-primary-50/40 ring-1 ring-primary' : 'border-hairline bg-white'"
+                                    class="p-2 rounded-xl border text-center transition">
+                                    <div class="text-[10px] font-medium text-muted" x-text="tier.min_pax + '–' + tier.max_pax + ' Pax'"></div>
+                                    <div class="text-xs font-extrabold text-ink-heading mt-0.5" x-text="formatCurrency(tier.price_per_pax)"></div>
+                                    <div class="text-[9px] text-emerald-600 font-bold mt-0.5" x-show="paxCount >= tier.min_pax && paxCount <= tier.max_pax">★ Tier Aktif</div>
+                                </div>
+                            </template>
+                        </div>
+                    </div>
+
+                    <!-- Section: Stepper Counter -->
+                    <div class="flex items-center justify-between p-3.5 bg-neutral-50/80 rounded-2xl border border-hairline">
+                        <div>
+                            <span class="font-bold text-ink-heading text-xs block">Jumlah Peserta</span>
+                            <span class="text-[11px] text-muted font-medium">Harga saat ini: <strong class="text-primary font-bold" x-text="formatCurrency(currentPricePerPax()) + ' / orang'"></strong></span>
+                        </div>
+                        <div class="inline-flex items-center gap-3 bg-white border border-hairline px-3 py-1.5 rounded-full shadow-2xs">
+                            <button 
+                                type="button" 
+                                @click="changePax(-1)" 
+                                class="w-6 h-6 rounded-full bg-primary text-white flex items-center justify-center hover:bg-primary-hover active:scale-95 transition font-bold text-xs cursor-pointer shadow-2xs">
+                                −
+                            </button>
+                            <span id="paxCountDisplay" class="font-bold text-ink-heading text-xs min-w-16 text-center" x-text="paxCount + ' Orang'"></span>
+                            <button 
+                                type="button" 
+                                @click="changePax(1)" 
+                                class="w-6 h-6 rounded-full bg-primary text-white flex items-center justify-center hover:bg-primary-hover active:scale-95 transition font-bold text-xs cursor-pointer shadow-2xs">
+                                +
+                            </button>
+                        </div>
                     </div>
 
                     <!-- Section: Meeting Point (Penjemputan) -->
                     <div class="space-y-2">
                         <h4 class="font-bold text-ink-heading text-xs uppercase tracking-wider">Meeting Point (Penjemputan)</h4>
                         <div class="space-y-2" id="meetingPointContainer">
-                            
-                            <!-- Option 1: Basecamp (Gratis) -->
-                            <label class="flex items-center justify-between p-3 rounded-2xl border border-hairline hover:border-gray-300 cursor-pointer transition-colors bg-white group shadow-2xs">
-                                <div class="flex items-center gap-2.5 min-w-0">
-                                    <input type="radio" name="meetingPoint" value="0" data-label="Basecamp Pendakian" data-short-label="Basecamp" checked onchange="updateCalculations()" class="accent-primary w-4 h-4 cursor-pointer shrink-0">
-                                    <span id="label-meeting-basecamp" class="font-medium text-body-strong text-xs truncate">Basecamp Pendakian</span>
-                                </div>
-                                <span class="text-[11px] font-semibold text-muted bg-surface-subtle px-2.5 py-0.5 rounded-full shrink-0">Gratis</span>
-                            </label>
-
-                            <!-- Option 2: Shuttle Stasiun Solo Balapan -->
-                            <label class="flex items-center justify-between p-3 rounded-2xl border border-hairline hover:border-gray-300 cursor-pointer transition-colors bg-white group shadow-2xs">
-                                <div class="flex items-center gap-2.5 min-w-0">
-                                    <input type="radio" name="meetingPoint" value="75000" data-label="Shuttle Solo Balapan" data-short-label="Solo Balapan" onchange="updateCalculations()" class="accent-primary w-4 h-4 cursor-pointer shrink-0">
-                                    <span class="font-medium text-body-strong text-xs truncate">Shuttle Stasiun Terdekat (Solo Balapan)</span>
-                                </div>
-                                <span class="text-[11px] font-semibold text-primary bg-primary-subtle px-2.5 py-0.5 rounded-full shrink-0">+Rp 75k</span>
-                            </label>
-
-                            <!-- Option 3: Shuttle Stasiun Tugu Jogja -->
-                            <label class="flex items-center justify-between p-3 rounded-2xl border border-hairline hover:border-gray-300 cursor-pointer transition-colors bg-white group shadow-2xs">
-                                <div class="flex items-center gap-2.5 min-w-0">
-                                    <input type="radio" name="meetingPoint" value="100000" data-label="Shuttle Tugu Jogja" data-short-label="Tugu Jogja" onchange="updateCalculations()" class="accent-primary w-4 h-4 cursor-pointer shrink-0">
-                                    <span class="font-medium text-body-strong text-xs truncate">Shuttle Stasiun Hub (Tugu Jogja)</span>
-                                </div>
-                                <span class="text-[11px] font-semibold text-primary bg-primary-subtle px-2.5 py-0.5 rounded-full shrink-0">+Rp 100k</span>
-                            </label>
+                            <template x-for="mp in meetingPoints" :key="mp.id">
+                                <label 
+                                    class="flex items-center justify-between p-3 rounded-2xl border cursor-pointer transition shadow-2xs"
+                                    :class="meetingPointId === mp.id ? 'border-primary bg-primary-50/20 ring-1 ring-primary' : 'border-hairline bg-white hover:border-gray-300'">
+                                    <div class="flex items-center gap-2.5 min-w-0">
+                                        <input type="radio" name="meetingPoint" :value="mp.id" :checked="meetingPointId === mp.id" @change="selectMeetingPoint(mp)" class="accent-primary w-4 h-4 cursor-pointer shrink-0">
+                                        <span class="font-medium text-body-strong text-xs truncate" x-text="mp.name"></span>
+                                    </div>
+                                    <span class="text-[11px] font-semibold px-2.5 py-0.5 rounded-full shrink-0"
+                                        :class="mp.additional_price_per_pax > 0 ? 'text-primary bg-primary-subtle' : 'text-emerald-700 bg-emerald-50'"
+                                        x-text="mp.additional_price_per_pax > 0 ? '+ ' + formatCurrency(mp.additional_price_per_pax) + '/pax' : 'Gratis'">
+                                    </span>
+                                </label>
+                            </template>
                         </div>
                     </div>
 
                     <!-- Section: Tambahan (Add-ons / Rental Gear) -->
-                    <div class="space-y-2">
-                        <h4 class="font-bold text-ink-heading text-xs uppercase tracking-wider">Tambahan</h4>
-                        <div class="space-y-2" id="addonContainer">
-                            
-                            <!-- Hydropack -->
-                            <label class="flex items-center justify-between p-3 rounded-2xl border border-hairline hover:border-gray-300 cursor-pointer transition-colors bg-white shadow-2xs">
-                                <div class="flex items-center gap-2.5 min-w-0">
-                                    <input type="checkbox" id="addon-hydropack" checked data-name="Hydropack" value="15000" onchange="updateCalculations()" class="accent-primary w-4 h-4 rounded cursor-pointer shrink-0">
-                                    <span class="font-medium text-body-strong text-xs truncate">Hydropack</span>
-                                </div>
-                                <span class="text-[11px] font-semibold text-body bg-surface-subtle px-2 py-0.5 rounded-full shrink-0">+Rp 15k</span>
-                            </label>
-
-                            <!-- Trekking Pole -->
-                            <label class="flex items-center justify-between p-3 rounded-2xl border border-hairline hover:border-gray-300 cursor-pointer transition-colors bg-white shadow-2xs">
-                                <div class="flex items-center gap-2.5 min-w-0">
-                                    <input type="checkbox" id="addon-trekkingpole" data-name="Trekking Pole" value="10000" onchange="updateCalculations()" class="accent-primary w-4 h-4 rounded cursor-pointer shrink-0">
-                                    <span class="font-medium text-body-strong text-xs truncate">Trekking Pole</span>
-                                </div>
-                                <span class="text-[11px] font-semibold text-body bg-surface-subtle px-2 py-0.5 rounded-full shrink-0">+Rp 10k</span>
-                            </label>
-
-                            <!-- Matras Gulung Tambahan -->
-                            <label class="flex items-center justify-between p-3 rounded-2xl border border-hairline hover:border-gray-300 cursor-pointer transition-colors bg-white shadow-2xs">
-                                <div class="flex items-center gap-2.5 min-w-0">
-                                    <input type="checkbox" id="addon-matras" data-name="Matras Gulung Tambahan" value="12000" onchange="updateCalculations()" class="accent-primary w-4 h-4 rounded cursor-pointer shrink-0">
-                                    <span class="font-medium text-body-strong text-xs truncate">Matras Gulung Tambahan</span>
-                                </div>
-                                <span class="text-[11px] font-semibold text-body bg-surface-subtle px-2 py-0.5 rounded-full shrink-0">+Rp 12k</span>
-                            </label>
-
-                            <!-- Headlamp -->
-                            <label class="flex items-center justify-between p-3 rounded-2xl border border-hairline hover:border-gray-300 cursor-pointer transition-colors bg-white shadow-2xs">
-                                <div class="flex items-center gap-2.5 min-w-0">
-                                    <input type="checkbox" id="addon-headlamp" data-name="Headlamp" value="10000" onchange="updateCalculations()" class="accent-primary w-4 h-4 rounded cursor-pointer shrink-0">
-                                    <span class="font-medium text-body-strong text-xs truncate">Headlamp</span>
-                                </div>
-                                <span class="text-[11px] font-semibold text-body bg-surface-subtle px-2 py-0.5 rounded-full shrink-0">+Rp 10k</span>
-                            </label>
+                    <div class="space-y-2" x-show="addons.length > 0">
+                        <h4 class="font-bold text-ink-heading text-xs uppercase tracking-wider">Tambahan (Rental Gear &amp; Layanan)</h4>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2" id="addonContainer">
+                            <template x-for="addon in addons" :key="addon.id">
+                                <label 
+                                    class="flex items-center justify-between p-3 rounded-2xl border cursor-pointer transition shadow-2xs"
+                                    :class="selectedAddons[addon.id] ? 'border-primary bg-primary-50/20 ring-1 ring-primary' : 'border-hairline bg-white hover:border-gray-300'">
+                                    <div class="flex items-center gap-2.5 min-w-0">
+                                        <input type="checkbox" :checked="!!selectedAddons[addon.id]" @change="toggleAddon(addon)" class="accent-primary w-4 h-4 rounded cursor-pointer shrink-0">
+                                        <span class="font-medium text-body-strong text-xs truncate" x-text="addon.name"></span>
+                                    </div>
+                                    <span class="text-[11px] font-semibold text-body bg-surface-subtle px-2 py-0.5 rounded-full shrink-0" x-text="'+ ' + formatCurrency(addon.price)"></span>
+                                </label>
+                            </template>
                         </div>
                     </div>
+
+                    <!-- Section: Form Data Pemesan (Ketua Rombongan) -->
+                    <div class="space-y-3 pt-3 border-t border-hairline">
+                        <div class="flex items-center justify-between">
+                            <h4 class="font-bold text-ink-heading text-xs uppercase tracking-wider">Data Pemesan (Ketua Rombongan)</h4>
+                            <span class="text-[10px] text-muted">Wajib NIK SIMAKSI</span>
+                        </div>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                            <div>
+                                <label class="block text-[11px] font-semibold text-muted mb-1">Nama Lengkap Ketua *</label>
+                                <input type="text" x-model="customerName" placeholder="Contoh: Arkan Isa Alvaro" class="w-full px-3 py-2 text-xs border border-hairline rounded-xl focus:outline-none focus:border-primary transition">
+                            </div>
+                            <div>
+                                <label class="block text-[11px] font-semibold text-muted mb-1">Nomor WhatsApp Aktif *</label>
+                                <input type="tel" x-model="customerPhone" placeholder="Contoh: 08123456789" class="w-full px-3 py-2 text-xs border border-hairline rounded-xl focus:outline-none focus:border-primary transition">
+                            </div>
+                            <div>
+                                <label class="block text-[11px] font-semibold text-muted mb-1">Email Aktif *</label>
+                                <input type="email" x-model="customerEmail" placeholder="Contoh: arkan@example.com" class="w-full px-3 py-2 text-xs border border-hairline rounded-xl focus:outline-none focus:border-primary transition">
+                            </div>
+                            <div>
+                                <label class="block text-[11px] font-semibold text-muted mb-1">NIK KTP (16 Digit) *</label>
+                                <input type="text" maxlength="16" x-model="customerNik" placeholder="16 digit angka KTP" class="w-full px-3 py-2 text-xs font-mono border border-hairline rounded-xl focus:outline-none focus:border-primary transition">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Section: Form Data Anggota Rombongan (Peserta 2 s/d N) -->
+                    <template x-if="participants.length > 0">
+                        <div class="space-y-3 pt-3 border-t border-hairline">
+                            <div class="flex items-center justify-between">
+                                <h4 class="font-bold text-ink-heading text-xs uppercase tracking-wider">Data Anggota Rombongan</h4>
+                                <span class="text-[10px] text-muted font-medium" x-text="participants.length + ' Anggota tambahan'"></span>
+                            </div>
+                            <div class="space-y-2.5">
+                                <template x-for="(participant, index) in participants" :key="index">
+                                    <div class="p-3 bg-neutral-50 rounded-xl border border-hairline space-y-2">
+                                        <span class="text-[11px] font-bold text-ink" x-text="'Anggota #' + (index + 1)"></span>
+                                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                                            <input type="text" x-model="participant.name" :placeholder="'Nama Anggota #' + (index + 1)" class="w-full px-3 py-1.5 text-xs bg-white border border-hairline rounded-lg focus:outline-none focus:border-primary transition">
+                                            <input type="text" maxlength="16" x-model="participant.nik" :placeholder="'NIK 16 Digit Anggota #' + (index + 1)" class="w-full px-3 py-1.5 text-xs font-mono bg-white border border-hairline rounded-lg focus:outline-none focus:border-primary transition">
+                                        </div>
+                                    </div>
+                                </template>
+                            </div>
+                        </div>
+                    </template>
 
                 </div>
 
@@ -788,7 +841,7 @@
                         <h4 class="font-bold text-ink-heading text-xs uppercase tracking-wider">Keberangkatan</h4>
                         <div class="space-y-1.5">
                             <div class="bg-white border border-hairline rounded-xl px-3 py-2 text-xs font-medium text-body-strong shadow-2xs flex items-center justify-between">
-                                <span id="summaryDepartureDate">{{ $expedition['departure_date'] }}</span>
+                                <span x-text="tripType === 'open' ? departureDateOpen : departureDatePrivate"></span>
                                 <svg class="w-3.5 h-3.5 text-muted-soft" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                                 </svg>
@@ -803,60 +856,87 @@
                         </div>
                     </div>
 
-                    <!-- Rincian Pesanan (Layout Flex Presisi dan Rapi) -->
-                    <div class="space-y-2.5 pt-2 border-t border-hairline">
+                    <!-- Rincian Biaya -->
+                    <div class="space-y-2.5 pt-2 border-t border-hairline text-xs">
                         <h4 class="font-bold text-ink-heading text-xs uppercase tracking-wider">Rincian Pesanan</h4>
-                        
-                        <div class="space-y-2 text-xs">
-                            <div class="flex items-center justify-between gap-3 text-muted text-[11px]">
-                                <span>Trip Dimulai</span>
-                                <span id="summaryTripStartDate" class="font-semibold text-body-strong shrink-0">15 Agustus 2026</span>
+                        <div class="flex justify-between text-muted">
+                            <span x-text="(tripType === 'open' ? 'Open Trip' : 'Private Trip') + ' (' + paxCount + 'x @ ' + formatCurrency(currentPricePerPax()) + ')'"></span>
+                            <span class="font-semibold text-ink" x-text="formatCurrency(ticketTotal())"></span>
+                        </div>
+                        <div class="flex justify-between text-muted" x-show="shuttleTotal() > 0">
+                            <span x-text="'Shuttle (' + selectedMeetingPointLabel + ')'"></span>
+                            <span class="font-semibold text-ink" x-text="formatCurrency(shuttleTotal())"></span>
+                        </div>
+                        <template x-for="(addon, id) in selectedAddons" :key="id">
+                            <div class="flex justify-between text-muted">
+                                <span x-text="addon.name"></span>
+                                <span class="font-semibold text-ink" x-text="formatCurrency(addon.price * (addon.quantity || 1))"></span>
                             </div>
-                            <div class="flex items-center justify-between gap-3 text-muted text-[11px]">
-                                <span>Trip Selesai</span>
-                                <span id="summaryTripEndDate" class="font-semibold text-body-strong shrink-0">16 Agustus 2026</span>
-                            </div>
-                            <div class="flex items-center justify-between gap-3 text-muted text-[11px]">
-                                <span>Durasi</span>
-                                <span id="summaryDuration" class="font-semibold text-body-strong shrink-0">2 Hari 1 Malam</span>
-                            </div>
-                            
-                            <!-- Dynamic Price Items -->
-                            <div class="flex items-center justify-between gap-3 text-[11px] pt-1.5 border-t border-hairline/60">
-                                <span id="summaryTripLabel" class="text-muted truncate">Open Trip (1x)</span>
-                                <span id="summaryTripPrice" class="font-bold text-ink-heading shrink-0 whitespace-nowrap">{{ $expedition['price_formatted'] }}</span>
-                            </div>
-
-                            <!-- Shuttle fee (if any) -->
-                            <div id="summaryShuttleRow" class="hidden items-center justify-between gap-3 text-[11px]">
-                                <span id="summaryShuttleLabel" class="text-muted truncate">Shuttle Fee</span>
-                                <span id="summaryShuttlePrice" class="font-bold text-ink-heading shrink-0 whitespace-nowrap">Rp 0</span>
-                            </div>
-
-                            <!-- Addon Items Container -->
-                            <div id="summaryAddonsContainer" class="space-y-1.5 pt-0.5">
-                            </div>
+                        </template>
+                        <div class="flex justify-between font-bold text-ink pt-1.5 border-t border-hairline">
+                            <span>Total Biaya Ekspedisi</span>
+                            <span class="text-ink-heading" x-text="formatCurrency(grandTotal())"></span>
                         </div>
                     </div>
 
-                    <!-- Total Section -->
-                    <div class="pt-3.5 border-t border-hairline flex items-center justify-between gap-3">
-                        <span class="text-xs sm:text-sm text-muted font-medium">Harga Saat Ini</span>
-                        <span id="modalCurrentTotal" class="text-xl sm:text-2xl font-extrabold text-ink-heading shrink-0 whitespace-nowrap text-right">
-                            {{ $expedition['price_formatted'] }}
-                        </span>
+                    <!-- Info Box Pembayaran Bertahap vs Langsung -->
+                    <div class="p-3.5 rounded-xl border text-xs" :class="tripType === 'open' ? 'bg-emerald-50 border-emerald-200' : 'bg-primary-50/50 border-primary/20'">
+                        <template x-if="tripType === 'open'">
+                            <div class="space-y-1">
+                                <div class="flex items-center gap-1.5 text-emerald-800 font-bold text-xs">
+                                    <svg class="w-3.5 h-3.5 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                    </svg>
+                                    <span>Tahap 1: Booking Fee (DP)</span>
+                                </div>
+                                <p class="text-[11px] text-emerald-700 leading-snug">
+                                    Bayar DP <strong>Rp <span x-text="formatCurrency(bookingFeePerPax)"></span>/orang</strong> sekarang untuk mengunci kursi. Pelunasan dibayarkan saat Price Lock H-3.
+                                </p>
+                                <div class="pt-2 flex justify-between items-center text-xs font-extrabold text-emerald-900 border-t border-emerald-200/60 mt-1">
+                                    <span>DP yang Dibayar Sekarang:</span>
+                                    <span class="text-sm font-black" x-text="formatCurrency(dpTotal())"></span>
+                                </div>
+                            </div>
+                        </template>
+
+                        <template x-if="tripType === 'private'">
+                            <div class="space-y-1">
+                                <div class="flex items-center gap-1.5 text-primary font-bold text-xs">
+                                    <svg class="w-3.5 h-3.5 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                                    </svg>
+                                    <span>Pembayaran Langsung (100% Tanpa DP)</span>
+                                </div>
+                                <p class="text-[11px] text-muted leading-snug">
+                                    Private trip eksklusif rombongan sendiri. Tanggal langsung terkunci dan dipersiapkan tanpa menunggu peserta lain.
+                                </p>
+                                <div class="pt-2 flex justify-between items-center text-xs font-extrabold text-primary border-t border-primary/10 mt-1">
+                                    <span>Total Bayar Penuh Sekarang:</span>
+                                    <span class="text-sm font-black" x-text="formatCurrency(grandTotal())"></span>
+                                </div>
+                            </div>
+                        </template>
+                    </div>
+
+                    <!-- Error Alert -->
+                    <div x-show="errorMessage" x-cloak class="p-3 bg-red-50 border border-red-200 text-red-700 text-xs rounded-xl">
+                        <p class="font-medium" x-text="errorMessage"></p>
                     </div>
 
                     <!-- Action Buttons -->
                     <div class="space-y-2 pt-1">
-                        <!-- Bayar Sekarang -->
+                        <!-- Bayar Sekarang Button -->
                         <button 
                             type="button" 
-                            onclick="handlePayment()" 
-                            class="w-full bg-primary hover:bg-primary-hover active:bg-primary-active active:scale-[0.99] text-white py-3 px-4 rounded-xl font-bold text-xs sm:text-sm shadow-md transition-all text-center flex items-center justify-center gap-2 cursor-pointer"
-                        >
-                            <span>Bayar Sekarang</span>
-                            <span>→</span>
+                            @click="submitBooking()" 
+                            :disabled="isSubmitting"
+                            class="w-full bg-primary hover:bg-primary-hover active:bg-primary-active text-white py-3.5 px-4 rounded-xl font-bold text-xs sm:text-sm shadow-md transition-all text-center flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50">
+                            <svg x-show="isSubmitting" class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" fill="none" viewBox="0 0 24 24">
+                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                            </svg>
+                            <span x-text="isSubmitting ? 'Memproses Reservasi...' : (tripType === 'open' ? 'Bayar DP Sekarang (' + formatCurrency(dpTotal()) + ')' : 'Bayar Penuh Sekarang (' + formatCurrency(grandTotal()) + ')')"></span>
+                            <span x-show="!isSubmitting">→</span>
                         </button>
 
                         <!-- Tanya Via Whatsapp -->
@@ -870,7 +950,7 @@
                             <svg class="w-4 h-4 text-emerald-500" fill="currentColor" viewBox="0 0 24 24">
                                 <path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.582 2.128 2.182-.573c.978.58 1.911.928 3.145.929 3.178 0 5.767-2.587 5.768-5.766.001-3.187-2.575-5.77-5.764-5.771zm3.392 8.244c-.144.405-.837.774-1.17.824-.299.045-.677.063-1.092-.069-.252-.08-.575-.187-.988-.365-1.739-.751-2.874-2.502-2.961-2.617-.087-.116-.708-.94-.708-1.793s.448-1.273.607-1.446c.159-.173.346-.217.462-.217l.332.006c.106.005.249-.04.39.298.144.347.491 1.2.534 1.287.043.087.072.188.014.304-.058.116-.087.188-.173.289l-.26.304c-.087.086-.177.18-.076.354.101.174.449.741.964 1.201.662.591 1.221.774 1.394.86s.275.072.376-.043c.101-.116.433-.506.549-.68.116-.173.231-.145.39-.087s1.011.477 1.184.564.289.13.332.202c.043.073.043.42-.101.825z"/>
                             </svg>
-                            <span>Tanya Via Whatsapp</span>
+                            <span>Tanya Via WhatsApp</span>
                         </a>
                     </div>
 
@@ -1189,128 +1269,268 @@
         // Register Alpine.js Component for Booking Modal
         document.addEventListener('alpine:init', () => {
             Alpine.data('bookingModalComponent', (config) => ({
-                paxCount: 1,
+                tripType: config.defaultTripType || 'open',
+                openExpeditionId: config.openExpeditionId,
+                privateExpeditionId: config.privateExpeditionId,
+                routeId: config.routeId,
+                routes: config.routes || [],
+                priceTiers: config.priceTiers || [],
+                meetingPoints: config.meetingPoints || [],
+                addons: config.addons || [],
+                bookingFeePerPax: config.bookingFeePerPax || 150000,
                 basePrice: config.basePrice || 500000,
-                bookingFee: config.bookingFee || 150000,
                 maxQuota: config.maxQuota || 10,
+                departureDateOpen: config.departureDateOpen || '',
+                departureDatePrivate: config.departureDatePrivate || '',
+                
+                paxCount: 1,
+                meetingPointId: null,
+                selectedMeetingPointPrice: 0,
+                selectedMeetingPointLabel: 'Basecamp',
+                selectedAddons: {},
+
+                customerName: '',
+                customerPhone: '',
+                customerEmail: '',
+                customerNik: '',
+                participants: [],
+
+                isSubmitting: false,
+                errorMessage: '',
+
                 init() {
-                    updateCalculations();
+                    if (this.meetingPoints && this.meetingPoints.length > 0) {
+                        const defaultMp = this.meetingPoints.find(m => m.is_default) || this.meetingPoints[0];
+                        this.selectMeetingPoint(defaultMp);
+                    }
+                    this.updateParticipantsList();
+
+                    // Listen to global open modal event
+                    window.addEventListener('open-booking-modal', (e) => {
+                        if (e.detail && e.detail.packageType) {
+                            this.setTripType(e.detail.packageType);
+                        }
+                        if (e.detail && e.detail.routeId) {
+                            this.routeId = e.detail.routeId;
+                        }
+                        const modal = document.getElementById('bookingModal');
+                        if (modal) {
+                            modal.classList.remove('opacity-0', 'pointer-events-none');
+                            modal.firstElementChild.classList.remove('scale-95');
+                            modal.firstElementChild.classList.add('scale-100');
+                        }
+                    });
                 },
+
+                setTripType(type) {
+                    this.tripType = type;
+                    selectedPackage = type;
+                    if (typeof updatePackageUI === 'function') {
+                        updatePackageUI(type);
+                    }
+                },
+
                 changePax(delta) {
-                    changePax(delta);
+                    const next = this.paxCount + delta;
+                    if (next >= 1 && next <= this.maxQuota) {
+                        this.paxCount = next;
+                        modalPaxCount = next;
+                        const paxEl = document.getElementById('paxCountDisplay');
+                        if (paxEl) paxEl.innerText = `${this.paxCount} Orang`;
+                        this.updateParticipantsList();
+                    }
+                },
+
+                updateParticipantsList() {
+                    const needed = this.paxCount - 1;
+                    while (this.participants.length < needed) {
+                        this.participants.push({ name: '', nik: '' });
+                    }
+                    while (this.participants.length > needed) {
+                        this.participants.pop();
+                    }
+                },
+
+                selectMeetingPoint(mp) {
+                    this.meetingPointId = mp.id;
+                    this.selectedMeetingPointPrice = parseInt(mp.additional_price_per_pax || 0, 10);
+                    this.selectedMeetingPointLabel = mp.name;
+                },
+
+                toggleAddon(addon) {
+                    if (this.selectedAddons[addon.id]) {
+                        delete this.selectedAddons[addon.id];
+                    } else {
+                        this.selectedAddons[addon.id] = {
+                            id: addon.id,
+                            name: addon.name,
+                            price: parseInt(addon.price, 10),
+                            quantity: 1
+                        };
+                    }
+                },
+
+                formatCurrency(amount) {
+                    return 'Rp ' + (amount || 0).toLocaleString('id-ID');
+                },
+
+                getTierPrice(pax) {
+                    if (!this.priceTiers || this.priceTiers.length === 0) {
+                        return this.basePrice;
+                    }
+                    for (let tier of this.priceTiers) {
+                        if (pax >= tier.min_pax && pax <= tier.max_pax) {
+                            return parseInt(tier.price_per_pax, 10);
+                        }
+                    }
+                    return parseInt(this.priceTiers[this.priceTiers.length - 1].price_per_pax, 10);
+                },
+
+                currentPricePerPax() {
+                    return this.getTierPrice(this.paxCount);
+                },
+
+                ticketTotal() {
+                    return this.currentPricePerPax() * this.paxCount;
+                },
+
+                shuttleTotal() {
+                    return this.selectedMeetingPointPrice * this.paxCount;
+                },
+
+                addonsTotal() {
+                    let total = 0;
+                    for (let key in this.selectedAddons) {
+                        total += (this.selectedAddons[key].price * (this.selectedAddons[key].quantity || 1));
+                    }
+                    return total;
+                },
+
+                grandTotal() {
+                    return this.ticketTotal() + this.shuttleTotal() + this.addonsTotal();
+                },
+
+                dpTotal() {
+                    return this.paxCount * this.bookingFeePerPax;
+                },
+
+                async submitBooking() {
+                    this.errorMessage = '';
+
+                    // Validate customer (Ketua)
+                    if (!this.customerName.trim() || this.customerName.trim().length < 3) {
+                        this.errorMessage = 'Nama lengkap ketua rombongan wajib diisi (minimal 3 karakter).';
+                        return;
+                    }
+                    if (!this.customerPhone.trim() || this.customerPhone.trim().length < 9) {
+                        this.errorMessage = 'Nomor WhatsApp aktif pemesan tidak valid.';
+                        return;
+                    }
+                    if (!this.customerEmail.trim() || !this.customerEmail.includes('@')) {
+                        this.errorMessage = 'Email pemesan tidak valid.';
+                        return;
+                    }
+                    if (!this.customerNik.trim() || this.customerNik.trim().length !== 16 || !/^\d+$/.test(this.customerNik.trim())) {
+                        this.errorMessage = 'NIK Ketua Rombongan wajib 16 digit angka resmi KTP.';
+                        return;
+                    }
+
+                    // Validate extra participants
+                    for (let i = 0; i < this.participants.length; i++) {
+                        const p = this.participants[i];
+                        if (!p.name || p.name.trim().length < 3) {
+                            this.errorMessage = `Nama lengkap Anggota #${i + 1} wajib diisi (minimal 3 karakter).`;
+                            return;
+                        }
+                        if (!p.nik || p.nik.trim().length !== 16 || !/^\d+$/.test(p.nik.trim())) {
+                            this.errorMessage = `NIK Anggota #${i + 1} wajib 16 digit angka resmi KTP (untuk asuransi & SIMAKSI).`;
+                            return;
+                        }
+                    }
+
+                    const participantsPayload = [
+                        {
+                            full_name: this.customerName.trim(),
+                            nik: this.customerNik.trim(),
+                            is_leader: true
+                        },
+                        ...this.participants.map(p => ({
+                            full_name: p.name.trim(),
+                            nik: p.nik.trim(),
+                            is_leader: false
+                        }))
+                    ];
+
+                    const addonsPayload = Object.values(this.selectedAddons).map(a => ({
+                        id: a.id,
+                        quantity: a.quantity || 1
+                    }));
+
+                    const expeditionId = this.tripType === 'private'
+                        ? (this.privateExpeditionId || this.openExpeditionId)
+                        : this.openExpeditionId;
+
+                    const payload = {
+                        expedition_id: expeditionId,
+                        route_id: this.routeId,
+                        meeting_point_id: this.meetingPointId,
+                        trip_type: this.tripType,
+                        customer_name: this.customerName.trim(),
+                        customer_email: this.customerEmail.trim(),
+                        customer_phone: this.customerPhone.trim(),
+                        customer_nik: this.customerNik.trim(),
+                        pax_count: this.paxCount,
+                        participants: participantsPayload,
+                        addons: addonsPayload
+                    };
+
+                    this.isSubmitting = true;
+
+                    try {
+                        const res = await fetch('{{ route('bookings.store') }}', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'Accept': 'application/json',
+                                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                            },
+                            body: JSON.stringify(payload)
+                        });
+
+                        const data = await res.json();
+
+                        if (!res.ok) {
+                            if (data.errors) {
+                                const firstKey = Object.keys(data.errors)[0];
+                                this.errorMessage = data.errors[firstKey][0];
+                            } else {
+                                this.errorMessage = data.message || 'Gagal memproses booking. Silakan coba lagi.';
+                            }
+                            this.isSubmitting = false;
+                            return;
+                        }
+
+                        // Redirect ke halaman checkout yang sesuai (Open Trip: Step 1 DP, Private Trip: Langsung 100%)
+                        window.location.href = data.redirect_url;
+                    } catch (err) {
+                        this.errorMessage = 'Terjadi gangguan jaringan internet. Silakan periksa koneksi Anda.';
+                        this.isSubmitting = false;
+                    }
                 }
             }));
         });
 
-        // Booking Modal State & Logic (referensi modal-pemesanan.html)
+        // Booking Modal State & Logic
         let modalPaxCount = 1;
 
-        function changePax(delta) {
-            const newPax = modalPaxCount + delta;
-            const maxSlot = {{ max(1, $expedition['quota_max'] - $expedition['quota_current']) }};
-            if (newPax >= 1 && newPax <= Math.max(10, maxSlot)) {
-                modalPaxCount = newPax;
-                const paxEl = document.getElementById('paxCountDisplay');
-                if (paxEl) paxEl.innerText = `${modalPaxCount} Orang`;
-                updateCalculations();
-            }
-        }
-
-        function updateCalculations() {
-            const basePrice = calculateCurrentPrice();
-            const tripTotal = basePrice * modalPaxCount;
-
-            const basePriceText = document.getElementById('modal-base-price-text');
-            if (basePriceText) basePriceText.innerText = `${formatIDR(basePrice)}/orang`;
-
-            const tripLabel = document.getElementById('summaryTripLabel');
-            if (tripLabel) {
-                const pkgName = selectedPackage === 'open' ? 'Open Trip' : 'Private Trip';
-                tripLabel.innerText = `${pkgName} (${modalPaxCount}x)`;
-            }
-
-            const tripPrice = document.getElementById('summaryTripPrice');
-            if (tripPrice) tripPrice.innerText = formatIDR(tripTotal);
-
-            // Shuttle Fee
-            const selectedRadio = document.querySelector('input[name="meetingPoint"]:checked');
-            const shuttlePricePerPax = selectedRadio ? parseInt(selectedRadio.value, 10) : 0;
-            const shuttleTotal = shuttlePricePerPax * modalPaxCount;
-            const shuttleRow = document.getElementById('summaryShuttleRow');
-            
-            if (shuttleRow) {
-                if (shuttleTotal > 0) {
-                    shuttleRow.classList.remove('hidden');
-                    shuttleRow.classList.add('flex');
-                    const shuttleLabel = document.getElementById('summaryShuttleLabel');
-                    const shuttlePrice = document.getElementById('summaryShuttlePrice');
-                    const shortLabel = selectedRadio.getAttribute('data-short-label') || 'Fee';
-                    if (shuttleLabel) shuttleLabel.innerText = `Shuttle (${shortLabel})`;
-                    if (shuttlePrice) shuttlePrice.innerText = formatIDR(shuttleTotal);
-                } else {
-                    shuttleRow.classList.add('hidden');
-                    shuttleRow.classList.remove('flex');
-                }
-            }
-
-            // Add-ons Rental Gear
-            const checkedAddons = document.querySelectorAll('#addonContainer input[type="checkbox"]:checked');
-            const addonsContainer = document.getElementById('summaryAddonsContainer');
-            let totalAddons = 0;
-
-            if (addonsContainer) {
-                addonsContainer.innerHTML = '';
-                checkedAddons.forEach(addon => {
-                    const cost = parseInt(addon.value, 10);
-                    totalAddons += cost;
-                    const div = document.createElement('div');
-                    div.className = 'flex items-center justify-between gap-3 text-[11px]';
-                    div.innerHTML = `
-                        <span class="text-muted truncate">${addon.getAttribute('data-name')}</span>
-                        <span class="font-semibold text-body-strong shrink-0 whitespace-nowrap">${formatIDR(cost)}</span>
-                    `;
-                    addonsContainer.appendChild(div);
-                });
-            }
-
-            // Grand Total Calculation
-            const grandTotal = tripTotal + shuttleTotal + totalAddons;
-            const currentTotalEl = document.getElementById('modalCurrentTotal');
-            if (currentTotalEl) currentTotalEl.innerText = formatIDR(grandTotal);
-        }
-
-        // Booking Modal Interaction
         function handleBookingClick() {
-            const modal = document.getElementById('bookingModal');
-            const jalur = document.getElementById('jalur-hidden-input').value;
-
-            // Sync dynamic labels
-            const routeSummary = document.getElementById('summaryRoute');
-            if (routeSummary) routeSummary.innerText = jalur;
-
-            const basecampLabel = document.getElementById('label-meeting-basecamp');
-            if (basecampLabel) basecampLabel.innerText = `Basecamp ${jalur}`;
-
-            const subtitle = document.getElementById('modal-expedition-subtitle');
-            if (subtitle) {
-                const pkgName = selectedPackage === 'open' ? 'Open Trip' : 'Private Trip';
-                const hikeName = selectedHikeType === 'camping' ? 'Camping 2D1N' : 'Tek-tok 1 Day';
-                subtitle.innerText = `${expeditionData.title} • ${pkgName} (${hikeName})`;
-            }
-
-            // Update WA ask link
-            const waAskBtn = document.getElementById('btn-modal-wa-ask');
-            if (waAskBtn) {
-                const askMsg = `Halo MiddleTrip, saya ingin konsultasi terkait ekspedisi ${expeditionData.title} jalur ${jalur}. Apakah ada jadwal yang tersedia?`;
-                waAskBtn.href = `https://wa.me/6281234567890?text=${encodeURIComponent(askMsg)}`;
-            }
-
-            updateCalculations();
-
-            // Show Modal with smooth animation
-            modal.classList.remove('opacity-0', 'pointer-events-none');
-            modal.firstElementChild.classList.remove('scale-95');
-            modal.firstElementChild.classList.add('scale-100');
+            window.dispatchEvent(new CustomEvent('open-booking-modal', {
+                detail: {
+                    packageType: selectedPackage,
+                    hikeType: selectedHikeType,
+                    routeId: selectedRouteId
+                }
+            }));
         }
 
         function closeBookingModal() {
@@ -1320,36 +1540,6 @@
                 modal.firstElementChild.classList.remove('scale-100');
                 modal.firstElementChild.classList.add('scale-95');
             }
-        }
-
-        function handlePayment() {
-            const selectedRadio = document.querySelector('input[name="meetingPoint"]:checked');
-            const meetingPoint = selectedRadio ? selectedRadio.getAttribute('data-label') : 'Basecamp';
-            const jalur = document.getElementById('jalur-hidden-input').value;
-            const grandTotal = document.getElementById('modalCurrentTotal').innerText;
-            const hikeTypeLabel = selectedHikeType === 'camping' ? 'Camping 2D1N' : 'Tek-tok One Day Hike';
-            const packageLabel = selectedPackage === 'open' ? 'Open Trip' : 'Private Trip';
-
-            // List checked addons
-            const checkedAddons = document.querySelectorAll('#addonContainer input[type="checkbox"]:checked');
-            let addonsText = 'Tidak ada';
-            if (checkedAddons.length > 0) {
-                addonsText = Array.from(checkedAddons).map(a => `${a.getAttribute('data-name')} (+${formatIDR(parseInt(a.value, 10))})`).join(', ');
-            }
-
-            // Format Professional WhatsApp Checkout Message
-            const message = `Halo Admin MiddleTrip, saya ingin memesan tiket ekspedisi:\n\n` +
-                            `• Ekspedisi: ${expeditionData.title}\n` +
-                            `• Tipe & Paket: ${hikeTypeLabel} (${packageLabel})\n` +
-                            `• Jalur: ${jalur}\n` +
-                            `• Tanggal Keberangkatan: ${expeditionData.departure_date}\n` +
-                            `• Jumlah Peserta: ${modalPaxCount} Orang\n` +
-                            `• Meeting Point: ${meetingPoint}\n` +
-                            `• Tambahan (Rental Gear): ${addonsText}\n` +
-                            `• Total Pembayaran: ${grandTotal}\n\n` +
-                            `Mohon instruksi pembayaran resmi dan formulir data peserta. Terima kasih!`;
-
-            window.open(`https://wa.me/6281234567890?text=${encodeURIComponent(message)}`, '_blank');
         }
 
         // Gallery Lightbox Modal

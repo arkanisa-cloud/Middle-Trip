@@ -22,11 +22,15 @@ class BookingController extends Controller
             $request->user()?->id,
         );
 
+        $redirectUrl = $booking->trip_type === 'private'
+            ? route('checkout.private', $booking->booking_code)
+            : route('checkout.step1', $booking->booking_code);
+
         return response()->json([
             'success' => true,
             'message' => 'Reservasi booking berhasil dibuat.',
             'booking_code' => $booking->booking_code,
-            'redirect_url' => route('checkout.step1', $booking->booking_code),
+            'redirect_url' => $redirectUrl,
         ], 201);
     }
 }

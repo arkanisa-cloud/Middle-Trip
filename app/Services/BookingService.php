@@ -34,9 +34,19 @@ class BookingService
                 ]);
             }
 
+            $tripType = $data['trip_type'] ?? $expedition->type;
+
+            // Jika private trip diminta, pastikan mengaitkan ekspedisi tipe private
+            if ($tripType === 'private' && $expedition->type !== 'private') {
+                $privateExpedition = Expedition::where('mountain_id', $expedition->mountain_id)
+                    ->where('type', 'private')
+                    ->first();
+                if ($privateExpedition) {
+                    $expedition = $privateExpedition;
+                }
+            }
+
             $mountain = $expedition->mountain;
-            $bookingFeePerPax = $mountain->booking_fee_per_pax;
-            $totalBookingFee = $bookingFeePerPax * $paxCount;
 
             // Hitung biaya shuttle
             $shuttleFeeTotal = 0;
@@ -46,9 +56,6 @@ class BookingService
                     $shuttleFeeTotal = $meetingPoint->additional_price_per_pax * $paxCount;
                 }
             }
-
-            // Hitung estimasi harga awal (base price x pax)
-            $estimatedTripCost = $mountain->base_price * $paxCount;
 
             // Hitung addons
             $addonsFeeTotal = 0;
@@ -68,7 +75,23 @@ class BookingService
                 }
             }
 
-            $grandTotal = $estimatedTripCost + $shuttleFeeTotal + $addonsFeeTotal;
+            if ($tripType === 'private') {
+                // Private Trip: Harga tier langsung terkunci sesuai jumlah pax, pembayaran langsung 100% tanpa DP
+                $lockedPricePerPax = $mountain->getTierPriceForPax($paxCount);
+                $tripCost = $lockedPricePerPax * $paxCount;
+                $grandTotal = $tripCost + $shuttleFeeTotal + $addonsFeeTotal;
+                $bookingFeePerPax = 0;
+                $totalBookingFee = 0;
+                $remainingPaymentTotal = $grandTotal;
+            } else {
+                // Open Trip: Wajib bayar booking fee (DP), harga final terkunci menjelang keberangkatan
+                $bookingFeePerPax = $mountain->booking_fee_per_pax;
+                $totalBookingFee = $bookingFeePerPax * $paxCount;
+                $estimatedTripCost = $mountain->base_price * $paxCount;
+                $grandTotal = $estimatedTripCost + $shuttleFeeTotal + $addonsFeeTotal;
+                $lockedPricePerPax = null;
+                $remainingPaymentTotal = null;
+            }
 
             // Generate Booking Code unik: MT-YYYYMMDD-XXXXX
             $bookingCode = 'MT-'.date('Ymd').'-'.strtoupper(Str::random(5));
@@ -80,7 +103,7 @@ class BookingService
                 'expedition_id' => $expedition->id,
                 'route_id' => $data['route_id'],
                 'meeting_point_id' => $data['meeting_point_id'] ?? null,
-                'trip_type' => $expedition->type,
+                'trip_type' => $tripType,
                 'customer_name' => $data['customer_name'],
                 'customer_email' => $data['customer_email'],
                 'customer_phone' => $data['customer_phone'],
@@ -88,9 +111,11 @@ class BookingService
                 'pax_count' => $paxCount,
                 'booking_fee_per_pax' => $bookingFeePerPax,
                 'total_booking_fee' => $totalBookingFee,
+                'locked_price_per_pax' => $lockedPricePerPax,
                 'shuttle_fee_total' => $shuttleFeeTotal,
                 'addons_fee_total' => $addonsFeeTotal,
                 'grand_total' => $grandTotal,
+                'remaining_payment_total' => $remainingPaymentTotal,
                 'status' => 'open',
                 'notes' => $data['notes'] ?? null,
             ]);

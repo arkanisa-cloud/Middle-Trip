@@ -91,6 +91,49 @@ class CheckoutController extends Controller
     }
 
     /**
+     * Menampilkan halaman pembayaran langsung 100% tanpa DP untuk Private Trip.
+     */
+    public function private(string $bookingCode): View|RedirectResponse
+    {
+        $booking = Booking::with(['expedition.mountain', 'route', 'meetingPoint', 'participants', 'addons'])
+            ->where('booking_code', $bookingCode)
+            ->firstOrFail();
+
+        if ($booking->status === 'paid') {
+            return redirect()->route('checkout.success', $booking->booking_code);
+        }
+
+        return view('customer.checkout.private_payment', compact('booking'));
+    }
+
+    /**
+     * Memproses pembayaran 100% lunas untuk Private Trip.
+     */
+    public function payPrivate(Request $request, string $bookingCode): RedirectResponse
+    {
+        $booking = Booking::where('booking_code', $bookingCode)->firstOrFail();
+
+        $paymentMethod = $request->input('payment_method', 'BCA Virtual Account');
+        $amount = $booking->grand_total;
+
+        PaymentTransaction::create([
+            'booking_id' => $booking->id,
+            'transaction_code' => 'TRX-PVT-'.strtoupper(Str::random(10)),
+            'payment_stage' => 'full_payment',
+            'payment_method' => $paymentMethod,
+            'amount' => $amount,
+            'status' => 'success',
+            'paid_at' => now(),
+        ]);
+
+        $booking->update([
+            'status' => 'paid',
+        ]);
+
+        return redirect()->route('checkout.success', $booking->booking_code);
+    }
+
+    /**
      * Menampilkan halaman sukses pembayaran & tautan grup WA (Step 3).
      */
     public function success(string $bookingCode): View

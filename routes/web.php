@@ -18,6 +18,8 @@ Route::get('/checkout/{booking_code}', [CheckoutController::class, 'step1'])->na
 Route::post('/checkout/{booking_code}/pay-dp', [CheckoutController::class, 'payDp'])->name('checkout.pay_dp');
 Route::get('/checkout/{booking_code}/status', [CheckoutController::class, 'status'])->name('checkout.status');
 Route::post('/checkout/{booking_code}/settle', [CheckoutController::class, 'settle'])->name('checkout.settle');
+Route::get('/checkout/{booking_code}/private', [CheckoutController::class, 'private'])->name('checkout.private');
+Route::post('/checkout/{booking_code}/pay-private', [CheckoutController::class, 'payPrivate'])->name('checkout.pay_private');
 Route::get('/checkout/{booking_code}/success', [CheckoutController::class, 'success'])->name('checkout.success');
 
 Route::get('/dashboard', function () {

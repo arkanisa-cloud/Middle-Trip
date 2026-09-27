@@ -61,11 +61,15 @@ class ExpeditionController extends Controller
             ->with(['routes', 'priceTiers', 'meetingPoints', 'expeditions'])
             ->first();
 
+        $openExpedition = $mountainModel?->expeditions->where('type', 'open')->where('status', 'open')->first();
+        $privateExpedition = $mountainModel?->expeditions->where('type', 'private')->where('status', 'open')->first();
         $addons = Addon::where('is_active', true)->get();
 
         return view('customer.detail', [
             'expedition' => $expedition,
             'mountainModel' => $mountainModel,
+            'openExpedition' => $openExpedition,
+            'privateExpedition' => $privateExpedition,
             'addons' => $addons,
         ]);
     }
