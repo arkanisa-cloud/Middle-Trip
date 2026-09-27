@@ -36,7 +36,7 @@
 - Consumes: Existing `mountains`, `routes`, `users` tables.
 - Produces: Tables `expedition_price_tiers`, `expeditions`, `meeting_points`, `addons`, `bookings`, `booking_participants`, `booking_addons`, `payment_transactions`, plus added columns on `mountains`.
 
-- [ ] **Step 1: Write the failing test for database tables existence**
+- [x] **Step 1: Write the failing test for database tables existence**
 
 ```php
 <?php
@@ -99,12 +99,12 @@ class DatabaseSchemaTest extends TestCase
 }
 ```
 
-- [ ] **Step 2: Run test to verify it fails**
+- [x] **Step 2: Run test to verify it fails**
 
 Run: `./vendor/bin/sail artisan test --filter=DatabaseSchemaTest`  
 Expected: FAIL with missing tables or columns.
 
-- [ ] **Step 3: Create the 9 migration files matching `docs/database.md`**
+- [x] **Step 3: Create the 9 migration files matching `docs/database.md`**
 
 1. `2026_09_27_000001_update_mountains_table_add_booking_fields.php`:
    Add `booking_fee_per_pax` (unsignedInteger, default 150000) and `price_lock_days_before_departure` (unsignedTinyInteger, default 3).
@@ -125,13 +125,13 @@ Expected: FAIL with missing tables or columns.
 9. `2026_09_27_000009_create_payment_transactions_table.php`:
    Columns `booking_id`, `transaction_code` (unique), `payment_stage`, `payment_method`, `amount`, `status`, `paid_at` (nullable), `payment_payload` (nullable, json).
 
-- [ ] **Step 4: Run migration and verify test passes**
+- [x] **Step 4: Run migration and verify test passes**
 
 Run: `./vendor/bin/sail artisan migrate`  
 Run: `./vendor/bin/sail artisan test --filter=DatabaseSchemaTest`  
 Expected: PASS
 
-- [ ] **Step 5: Format code with Laravel Pint**
+- [x] **Step 5: Format code with Laravel Pint**
 
 Run: `./vendor/bin/sail pint --dirty --format agent`
 
@@ -159,7 +159,7 @@ Run: `./vendor/bin/sail pint --dirty --format agent`
   - `Expedition::mountain()`, `Expedition::route()`, `Expedition::bookings()`, `Expedition::calculatePriceLockPrice(): int`
   - `Booking::expedition()`, `Booking::participants()`, `Booking::addons()`, `Booking::transactions()`
 
-- [ ] **Step 1: Write the failing tests for models and dynamic pricing logic**
+- [x] **Step 1: Write the failing tests for models and dynamic pricing logic**
 
 ```php
 <?php
@@ -220,24 +220,24 @@ class ExpeditionPriceTierTest extends TestCase
 }
 ```
 
-- [ ] **Step 2: Run test to verify it fails**
+- [x] **Step 2: Run test to verify it fails**
 
 Run: `./vendor/bin/sail artisan test --filter=ExpeditionPriceTierTest`  
 Expected: FAIL with "Class ExpeditionPriceTier not found"
 
-- [ ] **Step 3: Implement all Eloquent Models and update `Mountain.php` & `Route.php`**
+- [x] **Step 3: Implement all Eloquent Models and update `Mountain.php` & `Route.php`**
 
 Implement:
 - `Mountain::getTierPriceForPax(int $pax): int`: queries `priceTiers` for matching range and falls back to lowest price.
 - `Expedition::calculatePriceLockPrice(): int`: calculates final per pax price based on `$this->quota_booked` via `mountain->getTierPriceForPax()`.
 - Add all required casts and relationship methods (`hasMany`, `belongsTo`, `belongsToMany`).
 
-- [ ] **Step 4: Run unit tests to verify they pass**
+- [x] **Step 4: Run unit tests to verify they pass**
 
 Run: `./vendor/bin/sail artisan test --filter=ExpeditionPriceTierTest`  
 Expected: PASS
 
-- [ ] **Step 5: Format code with Laravel Pint**
+- [x] **Step 5: Format code with Laravel Pint**
 
 Run: `./vendor/bin/sail pint --dirty --format agent`
 
@@ -254,7 +254,7 @@ Run: `./vendor/bin/sail pint --dirty --format agent`
 - Consumes: Models from Task 2.
 - Produces: Complete working dataset for Mt. Merbabu (Via Selo, Suwanting, Thekelan, Wekas), price tiers (1-3: 650k, 4-6: 550k, 7-10: 475k), meeting points (Basecamp Free, Shuttle Solo +75k, Shuttle Jogja +100k), rental gear addons, and upcoming scheduled expeditions.
 
-- [ ] **Step 1: Write test for Seeder integrity**
+- [x] **Step 1: Write test for Seeder integrity**
 
 ```php
 <?php
@@ -289,12 +289,12 @@ class ExpeditionSeederTest extends TestCase
 }
 ```
 
-- [ ] **Step 2: Run test to verify it fails**
+- [x] **Step 2: Run test to verify it fails**
 
 Run: `./vendor/bin/sail artisan test --filter=ExpeditionSeederTest`  
 Expected: FAIL with "Target class [ExpeditionSubsystemSeeder] does not exist".
 
-- [ ] **Step 3: Implement `ExpeditionSubsystemSeeder.php`**
+- [x] **Step 3: Implement `ExpeditionSubsystemSeeder.php`**
 
 Populate:
 - Mt. Merbabu, Mt. Sindoro, Mt. Prau.
@@ -303,12 +303,12 @@ Populate:
 - Meeting points: *Basecamp Selo (Boyolali)* (0), *Shuttle Stasiun Solo Balapan* (75.000), *Shuttle Stasiun Tugu Jogja* (100.000).
 - Open Trip and Private Trip batches with realistic future dates (`departure_date = now()->addDays(14)`).
 
-- [ ] **Step 4: Run seeder and verify test passes**
+- [x] **Step 4: Run seeder and verify test passes**
 
 Run: `./vendor/bin/sail artisan test --filter=ExpeditionSeederTest`  
 Expected: PASS
 
-- [ ] **Step 5: Format code with Laravel Pint**
+- [x] **Step 5: Format code with Laravel Pint**
 
 Run: `./vendor/bin/sail pint --dirty --format agent`
 
@@ -329,7 +329,7 @@ Run: `./vendor/bin/sail pint --dirty --format agent`
   - `BookingService::createBooking(array $validatedData): Booking`
   - Endpoint `POST /bookings` returning `{ success: true, booking_code: "MT-...", redirect_url: "/checkout/MT-..." }`.
 
-- [ ] **Step 1: Write feature test for booking creation**
+- [x] **Step 1: Write feature test for booking creation**
 
 ```php
 <?php
@@ -426,12 +426,12 @@ class BookingCreationTest extends TestCase
 }
 ```
 
-- [ ] **Step 2: Run test to verify it fails**
+- [x] **Step 2: Run test to verify it fails**
 
 Run: `./vendor/bin/sail artisan test --filter=BookingCreationTest`  
 Expected: FAIL with "Route [bookings.store] not defined".
 
-- [ ] **Step 3: Implement `StoreBookingRequest`, `BookingService`, and `BookingController`**
+- [x] **Step 3: Implement `StoreBookingRequest`, `BookingService`, and `BookingController`**
 
 1. `StoreBookingRequest.php`: Validate NIK 16 digits, email, phone, participant array count equals `pax_count`.
 2. `BookingService.php`:
@@ -445,12 +445,12 @@ Expected: FAIL with "Route [bookings.store] not defined".
 4. `routes/web.php`:
    - Add `Route::post('/bookings', [BookingController::class, 'store'])->name('bookings.store');`
 
-- [ ] **Step 4: Run test to verify it passes**
+- [x] **Step 4: Run test to verify it passes**
 
 Run: `./vendor/bin/sail artisan test --filter=BookingCreationTest`  
 Expected: PASS
 
-- [ ] **Step 5: Format code with Laravel Pint**
+- [x] **Step 5: Format code with Laravel Pint**
 
 Run: `./vendor/bin/sail pint --dirty --format agent`
 
@@ -467,7 +467,7 @@ Run: `./vendor/bin/sail pint --dirty --format agent`
 - Consumes: Models from Task 2, `ExpeditionController@show`.
 - Produces: Dynamic interactive detail page passing real mountain and active expedition data into Alpine.js component (`bookingModalComponent`).
 
-- [ ] **Step 1: Write test for Detail Page rendering real database data**
+- [x] **Step 1: Write test for Detail Page rendering real database data**
 
 ```php
 <?php
@@ -502,11 +502,11 @@ class ExpeditionDetailViewTest extends TestCase
 }
 ```
 
-- [ ] **Step 2: Run test to verify current state**
+- [x] **Step 2: Run test to verify current state**
 
 Run: `./vendor/bin/sail artisan test --filter=ExpeditionDetailViewTest`
 
-- [ ] **Step 3: Update `ExpeditionController@show` and integrate Alpine.js in `detail.blade.php`**
+- [x] **Step 3: Update `ExpeditionController@show` and integrate Alpine.js in `detail.blade.php`**
 
 1. In `ExpeditionController@show`:
    Fetch real Eloquent `Mountain::with(['routes', 'priceTiers', 'meetingPoints', 'expeditions'])->where('slug', $slug)->firstOrFail()`.
@@ -517,12 +517,12 @@ Run: `./vendor/bin/sail artisan test --filter=ExpeditionDetailViewTest`
    - Dynamic participant fields generator (Ketua + Anggota NIK input fields).
    - Submit form asynchronously via `fetch('/bookings')` and redirect to checkout page upon success.
 
-- [ ] **Step 4: Run test to verify it passes**
+- [x] **Step 4: Run test to verify it passes**
 
 Run: `./vendor/bin/sail artisan test --filter=ExpeditionDetailViewTest`  
 Expected: PASS
 
-- [ ] **Step 5: Format code with Laravel Pint**
+- [x] **Step 5: Format code with Laravel Pint**
 
 Run: `./vendor/bin/sail pint --dirty --format agent`
 
@@ -547,7 +547,7 @@ Run: `./vendor/bin/sail pint --dirty --format agent`
   - `POST /checkout/{booking_code}/settle` (Process pelunasan -> status `paid`)
   - `GET /checkout/{booking_code}/success` (Step 3: Selesai & Gabung Grup WA)
 
-- [ ] **Step 1: Write feature test for complete 3-step checkout flow**
+- [x] **Step 1: Write feature test for complete 3-step checkout flow**
 
 ```php
 <?php
@@ -631,22 +631,22 @@ class CheckoutFlowTest extends TestCase
 }
 ```
 
-- [ ] **Step 2: Run test to verify it fails**
+- [x] **Step 2: Run test to verify it fails**
 
 Run: `./vendor/bin/sail artisan test --filter=CheckoutFlowTest`  
 Expected: FAIL with missing routes.
 
-- [ ] **Step 3: Implement `CheckoutController` and the 3 Blade Views**
+- [x] **Step 3: Implement `CheckoutController` and the 3 Blade Views**
 
 Port pixel-perfect markup from `payment_open_trip_1.html`, `payment_open_trip_2.html`, and `payment_open_trip_3.html` into clean Blade views utilizing Tailwind CSS v4 tokens and layouts.
 Add payment processing simulation handling transaction record insertion and status transition.
 
-- [ ] **Step 4: Run test to verify it passes**
+- [x] **Step 4: Run test to verify it passes**
 
 Run: `./vendor/bin/sail artisan test --filter=CheckoutFlowTest`  
 Expected: PASS
 
-- [ ] **Step 5: Format code with Laravel Pint**
+- [x] **Step 5: Format code with Laravel Pint**
 
 Run: `./vendor/bin/sail pint --dirty --format agent`
 
@@ -666,7 +666,7 @@ Run: `./vendor/bin/sail pint --dirty --format agent`
   - Artisan command `php artisan expeditions:process-price-locks`
   - Artisan command `php artisan bookings:expire-unpaid`
 
-- [ ] **Step 1: Write feature test for Price Lock command**
+- [x] **Step 1: Write feature test for Price Lock command**
 
 ```php
 <?php
@@ -734,12 +734,12 @@ class ProcessPriceLocksCommandTest extends TestCase
 }
 ```
 
-- [ ] **Step 2: Run test to verify it fails**
+- [x] **Step 2: Run test to verify it fails**
 
 Run: `./vendor/bin/sail artisan test --filter=ProcessPriceLocksCommandTest`  
 Expected: FAIL with "Command expeditions:process-price-locks is not defined".
 
-- [ ] **Step 3: Implement `ProcessPriceLocksCommand` and `ExpireUnpaidBookingsCommand`**
+- [x] **Step 3: Implement `ProcessPriceLocksCommand` and `ExpireUnpaidBookingsCommand`**
 
 1. `ProcessPriceLocksCommand.php`:
    - Find all `expeditions` with `status = 'open'` where `departure_date - mountain.price_lock_days_before_departure <= today()`.
@@ -751,12 +751,12 @@ Expected: FAIL with "Command expeditions:process-price-locks is not defined".
    - Update `status = 'expired'`, decrement `expedition->quota_booked` by `booking->pax_count`.
 3. Register schedule in `routes/console.php`.
 
-- [ ] **Step 4: Run test to verify it passes**
+- [x] **Step 4: Run test to verify it passes**
 
 Run: `./vendor/bin/sail artisan test --filter=ProcessPriceLocksCommandTest`  
 Expected: PASS
 
-- [ ] **Step 5: Run full test suite & Pint formatting**
+- [x] **Step 5: Run full test suite & Pint formatting**
 
 Run: `./vendor/bin/sail test`  
 Run: `./vendor/bin/sail pint --dirty --format agent`  
