@@ -26,6 +26,8 @@ class Mountain extends Model
             'has_private_trip' => 'boolean',
             'base_price' => 'integer',
             'price_private' => 'integer',
+            'booking_fee_per_pax' => 'integer',
+            'price_lock_days_before_departure' => 'integer',
             'is_featured' => 'boolean',
             'featured_order' => 'integer',
             'is_active' => 'boolean',
@@ -46,6 +48,53 @@ class Mountain extends Model
     public function primaryRoute(): HasOne
     {
         return $this->hasOne(Route::class)->where('is_primary', true);
+    }
+
+    /**
+     * Relasi ke matriks tier harga dinamis.
+     */
+    public function priceTiers(): HasMany
+    {
+        return $this->hasMany(ExpeditionPriceTier::class)->orderBy('min_pax');
+    }
+
+    /**
+     * Relasi ke batch ekspedisi pendakian.
+     */
+    public function expeditions(): HasMany
+    {
+        return $this->hasMany(Expedition::class);
+    }
+
+    /**
+     * Relasi ke opsi meeting point shuttle.
+     */
+    public function meetingPoints(): HasMany
+    {
+        return $this->hasMany(MeetingPoint::class);
+    }
+
+    /**
+     * Mendapatkan harga per pax berdasarkan jumlah peserta akumulasi dari tier matriks.
+     */
+    public function getTierPriceForPax(int $pax): int
+    {
+        $tiers = $this->priceTiers()->get();
+
+        if ($tiers->isEmpty()) {
+            return $this->base_price;
+        }
+
+        foreach ($tiers as $tier) {
+            if ($pax >= $tier->min_pax && $pax <= $tier->max_pax) {
+                return $tier->price_per_pax;
+            }
+        }
+
+        // Jika jumlah pax melebihi max_pax tier tertinggi, berikan harga tier tertinggi (termurah)
+        $highestTier = $tiers->sortByDesc('max_pax')->first();
+
+        return $highestTier?->price_per_pax ?? $this->base_price;
     }
 
     /**

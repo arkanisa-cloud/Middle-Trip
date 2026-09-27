@@ -6,6 +6,7 @@ use App\Enums\TrailGrade;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Route extends Model
 {
@@ -31,5 +32,21 @@ class Route extends Model
     public function mountain(): BelongsTo
     {
         return $this->belongsTo(Mountain::class);
+    }
+
+    /**
+     * Relasi ke seluruh ekspedisi yang melewati jalur ini.
+     */
+    public function expeditions(): HasMany
+    {
+        return $this->hasMany(Expedition::class);
+    }
+
+    /**
+     * Relasi ke seluruh booking di jalur ini.
+     */
+    public function bookings(): HasMany
+    {
+        return $this->hasMany(Booking::class);
     }
 }
