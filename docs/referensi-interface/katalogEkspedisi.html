@@ -1,0 +1,616 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MiddleTrip - Katalog Ekspedisi 2026</title>
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Font Plus Jakarta Sans -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+          },
+          colors: {
+            brand: {
+              terracotta: '#9E3924',
+              'terracotta-hover': '#862F1D',
+              dark: '#0F172A',
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background-color: #F8F9FA;
+      color: #1A1D20;
+      -webkit-font-smoothing: antialiased;
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between selection:bg-brand-terracotta selection:text-white">
+
+  <!-- Top Floating Navbar Container -->
+  <header class="w-full pt-5 px-4 md:px-8">
+    <nav class="max-w-5xl mx-auto bg-white/95 backdrop-blur-md rounded-full px-5 md:px-7 py-3 border border-gray-200/70 shadow-sm flex items-center justify-between transition">
+      
+      <!-- Brand Logo -->
+      <a href="#" class="flex items-center gap-2 text-gray-900 font-bold tracking-tight text-lg group">
+        <svg class="w-5 h-5 text-gray-900 group-hover:text-brand-terracotta transition" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="m8 3 4 8 5-5 5 15H2L8 3z"/>
+        </svg>
+        <span class="font-extrabold text-[17px] tracking-tight">MiddleTrip</span>
+      </a>
+
+      <!-- Navigation Links -->
+      <div class="hidden md:flex items-center gap-8 text-[13.5px] font-medium text-gray-600">
+        <a href="#" class="hover:text-gray-900 transition">Home</a>
+        <a href="#" class="text-gray-900 font-bold relative after:content-[''] after:absolute after:bottom-[-4px] after:left-0 after:w-full after:h-[2px] after:bg-gray-900">Ekspedisi</a>
+        <a href="#" class="hover:text-gray-900 transition">Contact</a>
+      </div>
+
+      <!-- Auth Action Buttons -->
+      <div class="flex items-center gap-4 text-[13.5px] font-medium">
+        <a href="#" class="text-gray-700 hover:text-gray-900 transition px-2">Login</a>
+        <a href="#" class="bg-[#0F172A] hover:bg-black text-white px-5 py-1.5 rounded-full font-semibold transition shadow-sm">Daftar</a>
+      </div>
+    </nav>
+  </header>
+
+  <!-- Header Title Section -->
+  <section class="max-w-4xl mx-auto px-4 pt-12 md:pt-16 pb-7 text-center">
+    
+    <!-- Badge Pill -->
+    <div class="inline-flex items-center px-4 py-1 rounded-full bg-gray-200/70 text-gray-800 text-[11px] md:text-xs font-semibold mb-4 tracking-wide">
+      Katalog Ekspedisi 2026
+    </div>
+
+    <!-- Main Headline -->
+    <h1 class="text-3xl sm:text-4xl md:text-[44px] font-extrabold text-gray-900 tracking-tight leading-tight mb-3">
+      Jelajahi Puncak Indonesia
+    </h1>
+
+    <!-- Subtitle -->
+    <p class="text-gray-500 text-xs sm:text-sm md:text-[14.5px] max-w-2xl mx-auto leading-relaxed">
+      Temukan petualangan tak terlupakan di jajaran gunung api dan pegunungan tropis nusantara dengan standar pemanduan profesional.
+    </p>
+  </section>
+
+  <!-- Filter & Segmented Control -->
+  <section class="max-w-6xl mx-auto px-4 md:px-8 mb-9 w-full">
+    <div class="flex flex-col sm:flex-row items-center justify-between gap-3">
+      
+      <!-- Trip Category Filter (Pill segmented control) -->
+      <div class="bg-gray-200/60 p-1 rounded-full flex items-center gap-1 w-full sm:w-auto overflow-x-auto">
+        <button onclick="setTripType('all', this)" class="trip-filter-btn px-4 py-1.5 rounded-full text-xs font-semibold bg-white text-gray-900 shadow-sm transition whitespace-nowrap">
+          Semua Trip
+        </button>
+        <button onclick="setTripType('open', this)" class="trip-filter-btn px-4 py-1.5 rounded-full text-xs font-medium text-gray-600 hover:text-gray-900 transition whitespace-nowrap">
+          Open Trip Only
+        </button>
+        <button onclick="setTripType('private', this)" class="trip-filter-btn px-4 py-1.5 rounded-full text-xs font-medium text-gray-600 hover:text-gray-900 transition whitespace-nowrap">
+          Private Trip Only
+        </button>
+      </div>
+
+      <!-- Right Action Filters: Grade Select & Filter Toggle -->
+      <div class="flex items-center gap-2 self-end sm:self-auto">
+        
+        <!-- Grade Dropdown Menu -->
+        <div class="relative">
+          <button id="grade-dropdown-btn" onclick="toggleGradeMenu()" class="bg-gray-200/60 hover:bg-gray-200 text-gray-700 text-xs font-semibold px-4 py-2 rounded-full flex items-center gap-2 transition">
+            <span id="grade-selected-label">Grade</span>
+            <svg class="w-3.5 h-3.5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+            </svg>
+          </button>
+          
+          <div id="grade-menu" class="hidden absolute right-0 mt-2 w-44 bg-white border border-gray-100 rounded-2xl shadow-xl py-2 z-30 text-xs">
+            <button onclick="filterByGrade('all')" class="w-full text-left px-4 py-2 hover:bg-gray-50 font-medium text-gray-700">Semua Grade</button>
+            <button onclick="filterByGrade('Grade A')" class="w-full text-left px-4 py-2 hover:bg-gray-50 font-medium text-emerald-700 flex items-center justify-between">
+              Grade A (Pemula) <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+            </button>
+            <button onclick="filterByGrade('Grade B')" class="w-full text-left px-4 py-2 hover:bg-gray-50 font-medium text-amber-700 flex items-center justify-between">
+              Grade B (Menengah) <span class="w-2 h-2 rounded-full bg-amber-500"></span>
+            </button>
+            <button onclick="filterByGrade('Grade C')" class="w-full text-left px-4 py-2 hover:bg-gray-50 font-medium text-rose-700 flex items-center justify-between">
+              Grade C (Ahli) <span class="w-2 h-2 rounded-full bg-rose-500"></span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Filter Sliders Button -->
+        <button onclick="resetFilters()" title="Reset Filter" class="w-9 h-9 flex items-center justify-center bg-gray-200/60 hover:bg-gray-200 text-gray-700 rounded-full transition">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M3 4h18M7 8v8m10-5v5M3 12h18M3 20h18M9 4v4m6 4v8"></path>
+          </svg>
+        </button>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- Products Grid Section -->
+  <main class="max-w-6xl mx-auto px-4 md:px-8 w-full mb-20 flex-1">
+    <div id="trips-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+      
+      <!-- Card 1: Mt. Merbabu -->
+      <article data-grade="Grade A" data-type="open" class="trip-card bg-white rounded-2xl overflow-hidden border border-gray-100 shadow-sm hover:shadow-md transition duration-300 flex flex-col">
+        <div class="relative h-56 w-full overflow-hidden bg-gray-200">
+          <img 
+            src="https://images.unsplash.com/photo-1544735716-392fe2489ffa?q=80&w=900&auto=format&fit=crop" 
+            alt="Mt. Merbabu" 
+            class="w-full h-full object-cover transition-transform duration-500 hover:scale-105"
+            loading="lazy"
+          />
+          <div class="absolute top-3 left-3">
+            <span class="inline-block bg-[#EAF5EF] text-[#226848] text-[11px] font-bold px-3 py-1 rounded-full shadow-sm">
+              Grade A – Pemula
+            </span>
+          </div>
+        </div>
+
+        <div class="p-5 flex-1 flex flex-col justify-between">
+          <div>
+            <h3 class="text-lg font-bold text-gray-900 tracking-tight">Mt. Merbabu Expedition</h3>
+            <p class="flex items-center gap-1.5 text-xs text-gray-500 mt-1 font-medium">
+              <svg class="w-3.5 h-3.5 text-gray-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="m8 3 4 8 5-5 5 15H2L8 3z"/>
+              </svg>
+              3,145 MDPL
+            </p>
+          </div>
+
+          <div class="mt-6 pt-3 flex items-end justify-between border-t border-gray-50">
+            <div>
+              <span class="text-[10px] text-gray-400 block uppercase font-semibold tracking-wider">Current Price</span>
+              <p class="text-sm md:text-base font-bold text-gray-900">
+                Rp 800.000 <span class="text-xs font-normal text-gray-500">/ pax</span>
+              </p>
+            </div>
+
+            <button onclick="openDetailModal('Mt. Merbabu Expedition', '3,145 MDPL', 'Grade A – Pemula', 'Rp 800.000', 'https://images.unsplash.com/photo-1544735716-392fe2489ffa?q=80&w=900&auto=format&fit=crop', 'Jalur Selo yang ramah pemula, padang sabana nan luas, dan matahari terbit yang memesona.')" class="inline-flex items-center gap-1.5 bg-brand-terracotta hover:bg-brand-terracotta-hover text-white text-xs font-semibold px-4 py-2 rounded-full transition shadow-sm">
+              <span>Pilih Trip</span>
+              <span class="text-sm">→</span>
+            </button>
+          </div>
+        </div>
+      </article>
+
+      <!-- Card 2: Mt. Sindoro -->
+      <article data-grade="Grade B" data-type="open" class="trip-card bg-white rounded-2xl overflow-hidden border border-gray-100 shadow-sm hover:shadow-md transition duration-300 flex flex-col">
+        <div class="relative h-56 w-full overflow-hidden bg-gray-200">
+          <img 
+            src="https://images.unsplash.com/photo-1506744038136-46273834b3fb?q=80&w=900&auto=format&fit=crop" 
+            alt="Mt. Sindoro" 
+            class="w-full h-full object-cover transition-transform duration-500 hover:scale-105"
+            loading="lazy"
+          />
+          <div class="absolute top-3 left-3">
+            <span class="inline-block bg-[#FFF0E6] text-[#B85320] text-[11px] font-bold px-3 py-1 rounded-full shadow-sm">
+              Grade B – Menengah
+            </span>
+          </div>
+        </div>
+
+        <div class="p-5 flex-1 flex flex-col justify-between">
+          <div>
+            <h3 class="text-lg font-bold text-gray-900 tracking-tight">Mt. Sindoro Expedition</h3>
+            <p class="flex items-center gap-1.5 text-xs text-gray-500 mt-1 font-medium">
+              <svg class="w-3.5 h-3.5 text-gray-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="m8 3 4 8 5-5 5 15H2L8 3z"/>
+              </svg>
+              3,153 MDPL
+            </p>
+          </div>
+
+          <div class="mt-6 pt-3 flex items-end justify-between border-t border-gray-50">
+            <div>
+              <span class="text-[10px] text-gray-400 block uppercase font-semibold tracking-wider">Current Price</span>
+              <p class="text-sm md:text-base font-bold text-gray-900">
+                Rp 650.000 <span class="text-xs font-normal text-gray-500">/ pax</span>
+              </p>
+            </div>
+
+            <button onclick="openDetailModal('Mt. Sindoro Expedition', '3,153 MDPL', 'Grade B – Menengah', 'Rp 650.000', 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?q=80&w=900&auto=format&fit=crop', 'Trek bebatuan yang kokoh menuju kawah aktif dan lautan awan yang menakjubkan.')" class="inline-flex items-center gap-1.5 bg-brand-terracotta hover:bg-brand-terracotta-hover text-white text-xs font-semibold px-4 py-2 rounded-full transition shadow-sm">
+              <span>Pilih Trip</span>
+              <span class="text-sm">→</span>
+            </button>
+          </div>
+        </div>
+      </article>
+
+      <!-- Card 3: Mt. Prau -->
+      <article data-grade="Grade A" data-type="private" class="trip-card bg-white rounded-2xl overflow-hidden border border-gray-100 shadow-sm hover:shadow-md transition duration-300 flex flex-col">
+        <div class="relative h-56 w-full overflow-hidden bg-gray-200">
+          <img 
+            src="https://images.unsplash.com/photo-1589182373726-e4f658ab50f0?q=80&w=900&auto=format&fit=crop" 
+            alt="Mt. Prau" 
+            class="w-full h-full object-cover transition-transform duration-500 hover:scale-105"
+            loading="lazy"
+          />
+          <div class="absolute top-3 left-3">
+            <span class="inline-block bg-[#EAF5EF] text-[#226848] text-[11px] font-bold px-3 py-1 rounded-full shadow-sm">
+              Grade A – Pemula
+            </span>
+          </div>
+        </div>
+
+        <div class="p-5 flex-1 flex flex-col justify-between">
+          <div>
+            <h3 class="text-lg font-bold text-gray-900 tracking-tight">Mt. Prau Expedition</h3>
+            <p class="flex items-center gap-1.5 text-xs text-gray-500 mt-1 font-medium">
+              <svg class="w-3.5 h-3.5 text-gray-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="m8 3 4 8 5-5 5 15H2L8 3z"/>
+              </svg>
+              2,590 MDPL
+            </p>
+          </div>
+
+          <div class="mt-6 pt-3 flex items-end justify-between border-t border-gray-50">
+            <div>
+              <span class="text-[10px] text-gray-400 block uppercase font-semibold tracking-wider">Current Price</span>
+              <p class="text-sm md:text-base font-bold text-gray-900">
+                Rp 650.000 <span class="text-xs font-normal text-gray-500">/ pax</span>
+              </p>
+            </div>
+
+            <button onclick="openDetailModal('Mt. Prau Expedition', '2,590 MDPL', 'Grade A – Pemula', 'Rp 650.000', 'https://images.unsplash.com/photo-1589182373726-e4f658ab50f0?q=80&w=900&auto=format&fit=crop', 'Sunrise terindah di Jawa Tengah dengan pemandangan 360 derajat jajaran gunung kembar.')" class="inline-flex items-center gap-1.5 bg-brand-terracotta hover:bg-brand-terracotta-hover text-white text-xs font-semibold px-4 py-2 rounded-full transition shadow-sm">
+              <span>Pilih Trip</span>
+              <span class="text-sm">→</span>
+            </button>
+          </div>
+        </div>
+      </article>
+
+      <!-- Card 4: Mt. Slamet -->
+      <article data-grade="Grade C" data-type="open" class="trip-card bg-white rounded-2xl overflow-hidden border border-gray-100 shadow-sm hover:shadow-md transition duration-300 flex flex-col">
+        <div class="relative h-56 w-full overflow-hidden bg-gray-200">
+          <img 
+            src="https://images.unsplash.com/photo-1519681393784-d120267933ba?q=80&w=900&auto=format&fit=crop" 
+            alt="Mt. Slamet" 
+            class="w-full h-full object-cover transition-transform duration-500 hover:scale-105"
+            loading="lazy"
+          />
+          <div class="absolute top-3 left-3">
+            <span class="inline-block bg-[#FDECEB] text-[#B92F26] text-[11px] font-bold px-3 py-1 rounded-full shadow-sm">
+              Grade C – Ahli
+            </span>
+          </div>
+        </div>
+
+        <div class="p-5 flex-1 flex flex-col justify-between">
+          <div>
+            <h3 class="text-lg font-bold text-gray-900 tracking-tight">Mt. Slamet Expedition</h3>
+            <p class="flex items-center gap-1.5 text-xs text-gray-500 mt-1 font-medium">
+              <svg class="w-3.5 h-3.5 text-gray-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="m8 3 4 8 5-5 5 15H2L8 3z"/>
+              </svg>
+              3,428 MDPL
+            </p>
+          </div>
+
+          <div class="mt-6 pt-3 flex items-end justify-between border-t border-gray-50">
+            <div>
+              <span class="text-[10px] text-gray-400 block uppercase font-semibold tracking-wider">Current Price</span>
+              <p class="text-sm md:text-base font-bold text-gray-900">
+                Rp 650.000 <span class="text-xs font-normal text-gray-500">/ pax</span>
+              </p>
+            </div>
+
+            <button onclick="openDetailModal('Mt. Slamet Expedition', '3,428 MDPL', 'Grade C – Ahli', 'Rp 650.000', 'https://images.unsplash.com/photo-1519681393784-d120267933ba?q=80&w=900&auto=format&fit=crop', 'Atap Jawa Tengah dengan jalur kerikil merah vulkanik curam dan elevasi ekstrem.')" class="inline-flex items-center gap-1.5 bg-brand-terracotta hover:bg-brand-terracotta-hover text-white text-xs font-semibold px-4 py-2 rounded-full transition shadow-sm">
+              <span>Pilih Trip</span>
+              <span class="text-sm">→</span>
+            </button>
+          </div>
+        </div>
+      </article>
+
+      <!-- Card 5: Mt. Sumbing -->
+      <article data-grade="Grade B" data-type="private" class="trip-card bg-white rounded-2xl overflow-hidden border border-gray-100 shadow-sm hover:shadow-md transition duration-300 flex flex-col">
+        <div class="relative h-56 w-full overflow-hidden bg-gray-200">
+          <img 
+            src="https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?q=80&w=900&auto=format&fit=crop" 
+            alt="Mt. Sumbing" 
+            class="w-full h-full object-cover transition-transform duration-500 hover:scale-105"
+            loading="lazy"
+          />
+          <div class="absolute top-3 left-3">
+            <span class="inline-block bg-[#FFF0E6] text-[#B85320] text-[11px] font-bold px-3 py-1 rounded-full shadow-sm">
+              Grade B – Menengah
+            </span>
+          </div>
+        </div>
+
+        <div class="p-5 flex-1 flex flex-col justify-between">
+          <div>
+            <h3 class="text-lg font-bold text-gray-900 tracking-tight">Mt. Sumbing Expedition</h3>
+            <p class="flex items-center gap-1.5 text-xs text-gray-500 mt-1 font-medium">
+              <svg class="w-3.5 h-3.5 text-gray-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="m8 3 4 8 5-5 5 15H2L8 3z"/>
+              </svg>
+              3,371 MDPL
+            </p>
+          </div>
+
+          <div class="mt-6 pt-3 flex items-end justify-between border-t border-gray-50">
+            <div>
+              <span class="text-[10px] text-gray-400 block uppercase font-semibold tracking-wider">Current Price</span>
+              <p class="text-sm md:text-base font-bold text-gray-900">
+                Rp 650.000 <span class="text-xs font-normal text-gray-500">/ pax</span>
+              </p>
+            </div>
+
+            <button onclick="openDetailModal('Mt. Sumbing Expedition', '3,371 MDPL', 'Grade B – Menengah', 'Rp 650.000', 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?q=80&w=900&auto=format&fit=crop', 'Melewati jalur eksotis Bowongso menuju puncak sejati beralaskan awan putih.')" class="inline-flex items-center gap-1.5 bg-brand-terracotta hover:bg-brand-terracotta-hover text-white text-xs font-semibold px-4 py-2 rounded-full transition shadow-sm">
+              <span>Pilih Trip</span>
+              <span class="text-sm">→</span>
+            </button>
+          </div>
+        </div>
+      </article>
+
+      <!-- Card 6: Mt. Lawu -->
+      <article data-grade="Grade B" data-type="open" class="trip-card bg-white rounded-2xl overflow-hidden border border-gray-100 shadow-sm hover:shadow-md transition duration-300 flex flex-col">
+        <div class="relative h-56 w-full overflow-hidden bg-gray-200">
+          <img 
+            src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?q=80&w=900&auto=format&fit=crop" 
+            alt="Mt. Lawu" 
+            class="w-full h-full object-cover transition-transform duration-500 hover:scale-105"
+            loading="lazy"
+          />
+          <div class="absolute top-3 left-3">
+            <span class="inline-block bg-[#FFF0E6] text-[#B85320] text-[11px] font-bold px-3 py-1 rounded-full shadow-sm">
+              Grade B – Menengah
+            </span>
+          </div>
+        </div>
+
+        <div class="p-5 flex-1 flex flex-col justify-between">
+          <div>
+            <h3 class="text-lg font-bold text-gray-900 tracking-tight">Mt. Lawu Expedition</h3>
+            <p class="flex items-center gap-1.5 text-xs text-gray-500 mt-1 font-medium">
+              <svg class="w-3.5 h-3.5 text-gray-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="m8 3 4 8 5-5 5 15H2L8 3z"/>
+              </svg>
+              3,265 MDPL
+            </p>
+          </div>
+
+          <div class="mt-6 pt-3 flex items-end justify-between border-t border-gray-50">
+            <div>
+              <span class="text-[10px] text-gray-400 block uppercase font-semibold tracking-wider">Current Price</span>
+              <p class="text-sm md:text-base font-bold text-gray-900">
+                Rp 650.000 <span class="text-xs font-normal text-gray-500">/ pax</span>
+              </p>
+            </div>
+
+            <button onclick="openDetailModal('Mt. Lawu Expedition', '3,265 MDPL', 'Grade B – Menengah', 'Rp 650.000', 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?q=80&w=900&auto=format&fit=crop', 'Gunung sarat legenda sejarah dengan warung tertinggi di Indonesia milik Mbok Yem.')" class="inline-flex items-center gap-1.5 bg-brand-terracotta hover:bg-brand-terracotta-hover text-white text-xs font-semibold px-4 py-2 rounded-full transition shadow-sm">
+              <span>Pilih Trip</span>
+              <span class="text-sm">→</span>
+            </button>
+          </div>
+        </div>
+      </article>
+
+    </div>
+
+    <!-- Empty State -->
+    <div id="no-results" class="hidden text-center py-16 bg-white rounded-2xl border border-gray-100">
+      <svg class="w-12 h-12 text-gray-300 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+      </svg>
+      <p class="text-gray-700 font-semibold text-sm">Tidak ada ekspedisi yang cocok</p>
+      <p class="text-gray-400 text-xs mt-1">Coba ubah kriteria filter atau pilih semua grade.</p>
+      <button onclick="resetFilters()" class="mt-4 text-xs font-semibold text-brand-terracotta underline">Reset Semua Filter</button>
+    </div>
+  </main>
+
+  <!-- Footer Component -->
+  <footer class="w-full border-t border-gray-200/70 bg-[#F8F9FA] py-12 text-center text-gray-600">
+    <div class="max-w-xl mx-auto px-4 flex flex-col items-center gap-4">
+      
+      <!-- Footer Brand -->
+      <span class="font-bold text-gray-900 text-base tracking-tight">MiddleTrip</span>
+
+      <!-- Social and Legal Links -->
+      <div class="flex flex-wrap justify-center items-center gap-6 text-xs text-gray-500 font-medium">
+        <a href="#" class="hover:text-brand-terracotta transition">Instagram</a>
+        <a href="#" class="hover:text-brand-terracotta transition">Whatsapp</a>
+        <a href="#" class="hover:text-brand-terracotta transition">Gmail</a>
+        <a href="#" class="hover:text-brand-terracotta transition">Privacy Policy</a>
+      </div>
+
+      <!-- Copyright Notice -->
+      <p class="text-[11px] text-gray-400 mt-1">
+        © 2026 MiddleTrip Expedition Co. All rights reserved.
+      </p>
+    </div>
+  </footer>
+
+  <!-- Booking & Detail Modal -->
+  <div id="trip-modal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm transition-opacity duration-300">
+    <div class="bg-white rounded-3xl max-w-lg w-full overflow-hidden shadow-2xl transform transition-all">
+      <div class="relative h-48 sm:h-56 w-full">
+        <img id="modal-img" src="" alt="Trip image" class="w-full h-full object-cover">
+        <button onclick="closeModal()" class="absolute top-4 right-4 bg-white/80 hover:bg-white text-gray-800 rounded-full w-8 h-8 flex items-center justify-center backdrop-blur-sm transition">
+          ✕
+        </button>
+        <span id="modal-badge" class="absolute top-4 left-4 text-[11px] font-bold px-3 py-1 rounded-full shadow"></span>
+      </div>
+
+      <div class="p-6">
+        <div class="flex justify-between items-start">
+          <div>
+            <h3 id="modal-title" class="text-xl font-bold text-gray-900"></h3>
+            <p id="modal-elevation" class="text-xs text-gray-500 font-medium mt-1"></p>
+          </div>
+          <div class="text-right">
+            <span class="text-[10px] text-gray-400 font-semibold block uppercase">Harga per Pax</span>
+            <span id="modal-price" class="text-lg font-extrabold text-brand-terracotta"></span>
+          </div>
+        </div>
+
+        <p id="modal-desc" class="text-xs sm:text-sm text-gray-600 mt-4 leading-relaxed bg-gray-50 p-3.5 rounded-xl border border-gray-100"></p>
+
+        <!-- Facilities Included -->
+        <div class="mt-4">
+          <span class="text-[11px] font-bold text-gray-700 block mb-2">Fasilitas Termasuk:</span>
+          <div class="grid grid-cols-2 gap-2 text-[11px] text-gray-600">
+            <div class="flex items-center gap-1.5"><span class="text-emerald-500">✔</span> Tenda & Matras Premium</div>
+            <div class="flex items-center gap-1.5"><span class="text-emerald-500">✔</span> Guide & Porter Tim</div>
+            <div class="flex items-center gap-1.5"><span class="text-emerald-500">✔</span> Tiket SIMAKSI & Asuransi</div>
+            <div class="flex items-center gap-1.5"><span class="text-emerald-500">✔</span> Logistik Makanan Hangat</div>
+          </div>
+        </div>
+
+        <div class="mt-6 flex gap-3">
+          <button onclick="closeModal()" class="w-1/3 py-2.5 rounded-full border border-gray-200 text-gray-700 text-xs font-semibold hover:bg-gray-50 transition">
+            Kembali
+          </button>
+          <button onclick="confirmBooking()" class="w-2/3 py-2.5 rounded-full bg-brand-terracotta hover:bg-brand-terracotta-hover text-white text-xs font-semibold shadow-md transition">
+            Lanjut Reservasi
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Booking Success Banner -->
+  <div id="toast" class="fixed bottom-6 right-6 z-50 hidden bg-emerald-700 text-white text-xs font-semibold px-5 py-3 rounded-full shadow-lg flex items-center gap-2">
+    <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+    <span id="toast-text">Reservasi berhasil ditambahkan!</span>
+  </div>
+
+  <script>
+    let activeTypeFilter = 'all';
+    let activeGradeFilter = 'all';
+
+    function setTripType(type, element) {
+      activeTypeFilter = type;
+      
+      // Update UI button styles
+      document.querySelectorAll('.trip-filter-btn').forEach(btn => {
+        btn.className = 'trip-filter-btn px-4 py-1.5 rounded-full text-xs font-medium text-gray-600 hover:text-gray-900 transition whitespace-nowrap';
+      });
+      element.className = 'trip-filter-btn px-4 py-1.5 rounded-full text-xs font-semibold bg-white text-gray-900 shadow-sm transition whitespace-nowrap';
+
+      applyFilters();
+    }
+
+    function toggleGradeMenu() {
+      const menu = document.getElementById('grade-menu');
+      menu.classList.toggle('hidden');
+    }
+
+    function filterByGrade(grade) {
+      activeGradeFilter = grade;
+      const label = document.getElementById('grade-selected-label');
+      label.textContent = grade === 'all' ? 'Grade' : grade;
+      document.getElementById('grade-menu').classList.add('hidden');
+      applyFilters();
+    }
+
+    function applyFilters() {
+      const cards = document.querySelectorAll('.trip-card');
+      let visibleCount = 0;
+
+      cards.forEach(card => {
+        const cardGrade = card.getAttribute('data-grade');
+        const cardType = card.getAttribute('data-type');
+
+        const matchGrade = (activeGradeFilter === 'all') || (cardGrade === activeGradeFilter);
+        const matchType = (activeTypeFilter === 'all') || (cardType === activeTypeFilter);
+
+        if (matchGrade && matchType) {
+          card.classList.remove('hidden');
+          visibleCount++;
+        } else {
+          card.classList.add('hidden');
+        }
+      });
+
+      const noResults = document.getElementById('no-results');
+      if (visibleCount === 0) {
+        noResults.classList.remove('hidden');
+      } else {
+        noResults.classList.add('hidden');
+      }
+    }
+
+    function resetFilters() {
+      activeTypeFilter = 'all';
+      activeGradeFilter = 'all';
+
+      // Reset segmented buttons
+      const buttons = document.querySelectorAll('.trip-filter-btn');
+      buttons.forEach((btn, idx) => {
+        if (idx === 0) {
+          btn.className = 'trip-filter-btn px-4 py-1.5 rounded-full text-xs font-semibold bg-white text-gray-900 shadow-sm transition whitespace-nowrap';
+        } else {
+          btn.className = 'trip-filter-btn px-4 py-1.5 rounded-full text-xs font-medium text-gray-600 hover:text-gray-900 transition whitespace-nowrap';
+        }
+      });
+
+      document.getElementById('grade-selected-label').textContent = 'Grade';
+      document.getElementById('grade-menu').classList.add('hidden');
+      applyFilters();
+    }
+
+    // Close grade menu on clicking outside
+    document.addEventListener('click', (e) => {
+      const dropdown = document.getElementById('grade-dropdown-btn');
+      const menu = document.getElementById('grade-menu');
+      if (!dropdown.contains(e.target) && !menu.contains(e.target)) {
+        menu.classList.add('hidden');
+      }
+    });
+
+    // Modal Details Logic
+    function openDetailModal(title, elevation, grade, price, img, desc) {
+      document.getElementById('modal-title').textContent = title;
+      document.getElementById('modal-elevation').textContent = elevation;
+      document.getElementById('modal-price').textContent = price;
+      document.getElementById('modal-desc').textContent = desc;
+      document.getElementById('modal-img').src = img;
+
+      const badge = document.getElementById('modal-badge');
+      badge.textContent = grade;
+      if (grade.includes('Grade A')) {
+        badge.className = 'absolute top-4 left-4 bg-[#EAF5EF] text-[#226848] text-[11px] font-bold px-3 py-1 rounded-full shadow';
+      } else if (grade.includes('Grade B')) {
+        badge.className = 'absolute top-4 left-4 bg-[#FFF0E6] text-[#B85320] text-[11px] font-bold px-3 py-1 rounded-full shadow';
+      } else {
+        badge.className = 'absolute top-4 left-4 bg-[#FDECEB] text-[#B92F26] text-[11px] font-bold px-3 py-1 rounded-full shadow';
+      }
+
+      document.getElementById('trip-modal').classList.remove('hidden');
+    }
+
+    function closeModal() {
+      document.getElementById('trip-modal').classList.add('hidden');
+    }
+
+    function confirmBooking() {
+      closeModal();
+      const toast = document.getElementById('toast');
+      toast.classList.remove('hidden');
+      setTimeout(() => {
+        toast.classList.add('hidden');
+      }, 3500);
+    }
+  </script>
+</body>
+</html>
