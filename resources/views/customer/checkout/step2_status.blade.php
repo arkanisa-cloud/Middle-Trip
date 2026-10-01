@@ -8,6 +8,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+    <script type="text/javascript" src="{{ config('midtrans.snap_url') }}" data-client-key="{{ config('midtrans.client_key') }}"></script>
 </head>
 <body class="min-h-screen flex flex-col justify-between bg-canvas text-ink antialiased selection:bg-primary selection:text-white font-sans">
 
@@ -104,7 +105,7 @@
                             {{ $booking->expedition->mountain->name }} Expedition
                         </h1>
                         <p class="text-xs text-muted font-medium mt-0.5 mb-4">
-                            {{ $booking->expedition->departure_date->format('d M Y') }} • {{ $booking->pax_count }} Peserta
+                            {{ ($booking->departure_date ?? $booking->expedition->departure_date)->format('d M Y') }} • {{ $booking->pax_count }} Peserta
                         </p>
 
                         <div class="pt-3 border-t border-hairline">
@@ -177,7 +178,7 @@
                             </div>
                         </div>
                     @elseif($booking->status === 'price_locked')
-                        <form action="{{ route('checkout.settle', $booking->booking_code) }}" method="POST" class="space-y-4">
+                        <form action="{{ route('checkout.settle', $booking->booking_code) }}" method="POST" id="settle-form" class="space-y-4">
                             @csrf
                             <h3 class="text-sm font-bold text-ink-heading uppercase tracking-wider">Rincian Pelunasan</h3>
 
@@ -208,8 +209,29 @@
                                 </div>
                             </div>
 
-                            <button type="submit" class="w-full bg-primary hover:bg-primary-hover active:scale-[0.99] text-white py-3 px-4 rounded-xl font-bold text-xs sm:text-sm shadow-md transition-all text-center cursor-pointer">
-                                Bayar Pelunasan Sekarang (Rp {{ number_format($booking->remaining_payment_total, 0, ',', '.') }})
+                            <!-- Info Saluran Pembayaran Midtrans Snap -->
+                            <div class="p-3 bg-slate-50 border border-slate-200/80 rounded-xl space-y-1.5 text-xs">
+                                <div class="flex items-center justify-between">
+                                    <span class="font-semibold text-slate-800">Pembayaran Midtrans</span>
+                                    <span class="text-[9px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">Instant</span>
+                                </div>
+                                <p class="text-[10px] text-muted leading-tight">
+                                    QRIS, Virtual Account (BCA, Mandiri, BNI, BRI), Kartu Kredit, dll.
+                                </p>
+                            </div>
+
+                            <!-- Checkbox Persetujuan Pelunasan -->
+                            <label class="flex items-start gap-2.5 pt-1 cursor-pointer select-none">
+                                <input type="checkbox" required checked class="w-4 h-4 rounded border-slate-300 text-primary focus:ring-primary focus:ring-offset-0 accent-primary cursor-pointer mt-0.5 transition-colors">
+                                <span class="text-[11px] text-muted leading-tight">Saya mengonfirmasi pelunasan sisa tagihan ekspedisi MiddleTrip.</span>
+                            </label>
+
+                            <button type="submit" id="settle-button" class="w-full bg-primary hover:bg-primary-hover active:scale-[0.99] text-white py-3 px-4 rounded-xl font-bold text-xs sm:text-sm shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer">
+                                <svg id="settle-spinner" class="hidden animate-spin -ml-1 mr-2 h-4 w-4 text-white" fill="none" viewBox="0 0 24 24">
+                                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                </svg>
+                                <span id="settle-text">Bayar Pelunasan Sekarang (Rp {{ number_format($booking->remaining_payment_total, 0, ',', '.') }})</span>
                             </button>
                         </form>
                     @endif
@@ -219,5 +241,86 @@
         </div>
     </main>
 
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const form = document.getElementById('settle-form');
+            const settleBtn = document.getElementById('settle-button');
+            const settleText = document.getElementById('settle-text');
+            const settleSpinner = document.getElementById('settle-spinner');
+
+            if (!form || !settleBtn) return;
+
+            form.addEventListener('submit', async function (e) {
+                e.preventDefault();
+
+                if (!form.checkValidity()) {
+                    form.reportValidity();
+                    return;
+                }
+
+                settleBtn.disabled = true;
+                settleBtn.classList.add('opacity-75', 'cursor-not-allowed');
+                if (settleSpinner) settleSpinner.classList.remove('hidden');
+                if (settleText) settleText.textContent = 'Menyiapkan Pembayaran...';
+
+                try {
+                    const formData = new FormData(form);
+                    const response = await fetch("{{ route('checkout.settle', $booking->booking_code) }}", {
+                        method: 'POST',
+                        headers: {
+                            'X-Requested-With': 'XMLHttpRequest',
+                            'Accept': 'application/json',
+                        },
+                        body: formData,
+                    });
+
+                    const data = await response.json();
+
+                    if (data.status === 'already_paid') {
+                        window.location.href = data.redirect_url;
+                        return;
+                    }
+
+                    if (data.snap_token) {
+                        if (typeof window.snap === 'undefined') {
+                            alert('Gagal memuat modul pembayaran Midtrans. Mengalihkan ke halaman pembayaran...');
+                            window.location.href = data.redirect_url;
+                            return;
+                        }
+
+                        window.snap.pay(data.snap_token, {
+                            onSuccess: function (result) {
+                                window.location.href = "{{ route('checkout.success', $booking->booking_code) }}";
+                            },
+                            onPending: function (result) {
+                                window.location.href = "{{ route('checkout.success', $booking->booking_code) }}";
+                            },
+                            onError: function (result) {
+                                alert('Pembayaran gagal atau dibatalkan. Silakan coba kembali.');
+                                resetSettleButton();
+                            },
+                            onClose: function () {
+                                resetSettleButton();
+                            }
+                        });
+                    } else {
+                        alert(data.message || 'Gagal memproses tiket pelunasan.');
+                        resetSettleButton();
+                    }
+                } catch (err) {
+                    console.error(err);
+                    alert('Terjadi kesalahan jaringan atau server. Silakan coba kembali.');
+                    resetSettleButton();
+                }
+            });
+
+            function resetSettleButton() {
+                settleBtn.disabled = false;
+                settleBtn.classList.remove('opacity-75', 'cursor-not-allowed');
+                if (settleSpinner) settleSpinner.classList.add('hidden');
+                if (settleText) settleText.textContent = 'Bayar Pelunasan Sekarang (Rp {{ number_format($booking->remaining_payment_total, 0, ',', '.') }})';
+            }
+        });
+    </script>
 </body>
 </html>

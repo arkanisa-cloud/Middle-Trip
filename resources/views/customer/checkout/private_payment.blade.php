@@ -8,8 +8,9 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+    <script type="text/javascript" src="{{ config('midtrans.snap_url') }}" data-client-key="{{ config('midtrans.client_key') }}"></script>
 </head>
-<body class="min-h-screen flex flex-col justify-between bg-canvas text-ink antialiased selection:bg-primary selection:text-white font-sans" x-data="{ expandedAccordion: null, selectedPayment: 'BCA Virtual Account' }">
+<body class="min-h-screen flex flex-col justify-between bg-canvas text-ink antialiased selection:bg-primary selection:text-white font-sans">
 
     <!-- Header -->
     <header class="w-full bg-white border-b border-hairline px-4 sm:px-8 py-3.5">
@@ -75,7 +76,9 @@
             </div>
         </div>
 
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-7">
+        <form action="{{ route('checkout.pay_private', $booking->booking_code) }}" method="POST" id="payment-form">
+            @csrf
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-7">
 
             <!-- Left Column (7 cols) -->
             <div class="lg:col-span-7 space-y-4">
@@ -101,7 +104,7 @@
                             {{ $booking->expedition->mountain->name }}
                         </h1>
                         <p class="text-xs text-muted font-medium mt-0.5 mb-4">
-                            {{ $booking->expedition->mountain->duration_days }}D{{ $booking->expedition->mountain->duration_nights }}N • Keberangkatan: {{ \Carbon\Carbon::parse($booking->expedition->departure_date)->translatedFormat('d F Y') }}
+                            {{ $booking->expedition->mountain->duration_days }}D{{ $booking->expedition->mountain->duration_nights }}N • Keberangkatan: {{ \Carbon\Carbon::parse($booking->departure_date ?? $booking->expedition->departure_date)->translatedFormat('d F Y') }}
                         </p>
 
                         <div class="pt-3 border-t border-hairline">
@@ -146,45 +149,76 @@
                         </div>
                         <div>
                             <p class="text-muted text-[11px] font-medium">Keberangkatan</p>
-                            <p class="text-ink font-semibold mt-0.5">{{ \Carbon\Carbon::parse($booking->expedition->departure_date)->translatedFormat('d M Y') }}</p>
+                            <p class="text-ink font-semibold mt-0.5">{{ \Carbon\Carbon::parse($booking->departure_date ?? $booking->expedition->departure_date)->translatedFormat('d M Y') }}</p>
                         </div>
                     </div>
                 </div>
 
-                <!-- Card: Data Pemesan (Ketua) -->
+                <!-- Card: Data Pemesan (Kontak Utama) -->
                 <div class="bg-white rounded-2xl border border-hairline p-5 sm:p-6 shadow-sm">
-                    <div class="flex items-center gap-2 mb-4">
-                        <div class="text-primary">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
-                            </svg>
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="flex items-center gap-2">
+                            <div class="text-primary">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                                </svg>
+                            </div>
+                            <h2 class="text-sm font-bold text-ink-heading">Data Pemesan (Koordinator)</h2>
                         </div>
-                        <h2 class="text-sm font-bold text-ink-heading">Data Pemesan (Ketua Rombongan)</h2>
+                        <span class="text-[10px] text-muted bg-gray-100 px-2 py-0.5 rounded-full font-medium">Koordinator</span>
                     </div>
 
-                    <div class="space-y-3 text-xs">
+                    <div class="space-y-3.5 text-xs">
+                        <div>
+                            <label class="block text-muted font-medium mb-1">Nama Lengkap Pemesan <span class="text-rose-500">*</span></label>
+                            <input type="text" name="customer_name" id="input_customer_name"
+                                value="{{ old('customer_name', $booking->customer_name) }}"
+                                required minlength="3" maxlength="150"
+                                class="w-full px-3 py-2 border border-slate-200 focus:border-primary focus:ring-1 focus:ring-primary rounded-lg bg-white text-body-strong font-medium transition"
+                                placeholder="Nama sesuai KTP">
+                            @error('customer_name')
+                                <p class="text-rose-600 text-[11px] mt-1">{{ $message }}</p>
+                            @enderror
+                        </div>
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
                             <div>
-                                <span class="block text-muted text-[11px]">Nama Lengkap</span>
-                                <span class="font-semibold text-ink">{{ $booking->customer_name }}</span>
+                                <label class="block text-muted font-medium mb-1">Nomor WhatsApp Aktif <span class="text-rose-500">*</span></label>
+                                <input type="tel" name="customer_phone" id="input_customer_phone"
+                                    value="{{ old('customer_phone', $booking->customer_phone) }}"
+                                    required minlength="9" maxlength="25"
+                                    class="w-full px-3 py-2 border border-slate-200 focus:border-primary focus:ring-1 focus:ring-primary rounded-lg bg-white text-body-strong font-medium transition"
+                                    placeholder="Contoh: 08123456789">
+                                @error('customer_phone')
+                                    <p class="text-rose-600 text-[11px] mt-1">{{ $message }}</p>
+                                @enderror
                             </div>
                             <div>
-                                <span class="block text-muted text-[11px]">Nomor WhatsApp</span>
-                                <span class="font-semibold text-ink">{{ $booking->customer_phone }}</span>
+                                <label class="block text-muted font-medium mb-1">NIK Pemesan (16 Digit) <span class="text-rose-500">*</span></label>
+                                <input type="text" name="customer_nik" id="input_customer_nik"
+                                    value="{{ old('customer_nik', $booking->customer_nik) }}"
+                                    required minlength="16" maxlength="16" pattern="[0-9]{16}"
+                                    class="w-full px-3 py-2 border border-slate-200 focus:border-primary focus:ring-1 focus:ring-primary rounded-lg bg-white text-body-strong font-medium transition"
+                                    placeholder="16 digit angka KTP">
+                                @error('customer_nik')
+                                    <p class="text-rose-600 text-[11px] mt-1">{{ $message }}</p>
+                                @enderror
                             </div>
-                            <div>
-                                <span class="block text-muted text-[11px]">Email</span>
-                                <span class="font-semibold text-ink">{{ $booking->customer_email }}</span>
-                            </div>
-                            <div>
-                                <span class="block text-muted text-[11px]">NIK</span>
-                                <span class="font-semibold text-ink font-mono">{{ $booking->customer_nik }}</span>
-                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-muted font-medium mb-1">Email <span class="text-rose-500">*</span></label>
+                            <input type="email" name="customer_email" id="input_customer_email"
+                                value="{{ old('customer_email', $booking->customer_email) }}"
+                                required maxlength="150"
+                                class="w-full sm:w-1/2 px-3 py-2 border border-slate-200 focus:border-primary focus:ring-1 focus:ring-primary rounded-lg bg-white text-body-strong font-medium transition"
+                                placeholder="alamat@email.com">
+                            @error('customer_email')
+                                <p class="text-rose-600 text-[11px] mt-1">{{ $message }}</p>
+                            @enderror
                         </div>
                     </div>
                 </div>
 
-                <!-- Card: Data Seluruh Peserta Rombongan -->
+                <!-- Card: Data Seluruh Peserta Rombongan (Diisi Manual per Tiket) -->
                 <div class="bg-white rounded-2xl border border-hairline p-5 sm:p-6 shadow-sm">
                     <div class="flex items-center justify-between mb-4">
                         <div class="flex items-center gap-2">
@@ -193,38 +227,131 @@
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
                                 </svg>
                             </div>
-                            <h2 class="text-sm font-bold text-ink-heading">Daftar Anggota Rombongan ({{ $booking->pax_count }} Orang)</h2>
+                            <div>
+                                <h2 class="text-sm font-bold text-ink-heading">Daftar Anggota Rombongan ({{ $booking->pax_count }} Orang)</h2>
+                                <p class="text-[11px] text-muted">Seluruh peserta wajib melengkapi identitas resmi untuk penerbitan izin simaksi pendakian.</p>
+                            </div>
                         </div>
+                        <button type="button" onclick="copyPemesanToKetua()" class="text-[11px] text-primary hover:underline font-semibold cursor-pointer shrink-0">
+                            Salin Pemesan ke Ketua
+                        </button>
                     </div>
 
-                    <div class="space-y-2">
-                        @foreach($booking->participants as $index => $participant)
-                            <div class="border border-hairline rounded-xl overflow-hidden text-xs">
-                                <button type="button" @click="expandedAccordion = (expandedAccordion === {{ $index }} ? null : {{ $index }})" class="w-full flex items-center justify-between px-4 py-3 bg-neutral-50/50 hover:bg-neutral-50 text-left font-semibold text-ink transition">
+                    <div class="space-y-2.5 text-xs">
+                        @if($booking->pax_count == 1)
+                            @php
+                                $existingPart = $booking->participants[0] ?? null;
+                                $defaultName = old('participants.0.full_name', $existingPart?->full_name ?? $booking->customer_name);
+                                $defaultNik = old('participants.0.nik', $existingPart?->nik ?? $booking->customer_nik);
+                            @endphp
+                            <div class="border border-slate-200 rounded-xl p-4 bg-slate-50/50 space-y-3">
+                                <div class="flex items-center justify-between pb-2 border-b border-slate-200/60">
                                     <div class="flex items-center gap-2">
-                                        <span class="w-5 h-5 rounded-full {{ $participant->is_leader ? 'bg-primary text-white' : 'bg-neutral-200 text-neutral-600' }} flex items-center justify-center text-[10px] font-bold">
-                                            {{ $index + 1 }}
-                                        </span>
-                                        <span>{{ $participant->name }} {{ $participant->is_leader ? '(Ketua)' : '' }}</span>
+                                        <span class="w-5 h-5 rounded-full bg-primary text-white flex items-center justify-center font-bold text-[10px]">1</span>
+                                        <span class="font-bold text-ink-heading">Ketua (Peserta Utama)</span>
                                     </div>
-                                    <svg class="w-4 h-4 text-muted transition-transform" :class="expandedAccordion === {{ $index }} ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
-                                    </svg>
-                                </button>
-                                <div x-show="expandedAccordion === {{ $index }}" x-cloak class="p-4 bg-white border-t border-hairline space-y-2">
+                                    <span class="text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">
+                                        Ketua (Leader)
+                                    </span>
+                                </div>
+                                <input type="hidden" name="participants[0][is_leader]" value="1">
+                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                                     <div>
-                                        <span class="text-muted text-[11px]">NIK Resmi SIMAKSI:</span>
-                                        <p class="font-mono font-medium text-ink">{{ $participant->nik }}</p>
+                                        <label class="block text-slate-600 font-medium mb-1">
+                                            Nama Lengkap Ketua <span class="text-rose-500">*</span>
+                                        </label>
+                                        <input type="text" name="participants[0][full_name]"
+                                            id="participant_name_0"
+                                            value="{{ $defaultName }}"
+                                            required minlength="3" maxlength="150"
+                                            class="w-full px-3 py-2 border border-slate-200 focus:border-primary focus:ring-1 focus:ring-primary rounded-lg bg-white text-body-strong font-medium transition"
+                                            placeholder="Nama lengkap sesuai KTP">
+                                        @error('participants.0.full_name')
+                                            <p class="text-rose-600 text-[11px] mt-1">{{ $message }}</p>
+                                        @enderror
                                     </div>
-                                    @if($participant->phone)
-                                        <div>
-                                            <span class="text-muted text-[11px]">Telepon:</span>
-                                            <p class="font-medium text-ink">{{ $participant->phone }}</p>
-                                        </div>
-                                    @endif
+                                    <div>
+                                        <label class="block text-slate-600 font-medium mb-1">
+                                            NIK KTP (16 Digit) <span class="text-rose-500">*</span>
+                                        </label>
+                                        <input type="text" name="participants[0][nik]"
+                                            id="participant_nik_0"
+                                            value="{{ $defaultNik }}"
+                                            required minlength="16" maxlength="16" pattern="[0-9]{16}"
+                                            class="w-full px-3 py-2 border border-slate-200 focus:border-primary focus:ring-1 focus:ring-primary rounded-lg bg-white text-body-strong font-medium transition"
+                                            placeholder="16 digit NIK">
+                                        @error('participants.0.nik')
+                                            <p class="text-rose-600 text-[11px] mt-1">{{ $message }}</p>
+                                        @enderror
+                                    </div>
                                 </div>
                             </div>
-                        @endforeach
+                        @else
+                            {{-- Dropdown Accordion List Saat Peserta > 1 (Sesuai Referensi payment_open_trip_1.html) --}}
+                            @for($i = 0; $i < $booking->pax_count; $i++)
+                                @php
+                                    $existingPart = $booking->participants[$i] ?? null;
+                                    $isLeader = ($i === 0);
+                                    $hasError = $errors->has("participants.{$i}.full_name") || $errors->has("participants.{$i}.nik");
+                                    $isOpen = $isLeader || $hasError;
+                                    $defaultName = old("participants.{$i}.full_name", $existingPart?->full_name ?? ($isLeader ? $booking->customer_name : ''));
+                                    $defaultNik = old("participants.{$i}.nik", $existingPart?->nik ?? ($isLeader ? $booking->customer_nik : ''));
+                                    $itemTitle = $isLeader ? 'Ketua' : 'Anggota ' . $i;
+                                @endphp
+                                <div class="border border-[#ECEAE4] rounded-xl overflow-hidden shadow-2xs">
+                                    <button type="button"
+                                        class="w-full flex items-center justify-between px-4 py-3 {{ $isOpen ? 'bg-[#F9F8F6]' : 'bg-white hover:bg-neutral-50' }} text-xs font-semibold text-neutral-800 text-left transition-colors cursor-pointer"
+                                        onclick="toggleAccordion('content-peserta-{{ $i }}', 'icon-peserta-{{ $i }}')">
+                                        <div class="flex items-center gap-2.5">
+                                            <span class="w-5 h-5 rounded-full {{ $isLeader ? 'bg-primary text-white' : 'bg-slate-200 text-slate-700' }} flex items-center justify-center font-bold text-[10px]">
+                                                {{ $i + 1 }}
+                                            </span>
+                                            <span class="font-bold text-ink-heading">{{ $itemTitle }}</span>
+                                            <span class="text-[10px] font-bold px-2 py-0.5 rounded-full {{ $isLeader ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : 'bg-slate-100 text-slate-600' }}">
+                                                {{ $isLeader ? 'Ketua (Leader)' : 'Anggota' }}
+                                            </span>
+                                        </div>
+                                        <svg id="icon-peserta-{{ $i }}" class="w-4 h-4 text-neutral-500 transform transition-transform duration-200 {{ $isOpen ? 'rotate-180' : '' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                                        </svg>
+                                    </button>
+
+                                    <div id="content-peserta-{{ $i }}" class="{{ $isOpen ? '' : 'hidden' }} p-4 space-y-3 text-xs bg-white border-t border-[#ECEAE4]">
+                                        <input type="hidden" name="participants[{{ $i }}][is_leader]" value="{{ $isLeader ? '1' : '0' }}">
+                                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                            <div>
+                                                <label class="block text-slate-600 font-medium mb-1">
+                                                    Nama {{ $itemTitle }} <span class="text-rose-500">*</span>
+                                                </label>
+                                                <input type="text" name="participants[{{ $i }}][full_name]"
+                                                    id="participant_name_{{ $i }}"
+                                                    value="{{ $defaultName }}"
+                                                    required minlength="3" maxlength="150"
+                                                    class="w-full px-3 py-2 border border-slate-200 focus:border-primary focus:ring-1 focus:ring-primary rounded-lg bg-white text-body-strong font-medium transition"
+                                                    placeholder="Nama lengkap sesuai KTP">
+                                                @error("participants.{$i}.full_name")
+                                                    <p class="text-rose-600 text-[11px] mt-1">{{ $message }}</p>
+                                                @enderror
+                                            </div>
+                                            <div>
+                                                <label class="block text-slate-600 font-medium mb-1">
+                                                    NIK (16 Digit) <span class="text-rose-500">*</span>
+                                                </label>
+                                                <input type="text" name="participants[{{ $i }}][nik]"
+                                                    id="participant_nik_{{ $i }}"
+                                                    value="{{ $defaultNik }}"
+                                                    required minlength="16" maxlength="16" pattern="[0-9]{16}"
+                                                    class="w-full px-3 py-2 border border-slate-200 focus:border-primary focus:ring-1 focus:ring-primary rounded-lg bg-white text-body-strong font-medium transition"
+                                                    placeholder="16 digit NIK">
+                                                @error("participants.{$i}.nik")
+                                                    <p class="text-rose-600 text-[11px] mt-1">{{ $message }}</p>
+                                                @enderror
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            @endfor
+                        @endif
                     </div>
                 </div>
 
@@ -266,46 +393,43 @@
                             </div>
                         </div>
 
-                        <!-- Payment Form -->
-                        <form action="{{ route('checkout.pay_private', $booking->booking_code) }}" method="POST" class="mt-5 space-y-4">
-                            @csrf
-                            <div>
-                                <label class="block text-xs font-bold text-ink-heading mb-2">Pilih Metode Pembayaran</label>
-                                <div class="space-y-2 text-xs">
-                                    <!-- BCA VA -->
-                                    <label class="flex items-center justify-between p-3 rounded-xl border cursor-pointer transition" :class="selectedPayment === 'BCA Virtual Account' ? 'border-primary bg-primary-50/20 ring-1 ring-primary' : 'border-hairline hover:bg-neutral-50'">
-                                        <div class="flex items-center gap-2.5">
-                                            <input type="radio" name="payment_method" value="BCA Virtual Account" x-model="selectedPayment" class="text-primary focus:ring-primary">
-                                            <span class="font-semibold text-ink">BCA Virtual Account</span>
-                                        </div>
-                                        <span class="text-[10px] font-mono text-muted bg-neutral-100 px-2 py-0.5 rounded">Otomatis</span>
-                                    </label>
-
-                                    <!-- Mandiri VA -->
-                                    <label class="flex items-center justify-between p-3 rounded-xl border cursor-pointer transition" :class="selectedPayment === 'Mandiri Virtual Account' ? 'border-primary bg-primary-50/20 ring-1 ring-primary' : 'border-hairline hover:bg-neutral-50'">
-                                        <div class="flex items-center gap-2.5">
-                                            <input type="radio" name="payment_method" value="Mandiri Virtual Account" x-model="selectedPayment" class="text-primary focus:ring-primary">
-                                            <span class="font-semibold text-ink">Mandiri Virtual Account</span>
-                                        </div>
-                                        <span class="text-[10px] font-mono text-muted bg-neutral-100 px-2 py-0.5 rounded">Otomatis</span>
-                                    </label>
-
-                                    <!-- QRIS -->
-                                    <label class="flex items-center justify-between p-3 rounded-xl border cursor-pointer transition" :class="selectedPayment === 'QRIS' ? 'border-primary bg-primary-50/20 ring-1 ring-primary' : 'border-hairline hover:bg-neutral-50'">
-                                        <div class="flex items-center gap-2.5">
-                                            <input type="radio" name="payment_method" value="QRIS" x-model="selectedPayment" class="text-primary focus:ring-primary">
-                                            <span class="font-semibold text-ink">QRIS (Gopay, OVO, ShopeePay)</span>
-                                        </div>
-                                        <span class="text-[10px] font-mono text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded font-bold">Instan</span>
-                                    </label>
-                                </div>
+                        <!-- Informasi Saluran Pembayaran Resmi Midtrans -->
+                        <div class="mt-5 space-y-3 pt-3 border-t border-hairline text-xs">
+                            <div class="flex items-center justify-between">
+                                <label class="block font-bold text-ink-heading">Metode Pembayaran</label>
+                                <span class="text-[10px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">Midtrans Verified</span>
                             </div>
 
-                            <button type="submit" class="w-full py-3 px-4 bg-primary hover:bg-primary-hover active:bg-primary-active text-white text-xs font-bold rounded-xl shadow-md transition flex items-center justify-center gap-2 cursor-pointer">
-                                <span>Bayar Penuh Sekarang (Rp {{ number_format($booking->grand_total, 0, ',', '.') }})</span>
-                                <span>→</span>
-                            </button>
-                        </form>
+                            <div class="p-3.5 bg-slate-50 border border-slate-200/80 rounded-xl space-y-2.5">
+                                <p class="text-[11px] text-muted leading-relaxed">
+                                    Didukung oleh saluran pembayaran resmi <strong>Midtrans Sandbox</strong>:
+                                </p>
+                                <div class="flex flex-wrap gap-1.5 text-[10px] font-semibold text-slate-700">
+                                    <span class="bg-white px-2 py-1 rounded border border-slate-200">QRIS (GoPay, OVO, Dana)</span>
+                                    <span class="bg-white px-2 py-1 rounded border border-slate-200">BCA VA</span>
+                                    <span class="bg-white px-2 py-1 rounded border border-slate-200">Mandiri Bill</span>
+                                    <span class="bg-white px-2 py-1 rounded border border-slate-200">BNI &amp; BRI VA</span>
+                                    <span class="bg-white px-2 py-1 rounded border border-slate-200">Kartu Kredit / Debit</span>
+                                </div>
+                                <p class="text-[10px] text-muted-soft italic">
+                                    *Pilihan metode pembayaran lengkap akan langsung tampil di jendela aman Midtrans.
+                                </p>
+                            </div>
+
+                            <!-- Checkbox Persetujuan Syarat & Ketentuan -->
+                            <label class="flex items-start gap-2.5 pt-1 cursor-pointer select-none">
+                                <input type="checkbox" required checked class="w-4 h-4 rounded border-slate-300 text-primary focus:ring-primary focus:ring-offset-0 accent-primary cursor-pointer mt-0.5 transition-colors">
+                                <span class="text-[11px] text-muted leading-tight">Saya menyetujui <a href="#" class="text-primary font-medium underline hover:text-primary-hover">Syarat &amp; Ketentuan</a> serta kebijakan ekspedisi MiddleTrip.</span>
+                            </label>
+                        </div>
+
+                        <button type="submit" id="pay-button" class="w-full mt-4 bg-primary hover:bg-primary-hover active:scale-[0.99] text-white py-3.5 px-4 rounded-xl font-bold text-xs sm:text-sm shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer">
+                            <svg id="pay-button-spinner" class="hidden animate-spin -ml-1 mr-2 h-4 w-4 text-white" fill="none" viewBox="0 0 24 24">
+                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                            </svg>
+                            <span id="pay-button-text">Bayar Penuh Sekarang (Rp {{ number_format($booking->grand_total, 0, ',', '.') }})</span>
+                        </button>
 
                         <p class="text-[10px] text-center text-muted mt-4 leading-relaxed">
                             Setelah pembayaran selesai, slot private trip Anda akan langsung berstatus <strong>Lunas</strong> dan Anda akan mendapatkan tautan WhatsApp grup koordinasi rombongan.
@@ -314,8 +438,125 @@
                 </div>
             </div>
 
-        </div>
+            </div>
+        </form>
     </main>
+
+    <script>
+        function toggleAccordion(contentId, iconId) {
+            const content = document.getElementById(contentId);
+            const icon = document.getElementById(iconId);
+            if (!content || !icon) return;
+
+            const isHidden = content.classList.contains('hidden');
+            if (isHidden) {
+                content.classList.remove('hidden');
+                icon.classList.add('rotate-180');
+            } else {
+                content.classList.add('hidden');
+                icon.classList.remove('rotate-180');
+            }
+        }
+
+        function copyPemesanToKetua() {
+            const custName = document.getElementById('input_customer_name')?.value;
+            const custNik = document.getElementById('input_customer_nik')?.value;
+            if (custName && document.getElementById('participant_name_0')) {
+                document.getElementById('participant_name_0').value = custName;
+            }
+            if (custNik && document.getElementById('participant_nik_0')) {
+                document.getElementById('participant_nik_0').value = custNik;
+            }
+            // Pastikan accordion ketua terbuka saat tombol salin ditekan
+            const ketuaContent = document.getElementById('content-peserta-0');
+            const ketuaIcon = document.getElementById('icon-peserta-0');
+            if (ketuaContent && ketuaContent.classList.contains('hidden')) {
+                ketuaContent.classList.remove('hidden');
+                if (ketuaIcon) ketuaIcon.classList.add('rotate-180');
+            }
+        }
+
+        // Handler Midtrans Snap Popup
+        document.addEventListener('DOMContentLoaded', function () {
+            const form = document.getElementById('payment-form');
+            const payBtn = document.getElementById('pay-button');
+            const payBtnText = document.getElementById('pay-button-text');
+            const payBtnSpinner = document.getElementById('pay-button-spinner');
+
+            if (!form || !payBtn) return;
+
+            form.addEventListener('submit', async function (e) {
+                e.preventDefault();
+
+                if (!form.checkValidity()) {
+                    form.reportValidity();
+                    return;
+                }
+
+                payBtn.disabled = true;
+                payBtn.classList.add('opacity-75', 'cursor-not-allowed');
+                if (payBtnSpinner) payBtnSpinner.classList.remove('hidden');
+                if (payBtnText) payBtnText.textContent = 'Menyiapkan Pembayaran...';
+
+                try {
+                    const formData = new FormData(form);
+                    const response = await fetch("{{ route('checkout.pay_private', $booking->booking_code) }}", {
+                        method: 'POST',
+                        headers: {
+                            'X-Requested-With': 'XMLHttpRequest',
+                            'Accept': 'application/json',
+                        },
+                        body: formData,
+                    });
+
+                    const data = await response.json();
+
+                    if (data.status === 'already_paid') {
+                        window.location.href = data.redirect_url;
+                        return;
+                    }
+
+                    if (data.snap_token) {
+                        if (typeof window.snap === 'undefined') {
+                            alert('Gagal memuat modul pembayaran Midtrans. Mengalihkan ke halaman pembayaran...');
+                            window.location.href = data.redirect_url;
+                            return;
+                        }
+
+                        window.snap.pay(data.snap_token, {
+                            onSuccess: function (result) {
+                                window.location.href = "{{ route('checkout.success', $booking->booking_code) }}";
+                            },
+                            onPending: function (result) {
+                                window.location.href = "{{ route('checkout.success', $booking->booking_code) }}";
+                            },
+                            onError: function (result) {
+                                alert('Pembayaran gagal atau dibatalkan. Silakan coba kembali.');
+                                resetPayButton();
+                            },
+                            onClose: function () {
+                                resetPayButton();
+                            }
+                        });
+                    } else {
+                        alert(data.message || 'Gagal memproses tiket pembayaran.');
+                        resetPayButton();
+                    }
+                } catch (err) {
+                    console.error(err);
+                    alert('Terjadi kesalahan jaringan atau server. Silakan coba kembali.');
+                    resetPayButton();
+                }
+            });
+
+            function resetPayButton() {
+                payBtn.disabled = false;
+                payBtn.classList.remove('opacity-75', 'cursor-not-allowed');
+                if (payBtnSpinner) payBtnSpinner.classList.add('hidden');
+                if (payBtnText) payBtnText.textContent = 'Bayar Penuh Sekarang (Rp {{ number_format($booking->grand_total, 0, ',', '.') }})';
+            }
+        });
+    </script>
 
     <!-- Footer -->
     <footer class="w-full border-t border-hairline mt-12 py-5 text-xs text-muted">
