@@ -13,7 +13,7 @@ class MidtransService
      *
      * @return array{token: string, redirect_url: string, order_id: string}
      */
-    public function createSnapToken(Booking $booking, string $paymentStage, int $amount): array
+    public function createSnapToken(Booking $booking, string $paymentStage, int $amount, ?string $paymentMethod = null): array
     {
         $serverKey = config('midtrans.server_key');
 
@@ -55,6 +55,23 @@ class MidtransService
                 'secure' => (bool) config('midtrans.is_3ds', true),
             ],
         ];
+
+        if ($paymentMethod) {
+            $mappedPayments = match (strtolower(trim($paymentMethod))) {
+                'bca', 'bca_va', 'bank_bca' => ['bca_va'],
+                'bni', 'bni_va', 'bank_bni' => ['bni_va'],
+                'bri', 'bri_va', 'bank_bri' => ['bri_va'],
+                'mandiri', 'mandiri_bill', 'bank_mandiri', 'echannel' => ['echannel'],
+                'qris', 'gopay', 'ewallet', 'shopeepay' => ['qris', 'gopay', 'shopeepay'],
+                'credit_card', 'cc' => ['credit_card'],
+                'paylater', 'kredivo', 'akulaku' => ['kredivo', 'akulaku'],
+                default => null,
+            };
+
+            if ($mappedPayments !== null) {
+                $payload['enabled_payments'] = $mappedPayments;
+            }
+        }
 
         $apiUrl = config('midtrans.snap_api_url');
 

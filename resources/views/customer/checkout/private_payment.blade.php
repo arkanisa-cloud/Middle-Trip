@@ -352,7 +352,145 @@
                                 </div>
                             @endfor
                         @endif
+                    <!-- Card 5: Pilih Metode Pembayaran (Dropdown Accordion Sesuai payment_open_trip_1.html) -->
+                    <div class="bg-white rounded-2xl border border-hairline p-5 sm:p-6 shadow-xs">
+                        <div class="flex items-center gap-2 mb-4">
+                            <div class="text-primary">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/>
+                                </svg>
+                            </div>
+                            <h2 class="text-sm font-bold text-ink-heading">Pilih Metode Pembayaran</h2>
+                        </div>
+
+                        <div class="space-y-2.5">
+                            <!-- Virtual Account (Expanded by default) -->
+                            <div class="border border-[#ECEAE4] rounded-xl overflow-hidden shadow-2xs">
+                                <button type="button" class="w-full flex items-center justify-between px-4 py-3 bg-[#F9F8F6] text-xs font-semibold text-neutral-800 text-left transition-colors cursor-pointer" onclick="toggleAccordion('content-va-pvt', 'icon-va-pvt')">
+                                    <span class="font-bold">Virtual Account (Transfer Bank)</span>
+                                    <svg id="icon-va-pvt" class="w-4 h-4 text-neutral-500 transform transition-transform duration-200 rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                                    </svg>
+                                </button>
+
+                                <div id="content-va-pvt" class="p-3 divide-y divide-neutral-100 text-xs bg-white border-t border-[#ECEAE4]">
+                                    <!-- Bank BCA -->
+                                    <label class="flex items-center justify-between py-2.5 px-2 hover:bg-neutral-50/80 rounded-lg cursor-pointer">
+                                        <div class="flex items-center gap-3">
+                                            <input type="radio" name="payment_method" value="bca" checked class="w-4 h-4 text-primary accent-primary focus:ring-primary cursor-pointer">
+                                            <span class="text-neutral-800 font-medium">Bank BCA</span>
+                                        </div>
+                                        <div class="h-5 flex items-center">
+                                            <span class="text-[#005B9C] font-extrabold italic text-sm tracking-tighter">BCA</span>
+                                        </div>
+                                    </label>
+
+                                    <!-- Bank BNI -->
+                                    <label class="flex items-center justify-between py-2.5 px-2 hover:bg-neutral-50/80 rounded-lg cursor-pointer">
+                                        <div class="flex items-center gap-3">
+                                            <input type="radio" name="payment_method" value="bni" class="w-4 h-4 text-primary accent-primary focus:ring-primary cursor-pointer">
+                                            <span class="text-neutral-800 font-medium">Bank BNI</span>
+                                        </div>
+                                        <div class="h-5 flex items-center">
+                                            <span class="text-[#E55300] font-black italic text-sm tracking-tight">BNI</span>
+                                        </div>
+                                    </label>
+
+                                    <!-- Bank BRI -->
+                                    <label class="flex items-center justify-between py-2.5 px-2 hover:bg-neutral-50/80 rounded-lg cursor-pointer">
+                                        <div class="flex items-center gap-3">
+                                            <input type="radio" name="payment_method" value="bri" class="w-4 h-4 text-primary accent-primary focus:ring-primary cursor-pointer">
+                                            <span class="text-neutral-800 font-medium">Bank BRI</span>
+                                        </div>
+                                        <div class="h-5 flex items-center">
+                                            <span class="text-[#00529C] font-black tracking-tight text-xs uppercase px-1.5 py-0.5 border border-[#00529C] rounded font-mono">BRI</span>
+                                        </div>
+                                    </label>
+
+                                    <!-- Bank Mandiri -->
+                                    <label class="flex items-center justify-between py-2.5 px-2 hover:bg-neutral-50/80 rounded-lg cursor-pointer">
+                                        <div class="flex items-center gap-3">
+                                            <input type="radio" name="payment_method" value="mandiri" class="w-4 h-4 text-primary accent-primary focus:ring-primary cursor-pointer">
+                                            <span class="text-neutral-800 font-medium">Bank Mandiri</span>
+                                        </div>
+                                        <div class="h-5 flex items-center">
+                                            <span class="text-[#0B3979] font-black text-xs lowercase italic">mandir<span class="text-[#E7A600]">ı</span></span>
+                                        </div>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <!-- E-Wallet / QRIS -->
+                            <div class="border border-[#ECEAE4] rounded-xl overflow-hidden shadow-2xs">
+                                <button type="button" class="w-full flex items-center justify-between px-4 py-3 bg-white text-xs font-semibold text-neutral-800 text-left hover:bg-neutral-50 transition-colors cursor-pointer" onclick="toggleAccordion('content-ewallet-pvt', 'icon-ewallet-pvt')">
+                                    <span class="font-bold">E-Wallet &amp; QRIS</span>
+                                    <svg id="icon-ewallet-pvt" class="w-4 h-4 text-neutral-500 transform transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                                    </svg>
+                                </button>
+                                <div id="content-ewallet-pvt" class="hidden p-3 divide-y divide-neutral-100 text-xs bg-white border-t border-[#ECEAE4]">
+                                    <label class="flex items-center justify-between py-2.5 px-2 hover:bg-neutral-50/80 rounded-lg cursor-pointer">
+                                        <div class="flex items-center gap-3">
+                                            <input type="radio" name="payment_method" value="qris" class="w-4 h-4 text-primary accent-primary focus:ring-primary cursor-pointer">
+                                            <div>
+                                                <span class="text-neutral-800 font-medium block">QRIS (GoPay, OVO, ShopeePay, Dana)</span>
+                                                <span class="text-[10px] text-muted leading-tight">Scan instan via seluruh aplikasi mobile banking &amp; e-wallet</span>
+                                            </div>
+                                        </div>
+                                        <span class="text-[10px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">Instan</span>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <!-- Credit Card -->
+                            <div class="border border-[#ECEAE4] rounded-xl overflow-hidden shadow-2xs">
+                                <button type="button" class="w-full flex items-center justify-between px-4 py-3 bg-white text-xs font-semibold text-neutral-800 text-left hover:bg-neutral-50 transition-colors cursor-pointer" onclick="toggleAccordion('content-cc-pvt', 'icon-cc-pvt')">
+                                    <span class="font-bold">Credit / Debit Card</span>
+                                    <svg id="icon-cc-pvt" class="w-4 h-4 text-neutral-500 transform transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                                    </svg>
+                                </button>
+                                <div id="content-cc-pvt" class="hidden p-3 text-xs bg-white border-t border-[#ECEAE4]">
+                                    <label class="flex items-center justify-between py-2.5 px-2 hover:bg-neutral-50/80 rounded-lg cursor-pointer">
+                                        <div class="flex items-center gap-3">
+                                            <input type="radio" name="payment_method" value="credit_card" class="w-4 h-4 text-primary accent-primary focus:ring-primary cursor-pointer">
+                                            <div>
+                                                <span class="text-neutral-800 font-medium block">Kartu Visa / Mastercard / JCB</span>
+                                                <span class="text-[10px] text-muted">Didukung proteksi 3D Secure Midtrans</span>
+                                            </div>
+                                        </div>
+                                        <div class="flex items-center gap-1.5">
+                                            <span class="text-[10px] font-bold text-blue-700 bg-blue-50 px-1.5 py-0.5 rounded border border-blue-200">Visa</span>
+                                            <span class="text-[10px] font-bold text-rose-700 bg-rose-50 px-1.5 py-0.5 rounded border border-rose-200">Mastercard</span>
+                                        </div>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <!-- Pay Later -->
+                            <div class="border border-[#ECEAE4] rounded-xl overflow-hidden shadow-2xs">
+                                <button type="button" class="w-full flex items-center justify-between px-4 py-3 bg-white text-xs font-semibold text-neutral-800 text-left hover:bg-neutral-50 transition-colors cursor-pointer" onclick="toggleAccordion('content-paylater-pvt', 'icon-paylater-pvt')">
+                                    <span class="font-bold">Pay Later</span>
+                                    <svg id="icon-paylater-pvt" class="w-4 h-4 text-neutral-500 transform transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                                    </svg>
+                                </button>
+                                <div id="content-paylater-pvt" class="hidden p-3 text-xs bg-white border-t border-[#ECEAE4]">
+                                    <label class="flex items-center justify-between py-2.5 px-2 hover:bg-neutral-50/80 rounded-lg cursor-pointer">
+                                        <div class="flex items-center gap-3">
+                                            <input type="radio" name="payment_method" value="paylater" class="w-4 h-4 text-primary accent-primary focus:ring-primary cursor-pointer">
+                                            <div>
+                                                <span class="text-neutral-800 font-medium block">Kredivo / Akulaku</span>
+                                                <span class="text-[10px] text-muted">Cicilan fleksibel 30 hari hingga 12 bulan</span>
+                                            </div>
+                                        </div>
+                                        <span class="text-[10px] text-neutral-500 font-medium bg-neutral-100 px-2 py-0.5 rounded">Cicilan</span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
                     </div>
+
                 </div>
 
             </div>
@@ -393,26 +531,15 @@
                             </div>
                         </div>
 
-                        <!-- Informasi Saluran Pembayaran Resmi Midtrans -->
+                        <!-- Jaminan Keamanan & Persetujuan -->
                         <div class="mt-5 space-y-3 pt-3 border-t border-hairline text-xs">
-                            <div class="flex items-center justify-between">
-                                <label class="block font-bold text-ink-heading">Metode Pembayaran</label>
-                                <span class="text-[10px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">Midtrans Verified</span>
-                            </div>
-
-                            <div class="p-3.5 bg-slate-50 border border-slate-200/80 rounded-xl space-y-2.5">
-                                <p class="text-[11px] text-muted leading-relaxed">
-                                    Didukung oleh saluran pembayaran resmi <strong>Midtrans Sandbox</strong>:
-                                </p>
-                                <div class="flex flex-wrap gap-1.5 text-[10px] font-semibold text-slate-700">
-                                    <span class="bg-white px-2 py-1 rounded border border-slate-200">QRIS (GoPay, OVO, Dana)</span>
-                                    <span class="bg-white px-2 py-1 rounded border border-slate-200">BCA VA</span>
-                                    <span class="bg-white px-2 py-1 rounded border border-slate-200">Mandiri Bill</span>
-                                    <span class="bg-white px-2 py-1 rounded border border-slate-200">BNI &amp; BRI VA</span>
-                                    <span class="bg-white px-2 py-1 rounded border border-slate-200">Kartu Kredit / Debit</span>
+                            <div class="p-3 bg-slate-50 border border-slate-200/70 rounded-xl space-y-1">
+                                <div class="flex items-center justify-between">
+                                    <span class="text-[11px] font-bold text-ink-heading">Pembayaran Aman Terverifikasi</span>
+                                    <span class="text-[9px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">Midtrans Verified</span>
                                 </div>
-                                <p class="text-[10px] text-muted-soft italic">
-                                    *Pilihan metode pembayaran lengkap akan langsung tampil di jendela aman Midtrans.
+                                <p class="text-[10px] text-muted leading-tight">
+                                    Instruksi pembayaran resmi akan langsung tampil di jendela aman Midtrans.
                                 </p>
                             </div>
 

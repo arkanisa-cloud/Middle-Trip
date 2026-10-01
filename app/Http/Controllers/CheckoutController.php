@@ -52,7 +52,9 @@ class CheckoutController extends Controller
             return redirect()->route('checkout.status', $booking->booking_code);
         }
 
-        $snapData = DB::transaction(function () use ($booking): array {
+        $paymentMethod = $request->input('payment_method');
+
+        $snapData = DB::transaction(function () use ($booking, $paymentMethod): array {
             $expedition = Expedition::where('id', $booking->expedition_id)
                 ->lockForUpdate()
                 ->first();
@@ -70,14 +72,14 @@ class CheckoutController extends Controller
             }
 
             // Minta Snap Token dari Midtrans
-            $snap = $this->midtrans->createSnapToken($booking, 'booking_fee', $booking->total_booking_fee);
+            $snap = $this->midtrans->createSnapToken($booking, 'booking_fee', $booking->total_booking_fee, $paymentMethod);
 
             // Catat record transaksi dengan status pending
             PaymentTransaction::create([
                 'booking_id' => $booking->id,
                 'transaction_code' => $snap['order_id'],
                 'payment_stage' => 'booking_fee',
-                'payment_method' => 'midtrans',
+                'payment_method' => $paymentMethod ?? 'midtrans',
                 'amount' => $booking->total_booking_fee,
                 'status' => 'pending',
             ]);
@@ -202,14 +204,15 @@ class CheckoutController extends Controller
         $this->updateCustomerAndParticipants($request, $booking);
 
         $amount = (int) $booking->grand_total;
+        $paymentMethod = $request->input('payment_method');
 
-        $snapData = $this->midtrans->createSnapToken($booking, 'full_payment', $amount);
+        $snapData = $this->midtrans->createSnapToken($booking, 'full_payment', $amount, $paymentMethod);
 
         PaymentTransaction::create([
             'booking_id' => $booking->id,
             'transaction_code' => $snapData['order_id'],
             'payment_stage' => 'full_payment',
-            'payment_method' => 'midtrans',
+            'payment_method' => $paymentMethod ?? 'midtrans',
             'amount' => $amount,
             'status' => 'pending',
         ]);

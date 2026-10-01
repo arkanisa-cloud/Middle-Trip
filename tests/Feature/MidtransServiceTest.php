@@ -49,7 +49,7 @@ class MidtransServiceTest extends TestCase
             'status' => 'open',
         ]);
 
-        $service = new MidtransService();
+        $service = new MidtransService;
         $result = $service->createSnapToken($booking, 'booking_fee', 300000);
 
         $this->assertEquals('mock-snap-token-12345', $result['token']);
@@ -86,8 +86,42 @@ class MidtransServiceTest extends TestCase
         $this->expectException(RuntimeException::class);
         $this->expectExceptionMessage('Midtrans Server Key belum dikonfigurasi pada file .env.');
 
-        $service = new MidtransService();
+        $service = new MidtransService;
         $service->createSnapToken($booking, 'booking_fee', 150000);
+    }
+
+    public function test_can_filter_enabled_payments_when_payment_method_is_specified(): void
+    {
+        Http::fake([
+            'https://app.sandbox.midtrans.com/snap/v1/transactions' => Http::response([
+                'token' => 'mock-snap-token-bca',
+                'redirect_url' => 'https://app.sandbox.midtrans.com/snap/v2/vtweb/mock-snap-token-bca',
+            ], 201),
+        ]);
+
+        $expedition = Expedition::where('type', 'open')->first();
+        $booking = Booking::create([
+            'booking_code' => 'MT-TEST-SNAP-BCA',
+            'expedition_id' => $expedition->id,
+            'route_id' => $expedition->route_id,
+            'trip_type' => 'open',
+            'customer_name' => 'Alvaro Dev',
+            'customer_email' => 'alvaro@example.com',
+            'customer_phone' => '08123456789',
+            'customer_nik' => '3301234567890001',
+            'pax_count' => 1,
+            'booking_fee_per_pax' => 150000,
+            'total_booking_fee' => 150000,
+            'grand_total' => 500000,
+            'status' => 'open',
+        ]);
+
+        $service = new MidtransService;
+        $service->createSnapToken($booking, 'booking_fee', 150000, 'bca');
+
+        Http::assertSent(function ($request) {
+            return ($request['enabled_payments'] ?? []) === ['bca_va'];
+        });
     }
 
     public function test_verifies_signature_authenticity_correctly(): void
@@ -98,16 +132,16 @@ class MidtransServiceTest extends TestCase
         $orderId = 'MT-TEST-001';
         $statusCode = '200';
         $grossAmount = '300000.00';
-        $expectedSignature = hash('sha512', $orderId . $statusCode . $grossAmount . $serverKey);
+        $expectedSignature = hash('sha512', $orderId.$statusCode.$grossAmount.$serverKey);
 
-        $service = new MidtransService();
+        $service = new MidtransService;
         $this->assertTrue($service->verifySignature($orderId, $statusCode, $grossAmount, $expectedSignature));
         $this->assertFalse($service->verifySignature($orderId, $statusCode, $grossAmount, 'fake-signature'));
     }
 
     public function test_parses_transaction_statuses_accurately(): void
     {
-        $service = new MidtransService();
+        $service = new MidtransService;
 
         $settlement = $service->parseTransactionStatus(['transaction_status' => 'settlement']);
         $this->assertEquals('success', $settlement['status']);

@@ -53,9 +53,13 @@ class CheckoutFlowTest extends TestCase
         $responseStep1->assertOk();
         $responseStep1->assertSee('Data Pemesan');
         $responseStep1->assertSee('Bayar Booking Fee');
+        $responseStep1->assertSee('Pilih Metode Pembayaran');
+        $responseStep1->assertSee('Bank BCA');
 
         // 2. Pay DP -> returns Snap token and records pending transaction
-        $payDpResponse = $this->postJson(route('checkout.pay_dp', $booking->booking_code));
+        $payDpResponse = $this->postJson(route('checkout.pay_dp', $booking->booking_code), [
+            'payment_method' => 'bca',
+        ]);
         $payDpResponse->assertOk();
         $payDpResponse->assertJson([
             'status' => 'success',
@@ -65,6 +69,7 @@ class CheckoutFlowTest extends TestCase
         $this->assertDatabaseHas('payment_transactions', [
             'booking_id' => $booking->id,
             'payment_stage' => 'booking_fee',
+            'payment_method' => 'bca',
             'status' => 'pending',
         ]);
 
@@ -206,7 +211,14 @@ class CheckoutFlowTest extends TestCase
             'status' => 'open',
         ]);
 
-        $response = $this->postJson(route('checkout.pay_private', $booking->booking_code));
+        $pageResponse = $this->get(route('checkout.private', $booking->booking_code));
+        $pageResponse->assertOk();
+        $pageResponse->assertSee('Pilih Metode Pembayaran');
+        $pageResponse->assertSee('Bank BCA');
+
+        $response = $this->postJson(route('checkout.pay_private', $booking->booking_code), [
+            'payment_method' => 'qris',
+        ]);
         $response->assertOk();
         $response->assertJson([
             'status' => 'success',
@@ -216,6 +228,7 @@ class CheckoutFlowTest extends TestCase
         $this->assertDatabaseHas('payment_transactions', [
             'booking_id' => $booking->id,
             'payment_stage' => 'full_payment',
+            'payment_method' => 'qris',
             'amount' => 850000,
             'status' => 'pending',
         ]);
