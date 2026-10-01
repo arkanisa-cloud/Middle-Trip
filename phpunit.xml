@@ -31,5 +31,8 @@
         <env name="PULSE_ENABLED" value="false"/>
         <env name="TELESCOPE_ENABLED" value="false"/>
         <env name="NIGHTWATCH_ENABLED" value="false"/>
+        <env name="MIDTRANS_SERVER_KEY" value="SB-Mid-server-TEST12345"/>
+        <env name="MIDTRANS_CLIENT_KEY" value="SB-Mid-client-TEST12345"/>
+        <env name="MIDTRANS_IS_PRODUCTION" value="false"/>
     </php>
 </phpunit>
