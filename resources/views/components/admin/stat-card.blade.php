@@ -1,23 +1,36 @@
-@props(['title', 'value', 'subtitle' => null, 'icon' => null, 'trend' => null, 'trendType' => 'up'])
+@props([
+    'title',
+    'value',
+    'subtitle' => null,
+    'icon' => null,
+    'trend' => null,
+    'trendType' => 'up',
+    'iconBg' => 'bg-primary/10 text-primary',
+])
 
-<div class="bg-surface-card border border-hairline rounded-2xl p-5 shadow-xs transition-all duration-200 hover:shadow-md hover:border-hairline/80 relative overflow-hidden group">
-    <div class="flex items-center justify-between gap-4">
-        <div>
-            <p class="text-xs font-bold font-outfit uppercase tracking-wider text-muted">{{ $title }}</p>
-            <h3 class="text-2xl font-extrabold font-outfit text-ink-heading mt-1 tracking-tight">{{ $value }}</h3>
-            @if($subtitle)
-                <p class="text-xs text-muted-soft mt-1">{{ $subtitle }}</p>
+<div class="bg-surface-card border border-hairline rounded-2xl p-5 md:p-6 shadow-xs transition-all duration-200 hover:shadow-md hover:border-hairline/80 flex flex-col justify-between group">
+    <div>
+        <div class="flex items-center justify-between gap-3">
+            <span class="text-xs font-semibold text-muted font-outfit">{{ $title }}</span>
+            @if($icon)
+                <div class="w-10 h-10 rounded-xl {{ $iconBg }} flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform duration-200">
+                    {!! $icon !!}
+                </div>
             @endif
         </div>
-        @if($icon)
-            <div class="w-12 h-12 rounded-xl bg-primary-subtle text-primary flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform duration-200">
-                {!! $icon !!}
-            </div>
-        @endif
+        <div class="text-2xl md:text-3xl font-extrabold font-outfit text-ink-heading tracking-tight mt-2">
+            {{ $value }}
+        </div>
     </div>
-    @if($trend)
-        <div class="mt-3 pt-3 border-t border-hairline-soft flex items-center text-xs {{ $trendType === 'up' ? 'text-emerald-600' : 'text-rose-600' }}">
-            <span>{{ $trend }}</span>
+
+    @if($subtitle || $trend)
+        <div class="mt-4 pt-3 border-t border-hairline/60 flex items-center justify-between text-xs">
+            @if($subtitle)
+                <span class="text-muted-soft text-[11px]">{{ $subtitle }}</span>
+            @endif
+            @if($trend)
+                <span class="font-semibold {{ $trendType === 'up' ? 'text-emerald-600' : 'text-rose-600' }}">{{ $trend }}</span>
+            @endif
         </div>
     @endif
 </div>

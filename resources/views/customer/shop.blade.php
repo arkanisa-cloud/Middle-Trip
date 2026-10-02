@@ -23,11 +23,11 @@
         {{-- =====================================================================
              2. FILTER & SEGMENTED CONTROL
         ===================================================================== --}}
-        <section class="max-w-6xl mx-auto px-4 md:px-8 mb-9 w-full">
+        <section class="max-w-6xl mx-auto px-4 md:px-8 mb-8 sm:mb-9 w-full">
             <div class="flex flex-col sm:flex-row items-center justify-between gap-3">
 
                 <!-- Trip Category Filter (Pill segmented control) -->
-                <div class="bg-gray-200/60 p-1 rounded-full flex items-center gap-1 w-full sm:w-auto overflow-x-auto">
+                <div class="bg-gray-200/60 p-1 rounded-full flex items-center justify-center sm:justify-start gap-1 w-full sm:w-auto overflow-x-auto no-scrollbar">
                     <button type="button" onclick="setTripType('all', this)"
                         class="trip-filter-btn px-4 py-1.5 rounded-full text-xs font-semibold bg-white text-ink-heading shadow-sm transition whitespace-nowrap">
                         Semua Trip
@@ -42,7 +42,7 @@
                     </button>
                 </div>
 
-                <!-- Right Action Filters: Grade Select & Filter Toggle -->
+                <!-- Right Action Filters: Grade Select -->
                 <div class="flex items-center gap-2 self-end sm:self-auto">
 
                     <!-- Grade Dropdown Menu -->
@@ -84,15 +84,6 @@
                             </button>
                         </div>
                     </div>
-
-                    <!-- Filter Reset Button -->
-                    <button type="button" onclick="resetFilters()" title="Reset Filter"
-                        class="w-9 h-9 flex items-center justify-center bg-gray-200/60 hover:bg-gray-200 text-body-strong rounded-full transition cursor-pointer">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"
-                                d="M3 4h18M7 8v8m10-5v5M3 12h18M3 20h18M9 4v4m6 4v8"></path>
-                        </svg>
-                    </button>
 
                 </div>
             </div>

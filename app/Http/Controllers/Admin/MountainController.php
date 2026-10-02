@@ -65,7 +65,18 @@ class MountainController extends Controller
             'price_private' => 'nullable|integer|min:0',
             'price_tektok' => 'nullable|integer|min:0',
             'price_private_tektok' => 'nullable|integer|min:0',
-            'booking_fee_per_pax' => 'required|integer|min:0',
+            'booking_fee_per_pax' => [
+                'required',
+                'integer',
+                'min:0',
+                function ($attribute, $value, $fail) use ($request) {
+                    $basePrice = (int) $request->input('base_price', 0);
+                    $maxAllowedDp = floor($basePrice / 2);
+                    if ($value > $maxAllowedDp) {
+                        $fail("Besaran DP / Booking Fee per pax tidak boleh lebih dari 50% (setengah) dari harga trip (Maksimal Rp " . number_format($maxAllowedDp, 0, ',', '.') . ").");
+                    }
+                },
+            ],
             'price_lock_days_before_departure' => 'required|integer|min:1|max:30',
             'has_open_trip' => 'nullable|boolean',
             'has_private_trip' => 'nullable|boolean',
@@ -409,7 +420,18 @@ class MountainController extends Controller
             'price_private' => 'nullable|integer|min:0',
             'price_tektok' => 'nullable|integer|min:0',
             'price_private_tektok' => 'nullable|integer|min:0',
-            'booking_fee_per_pax' => 'required|integer|min:0',
+            'booking_fee_per_pax' => [
+                'required',
+                'integer',
+                'min:0',
+                function ($attribute, $value, $fail) use ($request) {
+                    $basePrice = (int) $request->input('base_price', 0);
+                    $maxAllowedDp = floor($basePrice / 2);
+                    if ($value > $maxAllowedDp) {
+                        $fail("Besaran DP / Booking Fee per pax tidak boleh lebih dari 50% (setengah) dari harga trip (Maksimal Rp " . number_format($maxAllowedDp, 0, ',', '.') . ").");
+                    }
+                },
+            ],
             'price_lock_days_before_departure' => 'required|integer|min:1|max:30',
             'has_open_trip' => 'nullable|boolean',
             'has_private_trip' => 'nullable|boolean',

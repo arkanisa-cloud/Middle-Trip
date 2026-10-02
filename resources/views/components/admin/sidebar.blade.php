@@ -26,7 +26,7 @@
     <div class="flex-1 overflow-y-auto py-4 px-3 space-y-6 no-scrollbar">
         <!-- Group: MENU -->
         <div>
-            <div class="px-3 mb-2 text-[11px] font-bold font-outfit uppercase tracking-wider text-gray-400/80">Menu</div>
+            <div class="px-3 mb-2 text-xs font-semibold text-gray-400">Menu</div>
             <ul class="space-y-1">
                 <li>
                     <a href="{{ route('admin.dashboard') }}" 
@@ -42,7 +42,7 @@
 
         <!-- Group: MASTER DATA -->
         <div>
-            <div class="px-3 mb-2 text-[11px] font-bold font-outfit uppercase tracking-wider text-gray-400/80">Master Data</div>
+            <div class="px-3 mb-2 text-xs font-semibold text-gray-400">Master Data</div>
             <ul class="space-y-1">
                 <li>
                     <a href="{{ route('admin.mountains.index') }}" 
@@ -58,7 +58,7 @@
                        class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-colors duration-150 {{ request()->routeIs('admin.meeting-points.*') ? 'bg-primary text-white shadow-xs font-semibold' : 'text-gray-300 hover:bg-surface-forest-card hover:text-white' }}">
                         <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
                         </svg>
                         <span>Titik Kumpul Shuttle</span>
                     </a>
@@ -77,7 +77,7 @@
 
         <!-- Group: EKSPEDISI -->
         <div>
-            <div class="px-3 mb-2 text-[11px] font-bold font-outfit uppercase tracking-wider text-gray-400/80">Jadwal Ekspedisi</div>
+            <div class="px-3 mb-2 text-xs font-semibold text-gray-400">Jadwal Ekspedisi</div>
             <ul class="space-y-1">
                 <li>
                     <a href="{{ route('admin.expeditions.index') }}" 
@@ -93,7 +93,7 @@
 
         <!-- Group: TRANSAKSI -->
         <div>
-            <div class="px-3 mb-2 text-[11px] font-bold font-outfit uppercase tracking-wider text-gray-400/80">Operasional & Booking</div>
+            <div class="px-3 mb-2 text-xs font-semibold text-gray-400">Operasional & Booking</div>
             <ul class="space-y-1">
                 <li>
                     <a href="{{ route('admin.bookings.index') }}" 
@@ -111,18 +111,18 @@
     <!-- User Profile & Logout Bottom Card -->
     <div class="p-3 border-t border-surface-forest-border shrink-0 bg-surface-forest-card">
         <div class="flex items-center justify-between gap-3 px-2 py-1.5">
-            <div class="flex items-center gap-2.5 overflow-hidden">
-                <div class="w-9 h-9 rounded-full bg-surface-forest-border flex items-center justify-center font-bold text-sm text-primary uppercase shrink-0 border border-surface-forest-border">
+            <a href="{{ route('admin.profile.edit') }}" title="Pengaturan Profil" class="flex items-center gap-2.5 overflow-hidden group">
+                <div class="w-9 h-9 rounded-full bg-surface-forest-border flex items-center justify-center font-bold text-sm text-primary uppercase shrink-0 border border-surface-forest-border group-hover:border-primary transition-colors">
                     {{ substr(Auth::user()->name ?? 'A', 0, 1) }}
                 </div>
                 <div class="overflow-hidden">
-                    <p class="text-xs font-bold text-white truncate leading-tight">{{ Auth::user()->name ?? 'Administrator' }}</p>
+                    <p class="text-xs font-bold text-white truncate leading-tight group-hover:text-primary transition-colors">{{ Auth::user()->name ?? 'Administrator' }}</p>
                     <p class="text-[10px] text-gray-400 truncate">{{ Auth::user()->email ?? 'admin@middletrip.id' }}</p>
                 </div>
-            </div>
+            </a>
             <form method="POST" action="{{ route('logout') }}" class="shrink-0">
                 @csrf
-                <button type="submit" title="Logout" class="p-1.5 text-gray-400 hover:text-rose-400 rounded-lg hover:bg-surface-forest transition-colors">
+                <button type="submit" title="Logout" class="p-1.5 text-gray-400 hover:text-rose-400 rounded-lg hover:bg-surface-forest transition-colors cursor-pointer">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
                     </svg>

@@ -38,38 +38,38 @@
         </nav>
 
         <!-- User Profile Hero Banner -->
-        <div class="bg-white rounded-3xl border border-hairline p-6 sm:p-8 shadow-xs mb-8 relative overflow-hidden">
+        <div class="bg-white rounded-3xl border border-hairline p-5 sm:p-8 shadow-xs mb-6 sm:mb-8 relative overflow-hidden">
             <!-- Decorative Mountain Silhouette -->
-            <div class="absolute -right-8 -bottom-10 opacity-[0.03] pointer-events-none select-none">
+            <div class="absolute -right-8 -bottom-10 opacity-[0.03] pointer-events-none select-none hidden sm:block">
                 <svg class="w-72 h-72 text-ink-heading" viewBox="0 0 24 24" fill="currentColor">
                     <path d="M8 3l4 8 5-5 5 15H2L8 3z" />
                 </svg>
             </div>
 
-            <div class="flex flex-col md:flex-row md:items-center justify-between gap-6 relative z-10">
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-5 sm:gap-6 relative z-10">
                 <!-- User Ident Card -->
-                <div class="flex items-center gap-4 sm:gap-5">
-                    <div class="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-gradient-to-br from-primary via-primary-hover to-primary-active text-white flex items-center justify-center font-extrabold text-2xl sm:text-3xl shadow-sm tracking-tight shrink-0 border-2 border-white ring-4 ring-primary-subtle">
+                <div class="flex items-center gap-3.5 sm:gap-5">
+                    <div class="w-14 h-14 sm:w-20 sm:h-20 rounded-2xl bg-gradient-to-br from-primary via-primary-hover to-primary-active text-white flex items-center justify-center font-extrabold text-xl sm:text-3xl shadow-sm tracking-tight shrink-0 border-2 border-white ring-4 ring-primary-subtle">
                         {{ strtoupper(substr($user->name, 0, 2)) }}
                     </div>
-                    <div>
-                        <div class="flex items-center gap-2.5 flex-wrap">
-                            <h1 class="text-xl sm:text-2xl font-extrabold text-ink-heading tracking-tight">
+                    <div class="min-w-0">
+                        <div class="flex items-center gap-2 flex-wrap">
+                            <h1 class="text-lg sm:text-2xl font-extrabold text-ink-heading tracking-tight truncate">
                                 {{ $user->name }}
                             </h1>
-                            <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-emerald-50 text-emerald-700 border border-emerald-200/80">
+                            <span class="inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-0.5 sm:py-1 rounded-full text-[10px] sm:text-xs font-bold bg-emerald-50 text-emerald-700 border border-emerald-200/80">
                                 <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
                                 Pendaki Terverifikasi
                             </span>
                         </div>
-                        <div class="flex items-center gap-3 text-xs sm:text-sm text-muted mt-1.5 font-medium flex-wrap">
-                            <span class="flex items-center gap-1.5">
+                        <div class="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-3 text-xs sm:text-sm text-muted mt-1 font-medium">
+                            <span class="flex items-center gap-1.5 truncate">
                                 <svg class="w-3.5 h-3.5 text-muted-soft shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.207" />
                                 </svg>
-                                <span>{{ $user->email }}</span>
+                                <span class="truncate">{{ $user->email }}</span>
                             </span>
-                            <span class="text-muted-soft">&bull;</span>
+                            <span class="text-muted-soft hidden sm:inline">&bull;</span>
                             <span class="flex items-center gap-1.5">
                                 <svg class="w-3.5 h-3.5 text-muted-soft shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5" />
@@ -81,43 +81,43 @@
                 </div>
 
                 <!-- Quick Metrics Bar -->
-                <div class="flex items-center gap-2 self-start md:self-center bg-canvas/80 p-2 rounded-2xl border border-hairline/80">
-                    <div class="text-center px-4 py-1.5">
-                        <span class="block text-lg sm:text-xl font-extrabold text-ink-heading leading-tight">{{ $bookings->count() }}</span>
-                        <span class="text-[10px] uppercase font-bold text-muted tracking-wider">Total Trip</span>
+                <div class="w-full md:w-auto flex items-center justify-between sm:justify-center gap-1 sm:gap-2 self-stretch md:self-center bg-canvas/80 p-2 rounded-2xl border border-hairline/80">
+                    <div class="flex-1 md:flex-none text-center px-2.5 sm:px-4 py-1.5">
+                        <span class="block text-base sm:text-xl font-extrabold text-ink-heading leading-tight">{{ $bookings->count() }}</span>
+                        <span class="text-[9px] sm:text-[10px] uppercase font-bold text-muted tracking-wider whitespace-nowrap">Total Trip</span>
                     </div>
-                    <div class="w-px h-8 bg-hairline"></div>
-                    <div class="text-center px-4 py-1.5">
-                        <span class="block text-lg sm:text-xl font-extrabold text-sky-600 leading-tight">
+                    <div class="w-px h-7 bg-hairline"></div>
+                    <div class="flex-1 md:flex-none text-center px-2.5 sm:px-4 py-1.5">
+                        <span class="block text-base sm:text-xl font-extrabold text-sky-600 leading-tight">
                             {{ $bookings->whereIn('status', ['reserved', 'price_locked'])->count() }}
                         </span>
-                        <span class="text-[10px] uppercase font-bold text-muted tracking-wider">DP / Aktif</span>
+                        <span class="text-[9px] sm:text-[10px] uppercase font-bold text-muted tracking-wider whitespace-nowrap">DP / Aktif</span>
                     </div>
-                    <div class="w-px h-8 bg-hairline"></div>
-                    <div class="text-center px-4 py-1.5">
-                        <span class="block text-lg sm:text-xl font-extrabold text-emerald-600 leading-tight">
+                    <div class="w-px h-7 bg-hairline"></div>
+                    <div class="flex-1 md:flex-none text-center px-2.5 sm:px-4 py-1.5">
+                        <span class="block text-base sm:text-xl font-extrabold text-emerald-600 leading-tight">
                             {{ $bookings->where('status', 'paid')->count() }}
                         </span>
-                        <span class="text-[10px] uppercase font-bold text-muted tracking-wider">Lunas</span>
+                        <span class="text-[9px] sm:text-[10px] uppercase font-bold text-muted tracking-wider whitespace-nowrap">Lunas</span>
                     </div>
                 </div>
             </div>
 
             <!-- Tab Switcher Navigation (Design System Segmented Capsule) -->
-            <div class="mt-7 pt-6 border-t border-hairline/80 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                <div class="bg-canvas p-1 rounded-2xl sm:rounded-full inline-flex border border-hairline shadow-2xs w-full sm:w-auto">
+            <div class="mt-6 sm:mt-7 pt-5 sm:pt-6 border-t border-hairline/80 flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4">
+                <div class="bg-canvas p-1 rounded-2xl sm:rounded-full flex border border-hairline shadow-2xs w-full sm:w-auto">
                     <button type="button"
                         @click="activeTab = 'orders'"
                         :class="activeTab === 'orders' 
                             ? 'bg-white text-ink-heading shadow-xs font-bold' 
                             : 'text-muted hover:text-ink-heading font-medium'"
-                        class="flex-1 sm:flex-none px-5 py-2.5 rounded-xl sm:rounded-full text-xs sm:text-sm transition-all flex items-center justify-center gap-2 cursor-pointer">
+                        class="flex-1 sm:flex-none px-3.5 sm:px-5 py-2 sm:py-2.5 rounded-xl sm:rounded-full text-xs sm:text-sm transition-all flex items-center justify-center gap-1.5 sm:gap-2 cursor-pointer">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
                         </svg>
                         <span>Pesanan Saya</span>
                         @if ($bookings->count() > 0)
-                            <span class="text-[10px] font-extrabold px-2 py-0.5 rounded-full transition-colors ml-0.5"
+                            <span class="text-[10px] font-extrabold px-1.5 sm:px-2 py-0.5 rounded-full transition-colors ml-0.5"
                                 :class="activeTab === 'orders' ? 'bg-primary text-white' : 'bg-gray-200 text-muted'">
                                 {{ $bookings->count() }}
                             </span>
@@ -129,7 +129,7 @@
                         :class="activeTab === 'settings' 
                             ? 'bg-white text-ink-heading shadow-xs font-bold' 
                             : 'text-muted hover:text-ink-heading font-medium'"
-                        class="flex-1 sm:flex-none px-5 py-2.5 rounded-xl sm:rounded-full text-xs sm:text-sm transition-all flex items-center justify-center gap-2 cursor-pointer">
+                        class="flex-1 sm:flex-none px-3.5 sm:px-5 py-2 sm:py-2.5 rounded-xl sm:rounded-full text-xs sm:text-sm transition-all flex items-center justify-center gap-1.5 sm:gap-2 cursor-pointer">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
                             <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -138,7 +138,7 @@
                     </button>
                 </div>
 
-                <a href="{{ route('ekspedisi.index') }}" class="text-xs font-bold text-primary hover:text-primary-hover flex items-center gap-1.5 transition-colors self-end sm:self-center">
+                <a href="{{ route('ekspedisi.index') }}" class="text-xs font-bold text-primary hover:text-primary-hover flex items-center justify-center gap-1.5 transition-colors self-center sm:self-center py-1">
                     <span>Cari Destinasi Baru</span>
                     <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
@@ -314,56 +314,56 @@
                     </div>
 
                     <!-- Card Body: Mountain Thumbnail & Destination Details -->
-                    <div class="py-5 flex flex-col sm:flex-row items-start sm:items-center gap-6 sm:gap-7 w-full">
+                    <div class="py-4 sm:py-5 flex flex-row items-start sm:items-center gap-3.5 sm:gap-7 w-full">
                         
                         <!-- Mountain Thumbnail Cover -->
-                        <div class="relative w-24 h-24 sm:w-28 sm:h-28 md:w-32 md:h-32 rounded-2xl overflow-hidden shrink-0 border border-hairline shadow-2xs group bg-gray-100">
+                        <div class="relative w-20 h-20 sm:w-28 sm:h-28 md:w-32 md:h-32 rounded-2xl overflow-hidden shrink-0 border border-hairline shadow-2xs group bg-gray-100">
                             <img src="{{ $coverImg }}" alt="{{ $mountainName }}"
                                 onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=800&q=80';"
                                 class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
                             <div class="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent pointer-events-none"></div>
-                            <span class="absolute bottom-1.5 left-1.5 right-1.5 text-center text-[10px] font-extrabold text-white bg-black/50 backdrop-blur-xs px-2 py-0.5 rounded-lg border border-white/20 truncate">
+                            <span class="absolute bottom-1 sm:bottom-1.5 left-1 sm:left-1.5 right-1 sm:right-1.5 text-center text-[9px] sm:text-[10px] font-extrabold text-white bg-black/60 backdrop-blur-xs px-1.5 sm:px-2 py-0.5 rounded-md sm:rounded-lg border border-white/20 truncate">
                                 {{ $elevationText }}
                             </span>
                         </div>
 
                         <!-- Destination & Route Meta -->
-                        <div class="space-y-3 flex-1 min-w-0">
+                        <div class="space-y-2 sm:space-y-3 flex-1 min-w-0">
                             <div class="flex items-center gap-2.5 flex-wrap">
-                                <h2 class="text-lg sm:text-xl font-extrabold text-ink-heading hover:text-primary transition-colors truncate">
+                                <h2 class="text-base sm:text-xl font-extrabold text-ink-heading hover:text-primary transition-colors truncate">
                                     {{ $mountainName }}
                                 </h2>
                             </div>
 
                             <!-- Feature Pills (Trip Type, Hike Type, Route Grade) -->
-                            <div class="flex items-center gap-2 flex-wrap">
+                            <div class="flex items-center gap-1.5 sm:gap-2 flex-wrap">
                                 <!-- Trip Type Pill -->
-                                <span class="text-xs font-bold px-3 py-1 rounded-full {{ $booking->trip_type === 'private' ? 'bg-purple-50 text-purple-700 border border-purple-200' : 'bg-emerald-50 text-emerald-700 border border-emerald-200' }}">
+                                <span class="text-[10px] sm:text-xs font-bold px-2.5 sm:px-3 py-0.5 sm:py-1 rounded-full {{ $booking->trip_type === 'private' ? 'bg-purple-50 text-purple-700 border border-purple-200' : 'bg-emerald-50 text-emerald-700 border border-emerald-200' }}">
                                     {{ $booking->trip_type === 'private' ? 'Private Trip' : 'Open Trip' }}
                                 </span>
 
                                 <!-- Hiking Type Pill -->
-                                <span class="text-xs font-bold px-3 py-1 rounded-full {{ $booking->hiking_type === 'tektok' ? 'bg-sky-50 text-sky-700 border border-sky-200' : 'bg-amber-50 text-amber-700 border border-amber-200' }}">
+                                <span class="text-[10px] sm:text-xs font-bold px-2.5 sm:px-3 py-0.5 sm:py-1 rounded-full {{ $booking->hiking_type === 'tektok' ? 'bg-sky-50 text-sky-700 border border-sky-200' : 'bg-amber-50 text-amber-700 border border-amber-200' }}">
                                     {{ $booking->hiking_type === 'tektok' ? 'Tektok (1 Hari)' : 'Camping Ceria' }}
                                 </span>
 
                                 <!-- Route & Grade Pill -->
-                                <span class="text-xs font-bold px-3 py-1 rounded-full border inline-flex items-center gap-1.5 {{ $gradeBadgeClass }}">
+                                <span class="text-[10px] sm:text-xs font-bold px-2.5 sm:px-3 py-0.5 sm:py-1 rounded-full border inline-flex items-center gap-1 sm:gap-1.5 {{ $gradeBadgeClass }}">
                                     <span class="w-1.5 h-1.5 rounded-full {{ $gradeDotClass }}"></span>
                                     {{ $booking->route?->name ?? 'Jalur Standar' }}
                                 </span>
                             </div>
 
                             <!-- Schedule, Pax, & Meeting Point Info -->
-                            <div class="text-xs text-muted flex items-center gap-3.5 pt-0.5 flex-wrap font-medium">
-                                <span class="flex items-center gap-1.5">
+                            <div class="text-[11px] sm:text-xs text-muted flex items-center gap-2 sm:gap-3.5 pt-0.5 flex-wrap font-medium">
+                                <span class="flex items-center gap-1">
                                     <svg class="w-3.5 h-3.5 text-muted-soft" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                                     </svg>
                                     {{ $booking->departure_date ? $booking->departure_date->translatedFormat('d M Y') : 'Fleksibel' }}
                                 </span>
                                 <span class="text-muted-soft">&bull;</span>
-                                <span class="flex items-center gap-1.5">
+                                <span class="flex items-center gap-1">
                                     <svg class="w-3.5 h-3.5 text-muted-soft" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
                                     </svg>
@@ -371,7 +371,7 @@
                                 </span>
                                 @if ($booking->meetingPoint)
                                     <span class="text-muted-soft">&bull;</span>
-                                    <span class="flex items-center gap-1.5 truncate max-w-[240px]" title="{{ $booking->meetingPoint->name }}">
+                                    <span class="flex items-center gap-1 truncate max-w-[200px] sm:max-w-[240px]" title="{{ $booking->meetingPoint->name }}">
                                         <svg class="w-3.5 h-3.5 text-muted-soft shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
                                             <path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                                             <path stroke-linecap="round" stroke-linejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -385,61 +385,74 @@
                     </div>
 
                     <!-- Card Footer: Dedicated Pricing & Action CTA Bar -->
-                    <div class="border-t border-hairline/80 pt-4 mt-2 flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-canvas/50 -mx-5 sm:-mx-6 -mb-5 sm:-mb-6 px-5 sm:px-6 py-4 rounded-b-3xl">
+                    <div class="border-t border-hairline/80 pt-3.5 sm:pt-4 mt-2 flex flex-col sm:flex-row sm:items-center justify-between gap-3.5 sm:gap-4 bg-canvas/50 -mx-5 sm:-mx-6 -mb-5 sm:-mb-6 px-4 sm:px-6 py-3.5 sm:py-4 rounded-b-3xl">
                         <div>
-                            <span class="text-[11px] font-semibold text-muted block">Total Biaya Ekspedisi</span>
+                            <span class="text-[10px] sm:text-[11px] font-semibold text-muted block">Total Biaya Ekspedisi</span>
                             <div class="flex items-baseline gap-2 flex-wrap">
-                                <span class="text-lg sm:text-xl font-extrabold text-ink-heading">
+                                <span class="text-base sm:text-xl font-extrabold text-ink-heading">
                                     Rp {{ number_format($booking->grand_total, 0, ',', '.') }}
                                 </span>
                                 @if ($booking->status === 'open' && $booking->trip_type === 'open')
-                                    <span class="text-[11px] text-amber-700 font-bold bg-amber-50 px-2 py-0.5 rounded-full border border-amber-200">
+                                    <span class="text-[10px] sm:text-[11px] text-amber-700 font-bold bg-amber-50 px-2 py-0.5 rounded-full border border-amber-200">
                                         DP Awal: Rp {{ number_format($booking->total_booking_fee, 0, ',', '.') }}
                                     </span>
                                 @elseif ($booking->status === 'price_locked')
-                                    <span class="text-[11px] text-orange-700 font-bold bg-orange-50 px-2 py-0.5 rounded-full border border-orange-200">
+                                    <span class="text-[10px] sm:text-[11px] text-orange-700 font-bold bg-orange-50 px-2 py-0.5 rounded-full border border-orange-200">
                                         Wajib Pelunasan: Rp {{ number_format($booking->remaining_payment_total, 0, ',', '.') }}
                                     </span>
                                 @elseif ($booking->status === 'reserved')
-                                    <span class="text-[11px] text-sky-700 font-bold bg-sky-50 px-2 py-0.5 rounded-full border border-sky-200">
+                                    <span class="text-[10px] sm:text-[11px] text-sky-700 font-bold bg-sky-50 px-2 py-0.5 rounded-full border border-sky-200">
                                         DP Lunas: Rp {{ number_format($booking->total_booking_fee, 0, ',', '.') }}
                                     </span>
                                 @elseif ($booking->status === 'paid')
-                                    <span class="text-[11px] text-emerald-700 font-bold bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
+                                    <span class="text-[10px] sm:text-[11px] text-emerald-700 font-bold bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
                                         Lunas 100%
                                     </span>
                                 @endif
                             </div>
                         </div>
 
-                        @if ($actionUrl !== '#')
-                            <a href="{{ $actionUrl }}"
-                                class="{{ $booking->status === 'open' ? 'bg-primary hover:bg-primary-hover shadow-xs hover:shadow' : ($booking->status === 'paid' ? 'bg-emerald-600 hover:bg-emerald-700 shadow-xs hover:shadow' : 'bg-surface-forest hover:bg-surface-forest-card shadow-xs hover:shadow') }} text-white font-bold text-xs sm:text-sm px-6 py-2.5 rounded-full transition-all inline-flex items-center justify-center gap-2 active:scale-95 cursor-pointer">
-                                <span>{{ $actionLabel }}</span>
-                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" />
-                                </svg>
-                            </a>
-                        @endif
+                        <div class="flex flex-col xs:flex-row sm:flex-row items-stretch sm:items-center gap-2 w-full sm:w-auto">
+                            @if (in_array($booking->status, ['reserved', 'price_locked', 'paid']))
+                                <a href="{{ route('bookings.print', $booking->booking_code) }}" target="_blank"
+                                    class="w-full sm:w-auto bg-white hover:bg-slate-50 text-ink border border-hairline hover:border-slate-300 font-bold text-xs sm:text-sm px-4 py-2.5 rounded-xl sm:rounded-full transition-all inline-flex items-center justify-center gap-1.5 shadow-2xs hover:shadow-xs cursor-pointer"
+                                    title="Cetak E-Tiket / Invoice">
+                                    <svg class="w-4 h-4 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
+                                    </svg>
+                                    <span>Cetak PDF</span>
+                                </a>
+                            @endif
+
+                            @if ($actionUrl !== '#')
+                                <a href="{{ $actionUrl }}"
+                                    class="w-full sm:w-auto {{ $booking->status === 'open' ? 'bg-primary hover:bg-primary-hover shadow-xs hover:shadow' : ($booking->status === 'paid' ? 'bg-emerald-600 hover:bg-emerald-700 shadow-xs hover:shadow' : 'bg-surface-forest hover:bg-surface-forest-card shadow-xs hover:shadow') }} text-white font-bold text-xs sm:text-sm px-6 py-2.5 rounded-xl sm:rounded-full transition-all inline-flex items-center justify-center gap-2 active:scale-95 cursor-pointer text-center">
+                                    <span>{{ $actionLabel }}</span>
+                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                                    </svg>
+                                </a>
+                            @endif
+                        </div>
                     </div>
 
                 </div>
             @empty
                 <!-- Empty State (Outdoor Alpine Aesthetic) -->
-                <div class="bg-white rounded-3xl border border-hairline p-10 sm:p-14 text-center shadow-xs">
-                    <div class="w-20 h-20 rounded-full bg-primary-subtle text-primary mx-auto flex items-center justify-center mb-4 border border-primary/20">
-                        <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.75">
+                <div class="bg-white rounded-3xl border border-hairline p-8 sm:p-14 text-center shadow-xs">
+                    <div class="w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-primary-subtle text-primary mx-auto flex items-center justify-center mb-4 border border-primary/20">
+                        <svg class="w-8 h-8 sm:w-10 sm:h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.75">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                         </svg>
                     </div>
-                    <h3 class="text-lg sm:text-xl font-extrabold text-ink-heading tracking-tight mb-2">
+                    <h3 class="text-base sm:text-xl font-extrabold text-ink-heading tracking-tight mb-2">
                         Belum Ada Riwayat Pesanan
                     </h3>
                     <p class="text-xs sm:text-sm text-muted max-w-md mx-auto mb-6 leading-relaxed">
                         Anda belum memiliki jadwal ekspedisi gunung aktif. Mari wujudkan petualangan mendaki impian Anda dengan fasilitas terlengkap dan guide profesional.
                     </p>
                     <a href="{{ route('ekspedisi.index') }}"
-                        class="bg-primary hover:bg-primary-hover active:bg-primary-active text-white text-xs sm:text-sm font-bold px-7 py-3 rounded-full shadow-sm hover:shadow transition-all inline-flex items-center gap-2">
+                        class="w-full sm:w-auto bg-primary hover:bg-primary-hover active:bg-primary-active text-white text-xs sm:text-sm font-bold px-7 py-3 rounded-xl sm:rounded-full shadow-sm hover:shadow transition-all inline-flex items-center justify-center gap-2">
                         <span>Jelajahi Ekspedisi Gunung</span>
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
@@ -456,7 +469,7 @@
         <div x-show="activeTab === 'settings'" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0 translate-y-2" x-transition:enter-end="opacity-100 translate-y-0" class="space-y-6">
 
             <!-- Card 1: Ubah Nama & Email -->
-            <div class="bg-white rounded-3xl border border-hairline p-6 sm:p-8 shadow-xs">
+            <div class="bg-white rounded-3xl border border-hairline p-5 sm:p-8 shadow-xs">
                 <div class="flex items-center gap-3 mb-6 pb-4 border-b border-hairline/80">
                     <div class="w-10 h-10 rounded-2xl bg-primary-subtle text-primary flex items-center justify-center shrink-0 border border-primary/20">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
@@ -494,7 +507,7 @@
                                 </svg>
                             </div>
                             <input type="text" id="name" name="name" value="{{ old('name', $user->name) }}" required
-                                class="w-full pl-10 pr-4 py-2.5 border border-hairline rounded-xl text-xs sm:text-sm focus:border-primary focus:ring-1 focus:ring-primary outline-none text-ink bg-white transition shadow-2xs font-semibold">
+                                class="w-full pl-10 pr-4 py-2.5 border border-hairline rounded-xl text-sm focus:border-primary focus:ring-1 focus:ring-primary outline-none text-ink bg-white transition shadow-2xs font-outfit font-normal">
                         </div>
                         @error('name')
                             <p class="text-xs text-rose-600 mt-1.5 font-medium flex items-center gap-1">
@@ -516,7 +529,7 @@
                                 </svg>
                             </div>
                             <input type="email" id="email" name="email" value="{{ old('email', $user->email) }}" required
-                                class="w-full pl-10 pr-4 py-2.5 border border-hairline rounded-xl text-xs sm:text-sm focus:border-primary focus:ring-1 focus:ring-primary outline-none text-ink bg-white transition shadow-2xs font-semibold">
+                                class="w-full pl-10 pr-4 py-2.5 border border-hairline rounded-xl text-sm focus:border-primary focus:ring-1 focus:ring-primary outline-none text-ink bg-white transition shadow-2xs font-outfit font-normal">
                         </div>
                         @error('email')
                             <p class="text-xs text-rose-600 mt-1.5 font-medium flex items-center gap-1">
@@ -528,7 +541,7 @@
 
                     <div class="pt-2 flex justify-end">
                         <button type="submit"
-                            class="bg-primary hover:bg-primary-hover active:bg-primary-active active:scale-[0.99] text-white text-xs sm:text-sm font-bold px-7 py-2.5 rounded-full shadow-xs hover:shadow transition-all cursor-pointer">
+                            class="w-full sm:w-auto bg-primary hover:bg-primary-hover active:bg-primary-active active:scale-[0.99] text-white text-xs sm:text-sm font-bold px-7 py-2.5 rounded-xl sm:rounded-full shadow-xs hover:shadow transition-all cursor-pointer text-center justify-center">
                             Simpan Perubahan
                         </button>
                     </div>
@@ -536,7 +549,7 @@
             </div>
 
             <!-- Card 2: Ubah Password -->
-            <div class="bg-white rounded-3xl border border-hairline p-6 sm:p-8 shadow-xs">
+            <div class="bg-white rounded-3xl border border-hairline p-5 sm:p-8 shadow-xs">
                 <div class="flex items-center gap-3 mb-6 pb-4 border-b border-hairline/80">
                     <div class="w-10 h-10 rounded-2xl bg-canvas text-body-strong flex items-center justify-center shrink-0 border border-hairline">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
@@ -574,7 +587,7 @@
                                 </svg>
                             </div>
                             <input type="password" id="current_password" name="current_password" required autocomplete="current-password"
-                                class="w-full pl-10 pr-4 py-2.5 border border-hairline rounded-xl text-xs sm:text-sm focus:border-primary focus:ring-1 focus:ring-primary outline-none text-ink bg-white transition shadow-2xs font-semibold">
+                                class="w-full pl-10 pr-4 py-2.5 border border-hairline rounded-xl text-sm focus:border-primary focus:ring-1 focus:ring-primary outline-none text-ink bg-white transition shadow-2xs font-outfit font-normal">
                         </div>
                         @if ($errors->updatePassword->has('current_password'))
                             <p class="text-xs text-rose-600 mt-1.5 font-medium flex items-center gap-1">
@@ -597,7 +610,7 @@
                                     </svg>
                                 </div>
                                 <input type="password" id="password" name="password" required autocomplete="new-password"
-                                    class="w-full pl-10 pr-4 py-2.5 border border-hairline rounded-xl text-xs sm:text-sm focus:border-primary focus:ring-1 focus:ring-primary outline-none text-ink bg-white transition shadow-2xs font-semibold">
+                                    class="w-full pl-10 pr-4 py-2.5 border border-hairline rounded-xl text-sm focus:border-primary focus:ring-1 focus:ring-primary outline-none text-ink bg-white transition shadow-2xs font-outfit font-normal">
                             </div>
                             @if ($errors->updatePassword->has('password'))
                                 <p class="text-xs text-rose-600 mt-1.5 font-medium flex items-center gap-1">
@@ -614,11 +627,11 @@
                             <div class="relative">
                                 <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-muted-soft">
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
-                                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0118 0Z" />
                                     </svg>
                                 </div>
                                 <input type="password" id="password_confirmation" name="password_confirmation" required autocomplete="new-password"
-                                    class="w-full pl-10 pr-4 py-2.5 border border-hairline rounded-xl text-xs sm:text-sm focus:border-primary focus:ring-1 focus:ring-primary outline-none text-ink bg-white transition shadow-2xs font-semibold">
+                                    class="w-full pl-10 pr-4 py-2.5 border border-hairline rounded-xl text-sm focus:border-primary focus:ring-1 focus:ring-primary outline-none text-ink bg-white transition shadow-2xs font-outfit font-normal">
                             </div>
                             @if ($errors->updatePassword->has('password_confirmation'))
                                 <p class="text-xs text-rose-600 mt-1.5 font-medium flex items-center gap-1">
@@ -631,7 +644,7 @@
 
                     <div class="pt-2 flex justify-end">
                         <button type="submit"
-                            class="bg-surface-dark hover:bg-black active:scale-[0.99] text-white text-xs sm:text-sm font-bold px-7 py-2.5 rounded-full shadow-xs hover:shadow transition-all cursor-pointer">
+                            class="w-full sm:w-auto bg-surface-dark hover:bg-black active:scale-[0.99] text-white text-xs sm:text-sm font-bold px-7 py-2.5 rounded-xl sm:rounded-full shadow-xs hover:shadow transition-all cursor-pointer text-center justify-center">
                             Perbarui Kata Sandi
                         </button>
                     </div>
@@ -639,7 +652,7 @@
             </div>
 
             <!-- Card 3: Keluar dari Akun (Sesi Login) -->
-            <div class="bg-white rounded-3xl border border-hairline p-6 sm:p-8 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div class="bg-white rounded-3xl border border-hairline p-5 sm:p-8 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div class="flex items-center gap-3.5">
                     <div class="w-10 h-10 rounded-2xl bg-rose-50 text-rose-600 flex items-center justify-center shrink-0 border border-rose-200/60">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
@@ -651,10 +664,10 @@
                         <p class="text-xs text-muted">Akhiri sesi login Anda di perangkat ini dengan aman.</p>
                     </div>
                 </div>
-                <form method="POST" action="{{ route('logout') }}" class="shrink-0">
+                <form method="POST" action="{{ route('logout') }}" class="w-full sm:w-auto shrink-0">
                     @csrf
                     <button type="submit"
-                        class="w-full sm:w-auto bg-rose-50 hover:bg-rose-100 text-rose-700 font-bold text-xs sm:text-sm px-6 py-2.5 rounded-full border border-rose-200 shadow-2xs hover:shadow-xs transition-all cursor-pointer flex items-center justify-center gap-2">
+                        class="w-full sm:w-auto bg-rose-50 hover:bg-rose-100 text-rose-700 font-bold text-xs sm:text-sm px-6 py-2.5 rounded-xl sm:rounded-full border border-rose-200 shadow-2xs hover:shadow-xs transition-all cursor-pointer flex items-center justify-center gap-2">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
                         </svg>

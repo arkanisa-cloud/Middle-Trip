@@ -15,6 +15,12 @@
     <!-- Toastr Notifications CSS -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
 
+    <style>
+        [x-cloak] {
+            display: none !important;
+        }
+    </style>
+
     <!-- Scripts and Styles -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 
@@ -89,67 +95,82 @@
 
     @stack('scripts')
 
-    <!-- jQuery & Toastr JS -->
+    <!-- jQuery, Toastr & SweetAlert2 JS -->
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
-        // Setup Toastr or fallback
+        // Setup Toastr clean & simple options
         if (typeof toastr !== 'undefined') {
             toastr.options = {
                 "closeButton": true,
                 "progressBar": true,
                 "positionClass": "toast-top-right",
-                "showDuration": "300",
-                "hideDuration": "500",
-                "timeOut": "4000",
-                "extendedTimeOut": "1500",
+                "showDuration": "200",
+                "hideDuration": "300",
+                "timeOut": "3500",
+                "extendedTimeOut": "1000",
                 "showEasing": "swing",
                 "hideEasing": "linear",
                 "showMethod": "fadeIn",
                 "hideMethod": "fadeOut"
             };
-        } else {
-            // Elegant native fallback toast if CDN is unreachable
-            window.toastr = (function() {
-                function show(type, msg, title) {
-                    let container = document.getElementById('native-toastr-container');
-                    if (!container) {
-                        container = document.createElement('div');
-                        container.id = 'native-toastr-container';
-                        container.className = 'fixed top-5 right-5 z-50 flex flex-col gap-2 max-w-sm w-full pointer-events-none';
-                        document.body.appendChild(container);
-                    }
-                    const toast = document.createElement('div');
-                    const bgClass = type === 'error' ? 'bg-rose-600 text-white' : (type === 'success' ? 'bg-emerald-600 text-white' : 'bg-amber-600 text-white');
-                    toast.className = `${bgClass} p-4 rounded-2xl shadow-xl pointer-events-auto transform transition-all duration-300 translate-y-[-10px] opacity-0 flex items-start justify-between gap-3 text-xs`;
-                    toast.innerHTML = `
-                        <div>
-                            ${title ? `<p class="font-bold text-sm mb-0.5">${title}</p>` : ''}
-                            <p class="font-medium">${msg}</p>
-                        </div>
-                        <button type="button" class="text-white/80 hover:text-white font-bold text-sm leading-none">&times;</button>
-                    `;
-                    container.appendChild(toast);
-                    requestAnimationFrame(() => {
-                        toast.classList.remove('translate-y-[-10px]', 'opacity-0');
-                    });
-                    const close = () => {
-                        toast.classList.add('opacity-0', 'translate-y-[-10px]');
-                        setTimeout(() => toast.remove(), 300);
-                    };
-                    toast.querySelector('button').onclick = close;
-                    setTimeout(close, 4500);
-                }
-                return {
-                    error: (msg, title) => show('error', msg, title),
-                    success: (msg, title) => show('success', msg, title),
-                    warning: (msg, title) => show('warning', msg, title),
-                    info: (msg, title) => show('info', msg, title)
-                };
-            })();
         }
 
-        // Trigger flash notifications from Laravel session
+        // Global Helper for SweetAlert Confirmations
+        function appConfirm(options) {
+            const defaults = {
+                title: 'Apakah Anda yakin?',
+                text: 'Tindakan ini akan diproses pada sistem.',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#1B4D3E',
+                cancelButtonColor: '#94A3B8',
+                confirmButtonText: 'Ya, Lanjutkan',
+                cancelButtonText: 'Batal',
+                customClass: {
+                    popup: 'rounded-3xl shadow-xl font-sans',
+                    confirmButton: 'rounded-xl font-bold px-5 py-2.5 shadow-sm',
+                    cancelButton: 'rounded-xl font-bold px-5 py-2.5'
+                }
+            };
+            return Swal.fire(Object.assign({}, defaults, options));
+        }
+
+        // SweetAlert2 Confirmation helper for forms with data-confirm or class confirm-delete
+        document.addEventListener('DOMContentLoaded', function() {
+            document.querySelectorAll('form[data-confirm], form.confirm-delete').forEach(function(form) {
+                form.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    const message = form.getAttribute('data-confirm') || 'Data yang dihapus tidak dapat dipulihkan kembali.';
+                    const title = form.getAttribute('data-title') || 'Apakah Anda yakin?';
+                    const confirmText = form.getAttribute('data-confirm-text') || 'Ya, Hapus Data';
+                    const icon = form.getAttribute('data-icon') || 'warning';
+                    
+                    Swal.fire({
+                        title: title,
+                        text: message,
+                        icon: icon,
+                        showCancelButton: true,
+                        confirmButtonColor: '#1B4D3E',
+                        cancelButtonColor: '#94A3B8',
+                        confirmButtonText: confirmText,
+                        cancelButtonText: 'Batal',
+                        customClass: {
+                            popup: 'rounded-3xl shadow-xl font-sans',
+                            confirmButton: 'rounded-xl font-bold px-5 py-2.5',
+                            cancelButton: 'rounded-xl font-bold px-5 py-2.5'
+                        }
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            form.submit();
+                        }
+                    });
+                });
+            });
+        });
+
+        // Trigger flash notifications from Laravel session with clean message
         @if (session('success'))
             toastr.success(@json(session('success')));
         @endif
@@ -163,7 +184,7 @@
         @endif
 
         @if ($errors->any())
-            toastr.error(@json($errors->first()), 'Gagal Menyimpan Data');
+            toastr.error(@json($errors->first()), 'Validasi Gagal');
         @endif
     </script>
 

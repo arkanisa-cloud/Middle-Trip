@@ -9,7 +9,6 @@
 
     <!-- Page Header Banner -->
     <x-admin.page-header 
-        badge="Operasional & Booking" 
         title="Manajemen Reservasi & SIMAKSI" 
         subtitle="Pantau data pendaftaran, kelengkapan identitas peserta untuk izin SIMAKSI, dan verifikasi status pembayaran."
     />
@@ -69,7 +68,7 @@
         @else
             <div class="overflow-x-auto">
                 <table class="w-full text-left text-xs">
-                    <thead class="bg-canvas border-b border-hairline text-muted font-bold font-outfit uppercase tracking-wider text-[11px]">
+                    <thead class="bg-canvas border-b border-hairline text-muted font-semibold font-outfit text-xs">
                         <tr>
                             <th class="py-3.5 px-5">Kode Booking</th>
                             <th class="py-3.5 px-5">Pemesan / Kontak</th>

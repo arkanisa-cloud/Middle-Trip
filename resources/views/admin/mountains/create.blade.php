@@ -9,7 +9,6 @@
 
         <!-- Page Header Banner -->
         <x-admin.page-header 
-            badge="Master Data" 
             title="Tambah Destinasi Gunung Baru" 
             subtitle="Lengkapi informasi umum, spesifikasi rute, matriks harga dinamis, profil elevasi, dan fasilitas ekspedisi."
             :backUrl="route('admin.mountains.index')"
@@ -75,20 +74,66 @@
                             class="w-full text-xs rounded-xl border border-hairline bg-canvas p-3 text-ink focus:border-primary focus:ring-1 focus:ring-primary shadow-xs">
                     </div>
 
-                    <!-- Grade Selection -->
-                    <div>
+                    <!-- Grade Selection (UI Kit Dropdown Varian 3 / Status Dot) -->
+                    @php
+                        $initialGrade = old('grade', 'Grade A');
+                        $gradeLabels = [
+                            'Grade A' => ['label' => 'Grade A – Pemula', 'dot' => 'bg-emerald-500', 'text' => 'text-emerald-700'],
+                            'Grade B' => ['label' => 'Grade B – Menengah', 'dot' => 'bg-amber-500', 'text' => 'text-amber-700'],
+                            'Grade C' => ['label' => 'Grade C – Ahli', 'dot' => 'bg-rose-500', 'text' => 'text-rose-700'],
+                        ];
+                        $initialGradeData = $gradeLabels[$initialGrade] ?? ['label' => 'Grade A – Pemula', 'dot' => 'bg-emerald-500', 'text' => 'text-emerald-700'];
+                    @endphp
+                    <div x-data="{ 
+                        open: false, 
+                        selectedVal: '{{ $initialGrade }}', 
+                        selectedLabel: '{{ $initialGradeData['label'] }}',
+                        selectedDot: '{{ $initialGradeData['dot'] }}'
+                    }" @click.outside="open = false" class="relative">
                         <label class="block text-xs font-bold text-ink-heading uppercase tracking-wider mb-2">
                             Tingkat Kesulitan Induk (Grade) <span class="text-rose-500">*</span>
                         </label>
-                        <select name="grade" required
-                            class="w-full text-xs rounded-xl border border-hairline bg-canvas p-3 text-ink focus:border-primary focus:ring-1 focus:ring-primary shadow-xs font-semibold">
-                            @foreach ($grades as $g)
-                                <option value="{{ $g->value }}"
-                                    {{ old('grade', 'Grade A') === $g->value ? 'selected' : '' }}>
-                                    {{ $g->label() }}
-                                </option>
-                            @endforeach
-                        </select>
+                        <input type="hidden" name="grade" :value="selectedVal" required>
+
+                        <button type="button" @click="open = !open"
+                                class="w-full text-xs rounded-xl border border-hairline bg-canvas p-3 text-ink flex items-center justify-between cursor-pointer focus:border-primary shadow-xs font-semibold transition select-none">
+                            <span class="flex items-center gap-2">
+                                <span class="w-2 h-2 rounded-full" :class="selectedDot"></span>
+                                <span x-text="selectedLabel" class="text-ink-heading"></span>
+                            </span>
+                            <svg class="w-4 h-4 text-muted transition-transform duration-200 shrink-0" 
+                                 :class="open ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                            </svg>
+                        </button>
+
+                        <div x-show="open" x-cloak
+                             x-transition:enter="transition ease-out duration-100"
+                             x-transition:enter-start="transform opacity-0 scale-95"
+                             x-transition:enter-end="transform opacity-100 scale-100"
+                             class="absolute left-0 right-0 mt-2 bg-white border border-hairline rounded-2xl shadow-xl py-2 z-50 text-xs">
+                            <div class="px-3 py-1.5 text-[10px] uppercase font-bold text-muted-soft tracking-wider border-b border-hairline/60 mb-1">
+                                Tingkat Kesulitan
+                            </div>
+                            <button type="button" @click="selectedVal = 'Grade A'; selectedLabel = 'Grade A – Pemula'; selectedDot = 'bg-emerald-500'; open = false;"
+                                    class="w-full text-left px-4 py-2 hover:bg-gray-50 text-body-strong font-medium flex items-center justify-between cursor-pointer"
+                                    :class="selectedVal === 'Grade A' ? 'bg-primary-subtle/50 font-bold' : ''">
+                                <span class="text-emerald-700">Grade A – Pemula</span>
+                                <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+                            </button>
+                            <button type="button" @click="selectedVal = 'Grade B'; selectedLabel = 'Grade B – Menengah'; selectedDot = 'bg-amber-500'; open = false;"
+                                    class="w-full text-left px-4 py-2 hover:bg-gray-50 text-body-strong font-medium flex items-center justify-between cursor-pointer"
+                                    :class="selectedVal === 'Grade B' ? 'bg-primary-subtle/50 font-bold' : ''">
+                                <span class="text-amber-700">Grade B – Menengah</span>
+                                <span class="w-2 h-2 rounded-full bg-amber-500"></span>
+                            </button>
+                            <button type="button" @click="selectedVal = 'Grade C'; selectedLabel = 'Grade C – Ahli'; selectedDot = 'bg-rose-500'; open = false;"
+                                    class="w-full text-left px-4 py-2 hover:bg-gray-50 text-body-strong font-medium flex items-center justify-between cursor-pointer"
+                                    :class="selectedVal === 'Grade C' ? 'bg-primary-subtle/50 font-bold' : ''">
+                                <span class="text-rose-700">Grade C – Ahli</span>
+                                <span class="w-2 h-2 rounded-full bg-rose-500"></span>
+                            </button>
+                        </div>
                     </div>
 
                     <!-- Cover Image Upload -->
@@ -297,7 +342,7 @@
                         <input type="number" name="booking_fee_per_pax"
                             value="{{ old('booking_fee_per_pax', 150000) }}" required
                             class="w-full text-xs rounded-xl border border-hairline bg-canvas p-3 text-ink focus:border-primary focus:ring-1 focus:ring-primary shadow-xs">
-                        <span class="text-[10.5px] text-muted mt-1 block">Uang muka awal untuk kunci kuota</span>
+                        <span class="text-[10.5px] text-amber-600 font-medium mt-1 block">Maksimal 50% (setengah) dari harga dasar trip</span>
                     </div>
 
                     <!-- Price Lock Days -->

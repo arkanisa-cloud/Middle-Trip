@@ -24,7 +24,7 @@ class CheckoutController extends Controller
      */
     public function step1(string $bookingCode): View
     {
-        $booking = Booking::with(['expedition.mountain', 'route', 'meetingPoint', 'participants', 'addons'])
+        $booking = Booking::with(['expedition.mountain.priceTiers', 'route', 'meetingPoint', 'participants', 'addons'])
             ->where('booking_code', $bookingCode)
             ->firstOrFail();
 
@@ -102,7 +102,7 @@ class CheckoutController extends Controller
      */
     public function status(string $bookingCode): View|RedirectResponse
     {
-        $booking = Booking::with(['expedition.mountain', 'route', 'meetingPoint', 'participants', 'addons'])
+        $booking = Booking::with(['expedition.mountain.priceTiers', 'route', 'meetingPoint', 'participants', 'addons'])
             ->where('booking_code', $bookingCode)
             ->firstOrFail();
 
@@ -310,6 +310,41 @@ class CheckoutController extends Controller
         }
 
         return view('customer.checkout.step3_success', compact('booking'));
+    }
+
+    /**
+     * Membatalkan reservasi booking yang belum dibayar (status open).
+     */
+    public function cancel(Request $request, string $bookingCode): JsonResponse|RedirectResponse
+    {
+        $booking = Booking::where('booking_code', $bookingCode)->firstOrFail();
+
+        // Validasi kepemilikan dan status
+        if ($booking->status !== 'open') {
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Hanya reservasi yang belum dibayar (status Open) yang dapat dibatalkan.',
+                ], 422);
+            }
+
+            return back()->with('error', 'Hanya reservasi yang belum dibayar (status Open) yang dapat dibatalkan.');
+        }
+
+        $booking->update([
+            'status' => 'cancelled',
+            'notes' => ($booking->notes ? $booking->notes.' | ' : '').'Dibatalkan oleh pemesan pada '.now()->format('d/m/Y H:i'),
+        ]);
+
+        if ($request->expectsJson()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Pesanan reservasi berhasil dibatalkan.',
+                'redirect_url' => route('profile.edit'),
+            ]);
+        }
+
+        return redirect()->route('profile.edit')->with('success', "Pesanan #{$booking->booking_code} berhasil dibatalkan.");
     }
 
     /**

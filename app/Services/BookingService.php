@@ -21,16 +21,27 @@ class BookingService
     public function createBooking(array $data, ?int $userId = null): Booking
     {
         return DB::transaction(function () use ($data, $userId): Booking {
-            /** @var Expedition $expedition */
-            $expedition = Expedition::where('id', $data['expedition_id'])
-                ->lockForUpdate()
-                ->firstOrFail();
-
             $paxCount = (int) $data['pax_count'];
-            $tripType = $data['trip_type'] ?? $expedition->type;
+            $route = \App\Models\Route::with('mountain')->findOrFail($data['route_id']);
+            $mountain = $route->mountain;
+
+            $expedition = null;
+            if (! empty($data['expedition_id'])) {
+                $expedition = Expedition::where('id', $data['expedition_id'])
+                    ->lockForUpdate()
+                    ->first();
+            }
+
+            $tripType = $data['trip_type'] ?? ($expedition ? $expedition->type : 'open');
 
             // Validasi kuota publik hanya berlaku untuk Open Trip
             if ($tripType !== 'private') {
+                if (! $expedition) {
+                    throw ValidationException::withMessages([
+                        'expedition_id' => 'Jadwal batch ekspedisi wajib dipilih untuk Open Trip.',
+                    ]);
+                }
+
                 $availableQuota = $expedition->quota_max - $expedition->quota_booked;
 
                 if ($availableQuota < $paxCount) {
@@ -42,23 +53,23 @@ class BookingService
 
             // Jika private trip diminta, pastikan gunung mendukung layanan private trip
             if ($tripType === 'private') {
-                if (! $expedition->mountain->has_private_trip) {
+                if (! $mountain->has_private_trip) {
                     throw ValidationException::withMessages([
                         'trip_type' => 'Layanan Private Trip belum dibuka untuk destinasi gunung ini.',
                     ]);
                 }
 
-                if ($expedition->type !== 'private') {
-                    $privateExpedition = Expedition::where('mountain_id', $expedition->mountain_id)
+                if ($expedition && $expedition->type !== 'private') {
+                    $privateExpedition = Expedition::where('mountain_id', $mountain->id)
                         ->where('type', 'private')
                         ->first();
                     if ($privateExpedition) {
                         $expedition = $privateExpedition;
+                    } else {
+                        $expedition = null;
                     }
                 }
             }
-
-            $mountain = $expedition->mountain;
 
             // Hitung biaya shuttle
             $shuttleFeeTotal = 0;
@@ -87,7 +98,7 @@ class BookingService
                 }
             }
 
-            $hikingType = $data['hiking_type'] ?? $expedition->hiking_type ?? 'camping';
+            $hikingType = $data['hiking_type'] ?? $expedition?->hiking_type ?? 'camping';
 
             if ($tripType === 'private') {
                 // Private Trip: Harga tier langsung terkunci sesuai jumlah pax, pembayaran langsung 100% tanpa DP
@@ -109,13 +120,15 @@ class BookingService
             }
 
             // Tentukan tanggal keberangkatan dan kepulangan
-            if ($tripType === 'private' && ! empty($data['departure_date'])) {
-                $departureDate = Carbon::parse($data['departure_date'])->toDateString();
+            if ($tripType === 'private') {
+                $departureDate = ! empty($data['departure_date'])
+                    ? Carbon::parse($data['departure_date'])->toDateString()
+                    : ($expedition?->departure_date ? Carbon::parse($expedition->departure_date)->toDateString() : now()->addDays(7)->toDateString());
                 $durationNights = $mountain?->duration_nights ?? 1;
                 $returnDate = Carbon::parse($departureDate)->addDays($durationNights)->toDateString();
             } else {
-                $departureDate = $expedition->departure_date ? Carbon::parse($expedition->departure_date)->toDateString() : now()->toDateString();
-                $returnDate = $expedition->return_date ? Carbon::parse($expedition->return_date)->toDateString() : Carbon::parse($departureDate)->addDays(1)->toDateString();
+                $departureDate = $expedition?->departure_date ? Carbon::parse($expedition->departure_date)->toDateString() : now()->toDateString();
+                $returnDate = $expedition?->return_date ? Carbon::parse($expedition->return_date)->toDateString() : Carbon::parse($departureDate)->addDays(1)->toDateString();
             }
 
             // Generate Booking Code unik: MT-YYYYMMDD-XXXXX
@@ -125,7 +138,7 @@ class BookingService
             $booking = Booking::create([
                 'booking_code' => $bookingCode,
                 'user_id' => $userId,
-                'expedition_id' => $expedition->id,
+                'expedition_id' => $expedition?->id,
                 'route_id' => $data['route_id'],
                 'meeting_point_id' => $data['meeting_point_id'] ?? null,
                 'trip_type' => $tripType,

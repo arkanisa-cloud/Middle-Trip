@@ -68,6 +68,14 @@ class Booking extends Model
     }
 
     /**
+     * Relasi ke destinasi gunung melalui rute pendakian.
+     */
+    public function mountain()
+    {
+        return $this->hasOneThrough(Mountain::class, Route::class, 'id', 'id', 'route_id', 'mountain_id');
+    }
+
+    /**
      * Relasi ke rute pendakian.
      */
     public function route(): BelongsTo

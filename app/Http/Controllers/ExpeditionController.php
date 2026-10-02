@@ -52,6 +52,54 @@ class ExpeditionController extends Controller
     }
 
     /**
+     * Endpoint API JSON untuk Quick Search Modal di Navbar.
+     */
+    public function searchApi(Request $request)
+    {
+        $query = Mountain::query()
+            ->active()
+            ->with(['primaryRoute', 'routes']);
+
+        if ($request->filled('q')) {
+            $keyword = $request->q;
+            $query->where(function ($q) use ($keyword) {
+                $q->where('name', 'like', '%'.$keyword.'%')
+                    ->orWhere('province', 'like', '%'.$keyword.'%')
+                    ->orWhere('regency', 'like', '%'.$keyword.'%')
+                    ->orWhereHas('routes', function ($rq) use ($keyword) {
+                        $rq->where('name', 'like', '%'.$keyword.'%');
+                    });
+            });
+        }
+
+        if ($request->filled('grade') && $request->grade !== 'all') {
+            $query->whereHas('primaryRoute', function ($q) use ($request) {
+                $q->where('grade', $request->grade);
+            });
+        }
+
+        $mountains = $query->orderBy('name')->limit(12)->get()->map(function ($mountain) {
+            return [
+                'id' => $mountain->id,
+                'name' => $mountain->name,
+                'slug' => $mountain->slug,
+                'elevation' => $mountain->formatted_elevation,
+                'location' => trim(($mountain->regency ? $mountain->regency . ', ' : '') . ($mountain->province ?? '')),
+                'cover_image' => $mountain->cover_image,
+                'price' => $mountain->formatted_short_price,
+                'grade' => $mountain->default_grade?->label() ?? 'Grade A – Pemula',
+                'grade_badge' => $mountain->default_grade?->badgeClasses() ?? 'bg-grade-a-bg text-grade-a-text',
+                'url' => route('ekspedisi.show', $mountain->slug),
+            ];
+        });
+
+        return response()->json([
+            'status' => 'success',
+            'data' => $mountains,
+        ]);
+    }
+
+    /**
      * Menampilkan detail lengkap produk ekspedisi gunung.
      */
     public function show(string $slug): View
@@ -156,6 +204,9 @@ class ExpeditionController extends Controller
             'priceTektok' => $mountain?->effective_price_tektok ?? ($expeditionData['price_tektok_open'] ?? 400000),
             'pricePrivateTektok' => $mountain?->effective_price_private_tektok ?? ($expeditionData['price_tektok_private'] ?? 650000),
             'maxQuota' => $openExpedition?->quota_max ?? 0,
+            'availableQuota' => $openExpedition ? max(0, (int) $openExpedition->quota_max - (int) $openExpedition->quota_booked) : 0,
+            'openQuotaBooked' => $openExpedition?->quota_booked ?? 0,
+            'openQuotaMax' => $openExpedition?->quota_max ?? 0,
             'durationDays' => $mountain?->duration_days ?? 2,
             'durationNights' => $mountain?->duration_nights ?? 1,
             'minPrivateDate' => now()->addDays(1)->toDateString(),

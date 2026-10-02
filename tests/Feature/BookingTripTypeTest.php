@@ -270,4 +270,78 @@ class BookingTripTypeTest extends TestCase
             'type' => 'private',
         ]);
     }
+
+    public function test_private_trip_can_be_booked_when_mountain_has_zero_batches_and_null_expedition_id(): void
+    {
+        $user = User::factory()->create();
+        $mountain = Mountain::where('slug', 'mt-merbabu')->first();
+
+        // Hapus SEMUA batch ekspedisi (open dan private) pada gunung ini
+        Expedition::where('mountain_id', $mountain->id)->delete();
+        $this->assertEquals(0, Expedition::where('mountain_id', $mountain->id)->count());
+
+        $route = $mountain->routes()->first();
+        $customDate = now()->addDays(14)->toDateString();
+
+        $payload = [
+            'expedition_id' => null,
+            'route_id' => $route->id,
+            'trip_type' => 'private',
+            'hiking_type' => 'camping',
+            'departure_date' => $customDate,
+            'customer_name' => 'Pendaki Private Mandiri',
+            'customer_email' => 'mandiri@example.com',
+            'customer_phone' => '081234567891',
+            'customer_nik' => '3301234567890005',
+            'pax_count' => 3,
+            'participants' => [
+                ['full_name' => 'Pendaki Private Mandiri', 'nik' => '3301234567890005', 'is_leader' => true],
+                ['full_name' => 'Peserta Dua', 'nik' => '3301234567890006', 'is_leader' => false],
+                ['full_name' => 'Peserta Tiga', 'nik' => '3301234567890007', 'is_leader' => false],
+            ],
+        ];
+
+        // 1. Submit booking POST /bookings
+        $response = $this->actingAs($user)->postJson(route('bookings.store'), $payload);
+        $response->assertCreated();
+
+        $bookingCode = $response->json('booking_code');
+        $this->assertEquals(route('checkout.private', $bookingCode), $response->json('redirect_url'));
+
+        $this->assertDatabaseHas('bookings', [
+            'booking_code' => $bookingCode,
+            'expedition_id' => null,
+            'route_id' => $route->id,
+            'trip_type' => 'private',
+            'departure_date' => $customDate,
+            'status' => 'open',
+        ]);
+
+        // 2. Kunjungi halaman checkout private
+        $checkoutResponse = $this->actingAs($user)->get(route('checkout.private', $bookingCode));
+        $checkoutResponse->assertOk();
+        $checkoutResponse->assertSee($mountain->name);
+        $checkoutResponse->assertSee($route->name);
+
+        // 3. Inisiasi pembayaran Private Trip (Midtrans Mock)
+        Http::fake([
+            'https://app.sandbox.midtrans.com/snap/v1/transactions' => Http::response([
+                'token' => 'mock-snap-token-12345',
+                'redirect_url' => 'https://app.sandbox.midtrans.com/snap/v2/vtweb/mock-snap-token-12345',
+            ], 201),
+        ]);
+
+        $payResponse = $this->actingAs($user)->postJson(route('checkout.pay_private', $bookingCode), [
+            'payment_method' => 'bca_va',
+            'customer_name' => 'Pendaki Private Mandiri',
+            'customer_phone' => '081234567891',
+            'customer_email' => 'mandiri@example.com',
+            'customer_nik' => '3301234567890005',
+            'participants' => $payload['participants'],
+        ]);
+
+        $payResponse->assertOk();
+        $this->assertEquals('mock-snap-token-12345', $payResponse->json('snap_token'));
+    }
 }
+

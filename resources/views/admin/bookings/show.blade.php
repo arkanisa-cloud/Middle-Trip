@@ -9,7 +9,6 @@
 
     <!-- Page Header with Back Action and Status Update -->
     <x-admin.page-header 
-        badge="Detail Transaksi"
         :title="'Booking #' . $booking->booking_code"
         :subtitle="'Dibuat pada ' . $booking->created_at->format('d F Y, H:i') . ' WIB • Status: ' . strtoupper($booking->status)"
         :backUrl="route('admin.bookings.index')"
@@ -19,20 +18,74 @@
             <div class="flex flex-wrap items-center gap-2.5">
                 <x-admin.status-badge :status="$booking->status" />
 
-                <!-- Manual Status Update Form -->
+                <!-- Cetak PDF / Invoice Button -->
+                <a href="{{ route('bookings.print', $booking->booking_code) }}" target="_blank"
+                   class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-full bg-white border border-hairline hover:bg-slate-50 text-xs font-bold text-ink shadow-xs transition-colors">
+                    <svg class="w-3.5 h-3.5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
+                    </svg>
+                    <span>Cetak E-Tiket / PDF</span>
+                </a>
+
+                <!-- Manual Status Update Form (UI Kit Dropdown Varian 3 / Status Dot) -->
+                @php
+                    $statusOptions = [
+                        'open' => ['label' => 'Open (Belum DP)', 'dot' => 'bg-amber-500', 'text' => 'text-amber-700'],
+                        'reserved' => ['label' => 'Reserved (DP Lunas)', 'dot' => 'bg-primary', 'text' => 'text-primary'],
+                        'price_locked' => ['label' => 'Price Locked', 'dot' => 'bg-indigo-600', 'text' => 'text-indigo-700'],
+                        'paid' => ['label' => 'Lunas (Paid)', 'dot' => 'bg-emerald-600', 'text' => 'text-emerald-700'],
+                        'expired' => ['label' => 'Expired', 'dot' => 'bg-gray-400', 'text' => 'text-gray-600'],
+                        'cancelled' => ['label' => 'Dibatalkan', 'dot' => 'bg-rose-500', 'text' => 'text-rose-700'],
+                    ];
+                    $currentStatusData = $statusOptions[$booking->status] ?? ['label' => ucfirst($booking->status), 'dot' => 'bg-gray-400', 'text' => 'text-ink'];
+                @endphp
+
                 <form method="POST" action="{{ route('admin.bookings.update_status', $booking->id) }}" 
-                      class="flex items-center gap-2"
-                      onsubmit="return confirm('Apakah Anda yakin ingin memperbarui status booking ini?')">
+                      data-confirm="Apakah Anda yakin ingin memperbarui status pemesanan #{{ $booking->booking_code }}?"
+                      data-title="Perbarui Status Booking"
+                      data-confirm-text="Ya, Update Status"
+                      class="confirm-action flex items-center gap-2">
                     @csrf
                     @method('PATCH')
-                    <select name="status" class="text-xs rounded-full border border-hairline bg-surface-card py-2 px-3.5 text-ink focus:border-primary font-bold shadow-xs">
-                        <option value="open" {{ $booking->status === 'open' ? 'selected' : '' }}>Open (Belum DP)</option>
-                        <option value="reserved" {{ $booking->status === 'reserved' ? 'selected' : '' }}>Reserved (DP Lunas)</option>
-                        <option value="price_locked" {{ $booking->status === 'price_locked' ? 'selected' : '' }}>Price Locked</option>
-                        <option value="paid" {{ $booking->status === 'paid' ? 'selected' : '' }}>Lunas (Paid)</option>
-                        <option value="expired" {{ $booking->status === 'expired' ? 'selected' : '' }}>Expired</option>
-                        <option value="cancelled" {{ $booking->status === 'cancelled' ? 'selected' : '' }}>Dibatalkan</option>
-                    </select>
+
+                    <div x-data="{ 
+                        open: false, 
+                        status: '{{ $booking->status }}', 
+                        statusLabel: '{{ $currentStatusData['label'] }}',
+                        statusDot: '{{ $currentStatusData['dot'] }}'
+                    }" @click.outside="open = false" class="relative">
+                        <input type="hidden" name="status" :value="status">
+                        
+                        <button type="button" @click="open = !open"
+                                class="bg-surface-card hover:bg-gray-50 text-xs rounded-full border border-hairline py-2 px-3.5 text-ink flex items-center gap-2 font-bold shadow-xs transition select-none cursor-pointer">
+                            <span class="w-2 h-2 rounded-full shrink-0" :class="statusDot"></span>
+                            <span x-text="statusLabel" class="block truncate max-w-[150px]"></span>
+                            <svg class="w-3.5 h-3.5 text-muted transition-transform duration-200 shrink-0" 
+                                 :class="open ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                            </svg>
+                        </button>
+
+                        <div x-show="open" x-cloak
+                             x-transition:enter="transition ease-out duration-100"
+                             x-transition:enter-start="transform opacity-0 scale-95"
+                             x-transition:enter-end="transform opacity-100 scale-100"
+                             class="absolute right-0 mt-2 w-56 bg-white border border-hairline rounded-2xl shadow-xl py-2 z-50 text-xs">
+                            <div class="px-3 py-1.5 text-[10px] uppercase font-bold text-muted-soft tracking-wider border-b border-hairline/60 mb-1">
+                                Status Reservasi
+                            </div>
+                            @foreach ($statusOptions as $val => $opt)
+                                <button type="button" 
+                                        @click="status = '{{ $val }}'; statusLabel = '{{ $opt['label'] }}'; statusDot = '{{ $opt['dot'] }}'; open = false;"
+                                        class="w-full text-left px-4 py-2 hover:bg-gray-50 text-body-strong font-medium flex items-center justify-between cursor-pointer"
+                                        :class="status === '{{ $val }}' ? 'bg-primary-subtle/40 font-bold' : ''">
+                                    <span class="{{ $opt['text'] }}">{{ $opt['label'] }}</span>
+                                    <span class="w-2 h-2 rounded-full {{ $opt['dot'] }}"></span>
+                                </button>
+                            @endforeach
+                        </div>
+                    </div>
+
                     <button type="submit" class="px-4 py-2 rounded-full bg-surface-forest text-white text-xs font-bold hover:bg-surface-forest-card transition-colors shrink-0 shadow-xs">
                         Update
                     </button>
@@ -103,7 +156,7 @@
                 @else
                     <div class="overflow-x-auto -mx-6 px-6">
                         <table class="w-full text-left text-xs">
-                            <thead class="bg-canvas border-y border-hairline text-muted font-bold font-outfit uppercase tracking-wider text-[11px]">
+                            <thead class="bg-canvas border-y border-hairline text-muted font-semibold font-outfit text-xs">
                                 <tr>
                                     <th class="py-3 px-4">No</th>
                                     <th class="py-3 px-4">Nama Lengkap (KTP)</th>

@@ -23,7 +23,12 @@ class StoreBookingRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'expedition_id' => ['required', 'exists:expeditions,id'],
+            'expedition_id' => [
+                'nullable',
+                'exists:expeditions,id',
+                'required_if:trip_type,open',
+                'required_without:trip_type',
+            ],
             'route_id' => ['required', 'exists:routes,id'],
             'meeting_point_id' => ['nullable', 'exists:meeting_points,id'],
             'trip_type' => ['nullable', 'string', 'in:open,private'],

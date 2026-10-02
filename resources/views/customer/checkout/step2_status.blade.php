@@ -7,7 +7,8 @@
     <title>Status Pemesanan - MiddleTrip</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+    <link
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
         rel="stylesheet">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <script type="text/javascript" src="{{ config('midtrans.snap_url') }}"
@@ -39,7 +40,7 @@
         </div>
     </header>
 
-    <main class="w-full max-w-6xl mx-auto px-4 sm:px-8 py-6 flex-1">
+    <main class="w-full max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6 flex-1">
         <div class="mb-4">
             <a href="{{ route('ekspedisi.show', $booking->expedition->mountain->slug) }}"
                 class="inline-flex items-center text-xs text-muted hover:text-ink transition">
@@ -52,53 +53,58 @@
         </div>
 
         <!-- Stepper (Stage 3 Active: Price Lock) -->
-        <div class="max-w-md mx-auto mb-8">
-            <div class="flex items-center justify-center">
+        <div class="w-full max-w-sm sm:max-w-md mx-auto mb-6 sm:mb-8 px-2">
+            <div class="flex items-center justify-between sm:justify-center">
                 <!-- Step 1: DATA (Done) -->
                 <div class="flex flex-col items-center">
-                    <div class="w-5 h-5 rounded-full bg-emerald-500 flex items-center justify-center text-white">
+                    <div
+                        class="w-5 h-5 rounded-full bg-emerald-500 flex items-center justify-center text-white shrink-0">
                         <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" />
                         </svg>
                     </div>
-                    <span class="text-[9px] uppercase tracking-wider text-emerald-600 font-bold mt-1">Data</span>
+                    <span
+                        class="text-[8px] sm:text-[9px] uppercase tracking-wider text-emerald-600 font-bold mt-1 text-center">Data</span>
                 </div>
 
-                <div class="w-14 sm:w-16 h-[2px] bg-emerald-500 -mt-3.5"></div>
+                <div class="w-6 sm:w-12 md:w-16 h-[2px] bg-emerald-500 -mt-3.5 mx-1 sm:mx-2"></div>
 
                 <!-- Step 2: RESERVASI (Done) -->
                 <div class="flex flex-col items-center">
-                    <div class="w-5 h-5 rounded-full bg-emerald-500 flex items-center justify-center text-white">
+                    <div
+                        class="w-5 h-5 rounded-full bg-emerald-500 flex items-center justify-center text-white shrink-0">
                         <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" />
                         </svg>
                     </div>
-                    <span class="text-[9px] uppercase tracking-wider text-emerald-600 font-bold mt-1">Reservasi</span>
+                    <span
+                        class="text-[8px] sm:text-[9px] uppercase tracking-wider text-emerald-600 font-bold mt-1 text-center">Reservasi</span>
                 </div>
 
                 <div
-                    class="w-14 sm:w-16 h-[2px] {{ $booking->status === 'price_locked' ? 'bg-emerald-800' : 'border-t-2 border-dotted border-gray-300' }} -mt-3.5">
+                    class="w-6 sm:w-12 md:w-16 h-[2px] {{ $booking->status === 'price_locked' ? 'bg-emerald-800' : 'border-t-2 border-dotted border-gray-300' }} -mt-3.5 mx-1 sm:mx-2">
                 </div>
 
                 <!-- Step 3: PRICE LOCK (Active) -->
                 <div class="flex flex-col items-center">
                     <div
-                        class="w-5 h-5 rounded-full {{ $booking->status === 'price_locked' ? 'bg-emerald-800 ring-2 ring-emerald-200' : 'border border-gray-300 bg-white' }} flex items-center justify-center text-white">
+                        class="w-5 h-5 rounded-full {{ $booking->status === 'price_locked' ? 'bg-emerald-800 ring-2 ring-emerald-200' : 'border border-gray-300 bg-white' }} flex items-center justify-center text-white shrink-0">
                         @if ($booking->status === 'price_locked')
                             <div class="w-2 h-2 rounded-full bg-white"></div>
                         @endif
                     </div>
                     <span
-                        class="text-[9px] uppercase tracking-wider {{ $booking->status === 'price_locked' ? 'text-emerald-900 font-bold' : 'text-muted-soft font-medium' }} mt-1">Price
+                        class="text-[8px] sm:text-[9px] uppercase tracking-wider {{ $booking->status === 'price_locked' ? 'text-emerald-900 font-bold' : 'text-muted-soft font-medium' }} mt-1 text-center">Price
                         Lock</span>
                 </div>
 
-                <div class="w-14 sm:w-16 border-t-2 border-dotted border-gray-300 -mt-3.5"></div>
+                <div class="w-6 sm:w-12 md:w-16 border-t-2 border-dotted border-gray-300 -mt-3.5 mx-1 sm:mx-2"></div>
 
                 <!-- Step 4: PAY (Dotted) -->
                 <div class="flex flex-col items-center">
-                    <div class="w-5 h-5 rounded-full border border-gray-300 bg-transparent"></div>
-                    <span class="text-[9px] uppercase tracking-wider text-muted-soft font-medium mt-1">Pay</span>
+                    <div class="w-5 h-5 rounded-full border border-gray-300 bg-transparent shrink-0"></div>
+                    <span
+                        class="text-[8px] sm:text-[9px] uppercase tracking-wider text-muted-soft font-medium mt-1 text-center">Pay</span>
                 </div>
             </div>
         </div>
@@ -127,6 +133,35 @@
                 </div>
             </div>
         @endif
+
+        @php
+            $mountain = $booking->expedition?->mountain;
+            $currentBooked = $booking->expedition?->quota_booked ?? 1;
+            $quotaMax = $booking->expedition?->quota_max ?? 10;
+            $hikingType = $booking->hiking_type ?? 'camping';
+
+            $currentPricePerPax =
+                $booking->locked_price_per_pax ??
+                ($mountain
+                    ? $mountain->getTierPriceForPax($currentBooked, $hikingType)
+                    : $mountain?->base_price ?? 500000);
+
+            $nextTier = null;
+            $nextTierPrice = null;
+            $nextTierPax = null;
+            if (
+                $mountain &&
+                $mountain->priceTiers &&
+                $booking->status !== 'price_locked' &&
+                $booking->status !== 'paid'
+            ) {
+                $nextTier = $mountain->priceTiers->where('min_pax', '>', $currentBooked)->sortBy('min_pax')->first();
+                if ($nextTier) {
+                    $nextTierPax = $nextTier->min_pax;
+                    $nextTierPrice = $mountain->getTierPriceForPax($nextTierPax, $hikingType);
+                }
+            }
+        @endphp
 
         @if ($booking->status === 'price_locked')
             <form action="{{ route('checkout.settle', $booking->booking_code) }}" method="POST" id="settle-form">
@@ -191,7 +226,13 @@
 
                 <!-- Card 2: Informasi Trip -->
                 <div class="bg-white rounded-2xl border border-hairline p-5 sm:p-6 shadow-xs">
-                    <h2 class="text-sm font-bold text-ink-heading mb-4">Informasi Trip</h2>
+                    <div class="flex items-center gap-2 mb-4 text-primary font-bold text-sm">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                        </svg>
+                        <h2 class="text-sm font-bold text-ink-heading">Informasi Trip</h2>
+                    </div>
                     <div class="grid grid-cols-2 gap-y-3.5 text-xs">
                         <div>
                             <p class="text-muted text-[11px] font-medium">Destinasi</p>
@@ -214,8 +255,180 @@
                     </div>
                 </div>
 
+                <!-- Card 3: Harga Saat Ini & Skema Tier -->
+                <div class="bg-white rounded-2xl border border-hairline p-5 sm:p-6 shadow-xs">
+                    <div class="flex items-center gap-2 mb-2 text-primary font-bold text-sm">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
+                        </svg>
+                        <h2 class="text-sm font-bold text-ink-heading">
+                            {{ $booking->status === 'price_locked' || $booking->status === 'paid' ? 'Harga Final Terkunci' : 'Harga Saat Ini' }}
+                        </h2>
+                    </div>
+
+                    <div class="mb-4 flex items-baseline gap-1.5">
+                        <span class="text-primary font-extrabold text-xl sm:text-2xl">Rp
+                            {{ number_format($currentPricePerPax, 0, ',', '.') }}</span>
+                        <span class="text-primary text-xs font-semibold">/Orang</span>
+                    </div>
+
+                    <div class="divide-y divide-gray-100 border border-hairline rounded-xl overflow-hidden text-xs">
+                        <div class="flex items-center justify-between px-4 py-2.5 bg-white">
+                            <span class="text-muted">Peserta saat ini</span>
+                            <span class="text-body-strong font-bold">{{ $currentBooked }} / {{ $quotaMax }}
+                                peserta</span>
+                        </div>
+                        @if ($booking->status === 'price_locked' || $booking->status === 'paid')
+                            <div class="flex items-center justify-between px-4 py-2.5 bg-white">
+                                <span class="text-muted">Status Harga</span>
+                                <span
+                                    class="text-emerald-700 font-bold bg-emerald-50 px-2.5 py-0.5 rounded-full border border-emerald-200">Price
+                                    Locked (Final)</span>
+                            </div>
+                        @else
+                            <div class="flex items-center justify-between px-4 py-2.5 bg-white">
+                                <span class="text-muted">Harga berikutnya</span>
+                                <span class="text-body-strong font-bold">
+                                    @if ($nextTier && $nextTierPrice)
+                                        {{ $nextTierPax }} peserta = Rp
+                                        {{ number_format($nextTierPrice, 0, ',', '.') }}/orang
+                                    @else
+                                        <span class="text-emerald-600 font-semibold">Tier termurah telah aktif</span>
+                                    @endif
+                                </span>
+                            </div>
+                        @endif
+                        <div class="flex items-center justify-between px-4 py-2.5 bg-white">
+                            <span class="text-muted">Booking Fee (DP)</span>
+                            <span class="text-emerald-700 font-bold flex items-center gap-1">
+                                <svg class="w-3.5 h-3.5 text-emerald-600" fill="none" stroke="currentColor"
+                                    viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+                                        d="M5 13l4 4L19 7" />
+                                </svg>
+                                Lunas
+                            </span>
+                        </div>
+                    </div>
+
+                    <p class="text-[11px] text-muted mt-2.5 pt-3 flex items-start gap-1.5">
+                        <svg class="w-3.5 h-3.5 text-primary mt-0.5 shrink-0" fill="none" stroke="currentColor"
+                            viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        <span>Harga final dikunci
+                            H-{{ $booking->expedition->mountain->price_lock_days_before_departure ?? 2 }} sebelum
+                            keberangkatan. Booking fee tetap dan tidak dapat dikembalikan.</span>
+                    </p>
+                </div>
+
+                <!-- Card 4: Data Pemesan -->
+                <div class="bg-white rounded-2xl border border-hairline p-5 sm:p-6 shadow-xs">
+                    <div class="flex items-center gap-2 mb-4 text-primary font-bold text-sm">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                        </svg>
+                        <h2 class="text-sm font-bold text-ink-heading">Data Pemesan</h2>
+                    </div>
+
+                    <div class="space-y-3.5 text-xs">
+                        <div>
+                            <label class="block text-slate-600 font-medium mb-1">Nama Lengkap</label>
+                            <input type="text" value="{{ $booking->customer_name }}" readonly
+                                class="w-full px-3.5 py-2.5 border border-slate-200 rounded-lg bg-slate-50/60 text-slate-800 font-outfit text-sm font-normal cursor-default focus:outline-none focus:ring-0">
+                        </div>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                            <div>
+                                <label class="block text-slate-600 font-medium mb-1">Nomor WhatsApp</label>
+                                <input type="tel" value="{{ $booking->customer_phone }}" readonly
+                                    class="w-full px-3.5 py-2.5 border border-slate-200 rounded-lg bg-slate-50/60 text-slate-800 font-outfit text-sm font-normal cursor-default focus:outline-none focus:ring-0">
+                            </div>
+
+                            <div>
+                                <label class="block text-slate-600 font-medium mb-1">NIK Pemesan (16 Digit)</label>
+                                <input type="text" value="{{ $booking->customer_nik }}" readonly
+                                    class="w-full px-3.5 py-2.5 border border-slate-200 rounded-lg bg-slate-50/60 text-slate-800 font-outfit text-sm font-normal cursor-default focus:outline-none focus:ring-0">
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-slate-600 font-medium mb-1">Email</label>
+                            <input type="email" value="{{ $booking->customer_email }}" readonly
+                                class="w-full sm:w-1/2 px-3.5 py-2.5 border border-slate-200 rounded-lg bg-slate-50/60 text-slate-800 font-outfit text-sm font-normal cursor-default focus:outline-none focus:ring-0">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 5: Data Detail Peserta -->
+                <div class="bg-white rounded-2xl border border-hairline p-5 sm:p-6 shadow-xs">
+                    <div class="flex items-center gap-2 mb-4 text-primary font-bold text-sm">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                        </svg>
+                        <h2 class="text-sm font-bold text-ink-heading">Data Detail Peserta ({{ $booking->pax_count }}
+                            Orang)</h2>
+                    </div>
+
+                    <div class="space-y-2.5 text-xs">
+                        @foreach ($booking->participants as $index => $participant)
+                            @php
+                                $isLeader = $participant->is_leader || $index === 0;
+                                $itemTitle = $isLeader ? 'Ketua' : 'Anggota ' . $index;
+                            @endphp
+                            <div class="border border-[#ECEAE4] rounded-xl overflow-hidden shadow-2xs">
+                                <button type="button"
+                                    class="w-full flex items-center justify-between px-3.5 sm:px-4 py-3 {{ $isLeader ? 'bg-[#F9F8F6]' : 'bg-white hover:bg-neutral-50' }} text-xs font-semibold text-neutral-800 text-left transition-colors cursor-pointer"
+                                    onclick="toggleAccordion('content-p-{{ $index }}', 'icon-p-{{ $index }}')">
+                                    <div class="flex flex-wrap items-center gap-1.5 sm:gap-2.5">
+                                        <span
+                                            class="w-5 h-5 rounded-full {{ $isLeader ? 'bg-primary text-white' : 'bg-slate-200 text-slate-700' }} flex items-center justify-center font-bold text-[10px] shrink-0">
+                                            {{ $index + 1 }}
+                                        </span>
+                                        <span class="font-bold text-ink-heading">{{ $participant->full_name }}</span>
+                                        <span
+                                            class="text-[10px] font-bold px-2 py-0.5 rounded-full {{ $isLeader ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : 'bg-slate-100 text-slate-600' }}">
+                                            {{ $isLeader ? 'Ketua (Leader)' : 'Anggota' }}
+                                        </span>
+                                    </div>
+                                    <svg id="icon-p-{{ $index }}"
+                                        class="w-4 h-4 text-neutral-500 transform transition-transform duration-200 shrink-0 ml-2 {{ $isLeader ? 'rotate-180' : '' }}"
+                                        fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M19 9l-7 7-7-7" />
+                                    </svg>
+                                </button>
+
+                                <div id="content-p-{{ $index }}"
+                                    class="{{ $isLeader ? '' : 'hidden' }} p-4 space-y-3 text-xs bg-white border-t border-[#ECEAE4]">
+                                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                        <div>
+                                            <label class="block text-slate-600 font-medium mb-1">
+                                                Nama Lengkap {{ $itemTitle }}
+                                            </label>
+                                            <input type="text" value="{{ $participant->full_name }}" readonly
+                                                class="w-full px-3.5 py-2.5 border border-slate-200 rounded-lg bg-slate-50/60 text-slate-800 font-outfit text-sm font-normal cursor-default focus:outline-none focus:ring-0">
+                                        </div>
+                                        <div>
+                                            <label class="block text-slate-600 font-medium mb-1">
+                                                NIK KTP (16 Digit)
+                                            </label>
+                                            <input type="text" value="{{ $participant->nik }}" readonly
+                                                class="w-full px-3.5 py-2.5 border border-slate-200 rounded-lg bg-slate-50/60 text-slate-800 font-outfit text-sm font-normal cursor-default focus:outline-none focus:ring-0">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        @endforeach
+                    </div>
+                </div>
+
                 @if ($booking->status === 'price_locked')
-                    <!-- Card 3: Pilih Metode Pembayaran Pelunasan -->
+                    <!-- Card 6: Pilih Metode Pembayaran Pelunasan -->
                     <div class="bg-white rounded-2xl border border-hairline p-5 sm:p-6 shadow-xs">
                         <div class="flex items-center gap-2 mb-4">
                             <div class="text-primary">
@@ -438,6 +651,16 @@
                                 DP Lunas: <span class="font-bold text-ink-heading">Rp
                                     {{ number_format($booking->total_booking_fee, 0, ',', '.') }}</span>
                             </div>
+
+                            <a href="{{ route('bookings.print', $booking->booking_code) }}" target="_blank"
+                                class="w-full py-2.5 px-3 bg-white hover:bg-emerald-50/80 text-ink-heading hover:text-emerald-800 border-2 border-slate-200 hover:border-emerald-500 text-xs font-extrabold rounded-xl transition-all duration-200 flex items-center justify-center gap-2 shadow-2xs hover:shadow-md active:scale-[0.99] text-center group">
+                                <svg class="w-4 h-4 text-emerald-600 group-hover:text-emerald-700 group-hover:scale-110 transition-all duration-200"
+                                    fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2"
+                                        d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
+                                </svg>
+                                <span>Cetak Invoice / Bukti Reservasi (PDF)</span>
+                            </a>
                         </div>
                     @elseif($booking->status === 'price_locked')
                         <div class="flex items-center gap-2 pb-3 border-b border-hairline">
@@ -480,18 +703,6 @@
                                     <span class="text-base font-extrabold text-primary">Rp
                                         {{ number_format($booking->remaining_payment_total, 0, ',', '.') }}</span>
                                 </div>
-                            </div>
-
-                            <!-- Info Saluran Pembayaran Midtrans Snap -->
-                            <div class="p-3 bg-slate-50 border border-slate-200/80 rounded-xl space-y-1.5 text-xs">
-                                <div class="flex items-center justify-between">
-                                    <span class="font-semibold text-slate-800">Pembayaran Midtrans</span>
-                                    <span
-                                        class="text-[9px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">Instant</span>
-                                </div>
-                                <p class="text-[10px] text-muted leading-tight">
-                                    QRIS, Virtual Account (BCA, Mandiri, BNI, BRI), Kartu Kredit, dll.
-                                </p>
                             </div>
 
                             <!-- Checkbox Persetujuan Pelunasan -->
@@ -584,7 +795,8 @@
                     if (data.snap_token) {
                         if (typeof window.snap === 'undefined') {
                             alert(
-                                'Gagal memuat modul pembayaran Midtrans. Mengalihkan ke halaman pembayaran...');
+                                'Gagal memuat modul pembayaran Midtrans. Mengalihkan ke halaman pembayaran...'
+                            );
                             window.location.href = data.redirect_url;
                             return;
                         }
@@ -596,12 +808,14 @@
                             },
                             onPending: function(result) {
                                 alert(
-                                    'Tagihan pelunasan telah dibuat. Silakan selesaikan pembayaran sesuai petunjuk yang diberikan.');
+                                    'Tagihan pelunasan telah dibuat. Silakan selesaikan pembayaran sesuai petunjuk yang diberikan.'
+                                );
                                 resetSettleButton();
                             },
                             onError: function(result) {
                                 alert(
-                                    'Pembayaran gagal atau dibatalkan. Silakan coba kembali.');
+                                    'Pembayaran gagal atau dibatalkan. Silakan coba kembali.'
+                                );
                                 resetSettleButton();
                             },
                             onClose: function() {

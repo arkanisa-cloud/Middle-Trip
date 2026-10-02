@@ -4,21 +4,23 @@
     {{-- =====================================================================
          1. HERO HEADER & FLOATING EXPRESS SEARCH BAR
     ===================================================================== --}}
-    <header class="relative w-full h-screen min-h-[660px] bg-cover bg-center flex flex-col justify-between"
-        style="background-image: linear-gradient(180deg, rgba(16, 24, 40, 0.45) 0%, rgba(16, 24, 40, 0.15) 40%, rgba(0,0,0,0.3) 100%), url('{{ asset('storage/mountains/hero-section.png') }}');">
+    <header
+        class="relative w-full min-h-[360px] sm:min-h-[440px] md:h-screen md:min-h-[660px] bg-cover bg-center flex flex-col justify-between"
+        style="background-image: linear-gradient(180deg, rgba(16, 24, 40, 0.45) 0%, rgba(16, 24, 40, 0.15) 40%, rgba(0,0,0,0.35) 100%), url('{{ asset('storage/mountains/hero-section.png') }}');">
 
         <!-- Hero Title Center -->
-        <div class="flex-1 flex flex-col items-center justify-center text-center px-4 pt-20 z-10">
+        <div
+            class="flex-1 flex flex-col items-center justify-center text-center px-4 pt-20 sm:pt-24 md:pt-20 pb-10 sm:pb-16 z-10">
             <h1
-                class="text-3xl sm:text-4xl md:text-5xl lg:text-[54px] font-extrabold text-white leading-tight max-w-3xl drop-shadow-lg [-webkit-text-stroke:1px_rgba(0,0,0,0.4)] [text-shadow:_0_2px_10px_rgba(0,0,0,0.5)]">
+                class="text-3xl sm:text-4xl md:text-5xl lg:text-[54px] font-extrabold text-white leading-tight max-w-3xl drop-shadow-md">
                 Jalan Tengah Menuju<br class="hidden sm:inline"> Puncak yang Sesungguhnya
             </h1>
         </div>
 
-        <!-- Floating Search Filter Bar -->
-        <div class="w-full max-w-4xl mx-auto px-4 translate-y-1/2 z-20">
+        <!-- Floating Search Filter Bar (Desktop only, mobile uses Navbar Quick Search) -->
+        <div class="hidden md:block w-full max-w-4xl mx-auto px-4 translate-y-1/2 z-20">
             <form id="hero-search-form" onsubmit="handleHeroSearch(event)"
-                class="bg-surface-card rounded-2xl md:rounded-full p-2.5 sm:p-3 shadow-xl border border-gray-100/80 flex flex-col md:flex-row items-center gap-2">
+                class="bg-white rounded-full p-2.5 sm:p-3 shadow-xl border border-gray-100 flex items-center gap-2">
 
                 <!-- Hidden inputs untuk state pencarian -->
                 <input type="hidden" id="selected-mountain-slug" name="mountain_slug" value="" />
@@ -28,17 +30,17 @@
                 <!-- Filter 1: Lokasi Gunung (Searchable Combobox Dropdown) -->
                 <div class="relative w-full md:w-1/3">
                     <div id="mountain-select-trigger"
-                        class="flex items-center gap-3 w-full px-4 py-2 hover:bg-gray-50 rounded-full cursor-pointer transition">
+                        class="flex items-center gap-3 w-full px-3.5 sm:px-4 py-2.5 sm:py-2 bg-gray-50/80 md:bg-transparent hover:bg-gray-100/80 md:hover:bg-gray-50 rounded-xl md:rounded-full border border-gray-100 md:border-none cursor-pointer transition">
                         <svg class="w-5 h-5 text-muted-soft shrink-0" fill="none" viewBox="0 0 24 24"
                             stroke="currentColor" stroke-width="1.8">
                             <path stroke-linecap="round" stroke-linejoin="round"
                                 d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                             <path stroke-linecap="round" stroke-linejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                         </svg>
-                        <div class="flex-1 text-left">
+                        <div class="flex-1 text-left min-w-0">
                             <input type="text" id="mountain-search-input" placeholder="Pilih Gunung"
                                 autocomplete="off"
-                                class="w-full bg-transparent border-none focus:border-none focus:ring-0 focus:outline-none text-[13px] font-semibold text-body-strong placeholder-muted cursor-pointer p-0 shadow-none" />
+                                class="w-full bg-transparent border-none focus:border-none focus:ring-0 focus:outline-none text-[13px] font-semibold text-body-strong placeholder-muted cursor-pointer p-0 shadow-none truncate" />
                         </div>
                         <svg id="mountain-chevron" class="w-4 h-4 text-muted transition-transform duration-200 shrink-0"
                             fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -49,7 +51,7 @@
 
                     <!-- Dropdown List Hasil Pencarian Gunung -->
                     <div id="mountain-dropdown-list"
-                        class="hidden absolute left-0 right-0 md:w-72 mt-2 bg-white border border-hairline rounded-2xl shadow-xl py-2 z-50 max-h-56 overflow-y-auto text-xs">
+                        class="hidden absolute left-0 right-0 md:left-0 md:right-auto md:w-72 mt-2 bg-white border border-hairline rounded-2xl shadow-2xl py-2 z-50 max-h-56 overflow-y-auto text-xs">
                         <div class="px-3 py-1.5 text-[10px] uppercase font-bold text-muted-soft tracking-wider">
                             Pilih Gunung
                         </div>
@@ -61,7 +63,7 @@
                             <button type="button"
                                 onclick="selectMountain('{{ $mountain->slug }}', '{{ $mountain->name }}')"
                                 class="mountain-option w-full text-left px-4 py-2 hover:bg-gray-50 text-body-strong font-medium flex items-center justify-between cursor-pointer">
-                                <span>{{ $mountain->name }}</span>
+                                <span class="font-semibold text-slate-800">{{ $mountain->name }}</span>
                                 <span
                                     class="text-[10px] text-muted font-normal font-liberation">{{ $mountain->formatted_elevation }}</span>
                             </button>
@@ -74,7 +76,7 @@
                 <!-- Filter 2: Pilih Jalur (Dependent Custom Dropdown) -->
                 <div class="relative w-full md:w-1/3">
                     <div id="jalur-select-trigger"
-                        class="flex items-center gap-3 w-full px-4 py-2 hover:bg-gray-50 rounded-full cursor-pointer transition select-none">
+                        class="flex items-center gap-3 w-full px-3.5 sm:px-4 py-2.5 sm:py-2 bg-gray-50/80 md:bg-transparent hover:bg-gray-100/80 md:hover:bg-gray-50 rounded-xl md:rounded-full border border-gray-100 md:border-none cursor-pointer transition select-none">
                         <svg class="w-5 h-5 text-muted-soft shrink-0" fill="none" viewBox="0 0 24 24"
                             stroke="currentColor" stroke-width="1.8">
                             <path stroke-linecap="round" stroke-linejoin="round"
@@ -93,7 +95,7 @@
 
                     <!-- Dropdown List Jalur (Dinamis sesuai Gunung) -->
                     <div id="jalur-dropdown-list"
-                        class="hidden absolute left-0 right-0 md:w-72 mt-2 bg-white border border-hairline rounded-2xl shadow-xl py-2 z-50 max-h-56 overflow-y-auto no-scrollbar text-xs">
+                        class="hidden absolute left-0 right-0 md:left-0 md:right-auto md:w-72 mt-2 bg-white border border-hairline rounded-2xl shadow-2xl py-2 z-50 max-h-56 overflow-y-auto no-scrollbar text-xs">
                         <div class="px-3 py-1.5 text-[10px] uppercase font-bold text-muted-soft tracking-wider">
                             Pilih Jalur
                         </div>
@@ -110,7 +112,7 @@
                 <!-- Filter 3: Tingkat Kesulitan (Otomatis / Terkunci sesuai Jalur) -->
                 <div class="relative w-full md:w-1/3">
                     <div id="grade-hero-trigger"
-                        class="flex items-center gap-3 w-full px-4 py-2 hover:bg-gray-50 rounded-full cursor-pointer transition select-none">
+                        class="flex items-center gap-3 w-full px-3.5 sm:px-4 py-2.5 sm:py-2 bg-gray-50/80 md:bg-transparent hover:bg-gray-100/80 md:hover:bg-gray-50 rounded-xl md:rounded-full border border-gray-100 md:border-none cursor-pointer transition select-none">
                         <svg class="w-5 h-5 text-muted-soft shrink-0" fill="none" viewBox="0 0 24 24"
                             stroke="currentColor" stroke-width="1.8">
                             <path stroke-linecap="round" stroke-linejoin="round"
@@ -139,7 +141,7 @@
 
                     <!-- Dropdown List Tingkat Kesulitan -->
                     <div id="grade-hero-dropdown-list"
-                        class="hidden absolute left-0 right-0 md:w-72 mt-2 bg-white border border-hairline rounded-2xl shadow-xl py-2 z-50 max-h-56 overflow-y-auto text-xs">
+                        class="hidden absolute left-0 right-0 md:left-0 md:right-auto md:w-72 mt-2 bg-white border border-hairline rounded-2xl shadow-2xl py-2 z-50 max-h-56 overflow-y-auto text-xs">
                         <div class="px-3 py-1.5 text-[10px] uppercase font-bold text-muted-soft tracking-wider">
                             Tingkat Kesulitan
                         </div>
@@ -177,7 +179,7 @@
     {{-- =====================================================================
          2. MAIN SECTION: PILIHAN PUNCAK (BENTO GRID)
     ===================================================================== --}}
-    <main id="ekspedisi" class="w-full max-w-6xl mx-auto px-4 pt-28 pb-16">
+    <main id="ekspedisi" class="w-full max-w-6xl mx-auto px-4 pt-10 sm:pt-14 md:pt-28 pb-16">
         <!-- Section Title Bar -->
         <div class="flex items-end justify-between mb-7">
             <div>
@@ -201,10 +203,10 @@
             @if ($featuredHero)
                 <!-- Big Hero Card: Featured Order 1 (Span 7) -->
                 <a href="{{ route('ekspedisi.show', $featuredHero->slug) }}"
-                    class="lg:col-span-7 relative min-h-[380px] md:min-h-[440px] lg:h-full lg:min-h-0 rounded-2xl overflow-hidden group shadow-sm bg-gray-900 cursor-pointer block">
+                    class="lg:col-span-7 relative min-h-[340px] sm:min-h-[400px] md:min-h-[440px] lg:h-full lg:min-h-0 rounded-2xl overflow-hidden group shadow-sm bg-gray-900 cursor-pointer block">
                     <img src="{{ $featuredHero->cover_image }}" alt="{{ $featuredHero->name }}"
                         class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition duration-500" />
-                    <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-black/30"></div>
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/85 via-black/30 to-black/30"></div>
 
                     <!-- Badges Top -->
                     <div class="absolute top-4 left-4 right-4 flex items-center justify-between pointer-events-none">
@@ -223,16 +225,18 @@
                     </div>
 
                     <!-- Content Bottom -->
-                    <div class="absolute bottom-5 left-5 right-5 flex items-end justify-between text-white">
-                        <div class="max-w-[70%]">
-                            <h3 class="text-2xl md:text-3xl font-bold tracking-tight">{{ $featuredHero->name }}</h3>
+                    <div
+                        class="absolute bottom-4 sm:bottom-5 left-4 sm:left-5 right-4 sm:right-5 flex flex-col sm:flex-row sm:items-end justify-between text-white gap-3 sm:gap-4">
+                        <div class="max-w-full sm:max-w-[70%]">
+                            <h3 class="text-xl sm:text-2xl md:text-3xl font-bold tracking-tight">
+                                {{ $featuredHero->name }}</h3>
                             <p class="text-xs md:text-sm text-white/80 mt-1 line-clamp-2 leading-relaxed">
                                 {{ $featuredHero->description }}
                             </p>
                         </div>
-                        <div class="text-right">
+                        <div class="text-left sm:text-right shrink-0">
                             <p class="text-[11px] text-white/75 font-normal">Mulai dari</p>
-                            <p class="text-lg md:text-xl font-bold text-white whitespace-nowrap">
+                            <p class="text-base sm:text-lg md:text-xl font-bold text-white whitespace-nowrap">
                                 {{ $featuredHero->formatted_short_price }} <span
                                     class="text-xs font-normal text-white/80 font-sans">/ pax</span></p>
                         </div>
