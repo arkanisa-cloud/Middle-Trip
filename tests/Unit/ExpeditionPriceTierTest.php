@@ -51,4 +51,46 @@ class ExpeditionPriceTierTest extends TestCase
         // Fallback boundary jika melebihi max_pax
         $this->assertEquals(475000, $mountain->getTierPriceForPax(12));
     }
+
+    public function test_mountain_returns_correct_tier_price_without_max_pax(): void
+    {
+        $mountain = Mountain::create([
+            'name' => 'Mt. Rinjani',
+            'slug' => 'mt-rinjani',
+            'elevation' => 3726,
+            'province' => 'NTB',
+            'cover_image' => 'https://example.com/rinjani.jpg',
+            'base_price' => 700000,
+            'booking_fee_per_pax' => 200000,
+            'price_lock_days_before_departure' => 3,
+        ]);
+
+        ExpeditionPriceTier::create([
+            'mountain_id' => $mountain->id,
+            'min_pax' => 1,
+            'max_pax' => null,
+            'price_per_pax' => 850000,
+        ]);
+
+        ExpeditionPriceTier::create([
+            'mountain_id' => $mountain->id,
+            'min_pax' => 4,
+            'max_pax' => null,
+            'price_per_pax' => 750000,
+        ]);
+
+        ExpeditionPriceTier::create([
+            'mountain_id' => $mountain->id,
+            'min_pax' => 7,
+            'max_pax' => null,
+            'price_per_pax' => 680000,
+        ]);
+
+        $this->assertEquals(850000, $mountain->getTierPriceForPax(1));
+        $this->assertEquals(850000, $mountain->getTierPriceForPax(3));
+        $this->assertEquals(750000, $mountain->getTierPriceForPax(4));
+        $this->assertEquals(750000, $mountain->getTierPriceForPax(6));
+        $this->assertEquals(680000, $mountain->getTierPriceForPax(7));
+        $this->assertEquals(680000, $mountain->getTierPriceForPax(15));
+    }
 }

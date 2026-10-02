@@ -26,11 +26,17 @@ class Mountain extends Model
             'has_private_trip' => 'boolean',
             'base_price' => 'integer',
             'price_private' => 'integer',
+            'price_tektok' => 'integer',
+            'price_private_tektok' => 'integer',
             'booking_fee_per_pax' => 'integer',
             'price_lock_days_before_departure' => 'integer',
             'is_featured' => 'boolean',
             'featured_order' => 'integer',
             'is_active' => 'boolean',
+            'elevation_checkpoints' => 'array',
+            'facilities_included' => 'array',
+            'facilities_excluded' => 'array',
+            'gallery' => 'array',
         ];
     }
 
@@ -75,26 +81,55 @@ class Mountain extends Model
     }
 
     /**
+     * Mendapatkan harga dasar tektok (dengan fallback proporsional 80% dari harga camping).
+     */
+    public function getEffectivePriceTektokAttribute(): int
+    {
+        return $this->price_tektok ?? (int) round($this->base_price * 0.8);
+    }
+
+    /**
+     * Mendapatkan harga private tektok (dengan fallback proporsional).
+     */
+    public function getEffectivePricePrivateTektokAttribute(): int
+    {
+        $basePrivate = $this->price_private ?? (int) round($this->base_price * 1.5);
+
+        return $this->price_private_tektok ?? (int) round($basePrivate * 0.85);
+    }
+
+    /**
      * Mendapatkan harga per pax berdasarkan jumlah peserta akumulasi dari tier matriks.
      */
-    public function getTierPriceForPax(int $pax): int
+    public function getTierPriceForPax(int $pax, string $hikingType = 'camping'): int
     {
         $tiers = $this->priceTiers()->get();
 
-        if ($tiers->isEmpty()) {
-            return $this->base_price;
-        }
+        $campingPrice = $this->base_price;
 
-        foreach ($tiers as $tier) {
-            if ($pax >= $tier->min_pax && $pax <= $tier->max_pax) {
-                return $tier->price_per_pax;
+        if ($tiers->isNotEmpty()) {
+            // Cari tier dengan min_pax tertinggi yang memenuhi kuota pax
+            $matchingTier = $tiers->where('min_pax', '<=', $pax)->sortByDesc('min_pax')->first();
+
+            if ($matchingTier) {
+                $campingPrice = $matchingTier->price_per_pax;
+            } else {
+                $lowestTier = $tiers->sortBy('min_pax')->first();
+                $campingPrice = $lowestTier?->price_per_pax ?? $this->base_price;
             }
         }
 
-        // Jika jumlah pax melebihi max_pax tier tertinggi, berikan harga tier tertinggi (termurah)
-        $highestTier = $tiers->sortByDesc('max_pax')->first();
+        if ($hikingType === 'tektok') {
+            if ($this->price_tektok !== null && $this->base_price > 0) {
+                $ratio = $this->price_tektok / $this->base_price;
 
-        return $highestTier?->price_per_pax ?? $this->base_price;
+                return (int) round($campingPrice * $ratio);
+            }
+
+            return (int) round($campingPrice * 0.8);
+        }
+
+        return $campingPrice;
     }
 
     /**

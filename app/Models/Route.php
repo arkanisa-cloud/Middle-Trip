@@ -23,6 +23,8 @@ class Route extends Model
             'grade' => TrailGrade::class,
             'is_primary' => 'boolean',
             'distance_km' => 'float',
+            'elevation_checkpoints' => 'array',
+            'itinerary' => 'array',
         ];
     }
 

@@ -9,7 +9,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
-<body class="min-h-screen flex flex-col justify-between bg-canvas text-ink antialiased selection:bg-primary selection:text-white font-sans" x-data="{ expandedAccordion: null }">
+<body class="min-h-screen flex flex-col justify-between bg-canvas text-ink antialiased selection:bg-primary selection:text-white font-sans">
 
     <!-- Header -->
     <header class="w-full bg-white border-b border-hairline px-4 sm:px-8 py-3.5">
@@ -114,7 +114,7 @@
                             {{ $booking->expedition->mountain->name }}
                         </h1>
                         <p class="text-xs text-muted font-medium mt-0.5 mb-4">
-                            {{ $booking->expedition->mountain->duration_days }}D{{ $booking->expedition->mountain->duration_nights }}N • {{ \Carbon\Carbon::parse($booking->expedition->departure_date)->translatedFormat('d F Y') }}
+                            {{ $booking->expedition->mountain->duration_days }}D{{ $booking->expedition->mountain->duration_nights }}N • {{ \Carbon\Carbon::parse($booking->departure_date ?? $booking->expedition->departure_date)->translatedFormat('d F Y') }}
                         </p>
 
                         <div class="pt-3 border-t border-hairline">
@@ -159,7 +159,7 @@
                         </div>
                         <div>
                             <p class="text-muted text-[11px] font-medium">Keberangkatan</p>
-                            <p class="text-ink font-semibold mt-0.5">{{ \Carbon\Carbon::parse($booking->expedition->departure_date)->translatedFormat('d M Y') }}</p>
+                            <p class="text-ink font-semibold mt-0.5">{{ \Carbon\Carbon::parse($booking->departure_date ?? $booking->expedition->departure_date)->translatedFormat('d M Y') }}</p>
                         </div>
                     </div>
                 </div>
@@ -210,31 +210,48 @@
                         </div>
                     </div>
 
-                    <div class="space-y-2">
+                    <div class="space-y-2.5">
                         @foreach($booking->participants as $index => $participant)
-                            <div class="border border-hairline rounded-xl overflow-hidden text-xs">
-                                <button type="button" @click="expandedAccordion = (expandedAccordion === {{ $index }} ? null : {{ $index }})" class="w-full flex items-center justify-between px-4 py-3 bg-neutral-50/50 hover:bg-neutral-50 text-left font-semibold text-ink transition">
-                                    <div class="flex items-center gap-2">
-                                        <span class="w-5 h-5 rounded-full {{ $participant->is_leader ? 'bg-primary-100 text-primary' : 'bg-neutral-200 text-neutral-600' }} flex items-center justify-center text-[10px] font-bold">
+                            @php
+                                $isOpen = ($index === 0);
+                                $itemTitle = $participant->is_leader ? 'Ketua' : 'Anggota ' . $index;
+                            @endphp
+                            <div class="border border-[#ECEAE4] rounded-xl overflow-hidden shadow-2xs">
+                                <button type="button"
+                                    class="w-full flex items-center justify-between px-4 py-3 {{ $isOpen ? 'bg-[#F9F8F6]' : 'bg-white hover:bg-neutral-50' }} text-xs font-semibold text-neutral-800 text-left transition-colors cursor-pointer"
+                                    onclick="toggleAccordion('content-peserta-{{ $index }}', 'icon-peserta-{{ $index }}')">
+                                    <div class="flex items-center gap-2.5">
+                                        <span class="w-5 h-5 rounded-full {{ $participant->is_leader ? 'bg-primary text-white' : 'bg-slate-200 text-slate-700' }} flex items-center justify-center font-bold text-[10px]">
                                             {{ $index + 1 }}
                                         </span>
-                                        <span>{{ $participant->name }} {{ $participant->is_leader ? '(Ketua)' : '' }}</span>
+                                        <span class="font-bold text-ink-heading">{{ $participant->full_name }}</span>
+                                        <span class="text-[10px] font-bold px-2 py-0.5 rounded-full {{ $participant->is_leader ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : 'bg-slate-100 text-slate-600' }}">
+                                            {{ $participant->is_leader ? 'Ketua (Leader)' : 'Anggota' }}
+                                        </span>
                                     </div>
-                                    <svg class="w-4 h-4 text-muted transition-transform" :class="expandedAccordion === {{ $index }} ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <svg id="icon-peserta-{{ $index }}" class="w-4 h-4 text-neutral-500 transform transition-transform duration-200 {{ $isOpen ? 'rotate-180' : '' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
                                     </svg>
                                 </button>
-                                <div x-show="expandedAccordion === {{ $index }}" x-cloak class="p-4 bg-white border-t border-hairline space-y-2">
-                                    <div>
-                                        <span class="text-muted text-[11px]">NIK (SIMAKSI & Asuransi):</span>
-                                        <p class="font-mono font-medium text-ink">{{ $participant->nik }}</p>
-                                    </div>
-                                    @if($participant->phone)
+                                <div id="content-peserta-{{ $index }}" class="{{ $isOpen ? '' : 'hidden' }} p-4 space-y-3 text-xs bg-white border-t border-[#ECEAE4]">
+                                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                                         <div>
-                                            <span class="text-muted text-[11px]">Telepon / WhatsApp:</span>
-                                            <p class="font-medium text-ink">{{ $participant->phone }}</p>
+                                            <label class="block text-slate-600 font-medium mb-1">Nama Lengkap {{ $itemTitle }}</label>
+                                            <input type="text" value="{{ $participant->full_name }}" readonly
+                                                class="w-full px-3 py-2 border border-slate-200 rounded-lg bg-slate-50 text-body-strong font-medium">
                                         </div>
-                                    @endif
+                                        <div>
+                                            <label class="block text-slate-600 font-medium mb-1">NIK (SIMAKSI & Asuransi)</label>
+                                            <input type="text" value="{{ $participant->nik }}" readonly
+                                                class="w-full px-3 py-2 border border-slate-200 rounded-lg bg-slate-50 text-body-strong font-medium font-mono">
+                                        </div>
+                                    </div>
+                                    <div class="flex items-center gap-1.5 text-[11px] text-emerald-700 font-semibold pt-0.5">
+                                        <svg class="w-3.5 h-3.5 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                        </svg>
+                                        <span>Data SIMAKSI Terverifikasi & Asuransi Aktif</span>
+                                    </div>
                                 </div>
                             </div>
                         @endforeach
@@ -310,5 +327,22 @@
             </div>
         </div>
     </footer>
+
+    <script>
+        function toggleAccordion(contentId, iconId) {
+            const content = document.getElementById(contentId);
+            const icon = document.getElementById(iconId);
+            if (!content || !icon) return;
+
+            const isHidden = content.classList.contains('hidden');
+            if (isHidden) {
+                content.classList.remove('hidden');
+                icon.classList.add('rotate-180');
+            } else {
+                content.classList.add('hidden');
+                icon.classList.remove('rotate-180');
+            }
+        }
+    </script>
 </body>
 </html>

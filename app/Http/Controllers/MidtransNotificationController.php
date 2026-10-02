@@ -48,12 +48,14 @@ class MidtransNotificationController extends Controller
             ]);
 
             if ($parsed['is_success']) {
-                $booking = Booking::where('id', $transaction->booking_id)->first();
+                $booking = Booking::with('expedition')->where('id', $transaction->booking_id)->first();
                 if ($booking) {
                     if ($transaction->payment_stage === 'booking_fee' && $booking->status === 'open') {
                         $booking->update(['status' => 'reserved']);
+                        $booking->expedition?->syncQuotaBooked();
                     } elseif (in_array($transaction->payment_stage, ['settlement', 'full_payment'], true)) {
                         $booking->update(['status' => 'paid']);
+                        $booking->expedition?->syncQuotaBooked();
                     }
                 }
             }

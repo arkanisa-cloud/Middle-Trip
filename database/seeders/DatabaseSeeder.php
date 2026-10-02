@@ -20,11 +20,19 @@ class DatabaseSeeder extends Seeder
         User::factory()->create([
             'name' => 'Test User',
             'email' => 'test@example.com',
+            'is_admin' => false,
         ]);
 
-        $this->call([
-            MountainSeeder::class,
-            ExpeditionSubsystemSeeder::class,
+        User::factory()->create([
+            'name' => 'MiddleTrip Administrator',
+            'email' => 'admin@admin.com',
+            'password' => bcrypt('password'),
+            'is_admin' => true,
         ]);
+
+        // $this->call([
+        //     MountainSeeder::class,
+        //     ExpeditionSubsystemSeeder::class,
+        // ]);
     }
 }

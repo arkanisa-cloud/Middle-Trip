@@ -6,6 +6,7 @@ use App\Models\Addon;
 use App\Models\Booking;
 use App\Models\Expedition;
 use App\Models\MeetingPoint;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
@@ -26,23 +27,34 @@ class BookingService
                 ->firstOrFail();
 
             $paxCount = (int) $data['pax_count'];
-            $availableQuota = $expedition->quota_max - $expedition->quota_booked;
-
-            if ($availableQuota < $paxCount) {
-                throw ValidationException::withMessages([
-                    'pax_count' => "Sisa kuota tidak mencukupi (Tersisa {$availableQuota} kursi).",
-                ]);
-            }
-
             $tripType = $data['trip_type'] ?? $expedition->type;
 
-            // Jika private trip diminta, pastikan mengaitkan ekspedisi tipe private
-            if ($tripType === 'private' && $expedition->type !== 'private') {
-                $privateExpedition = Expedition::where('mountain_id', $expedition->mountain_id)
-                    ->where('type', 'private')
-                    ->first();
-                if ($privateExpedition) {
-                    $expedition = $privateExpedition;
+            // Validasi kuota publik hanya berlaku untuk Open Trip
+            if ($tripType !== 'private') {
+                $availableQuota = $expedition->quota_max - $expedition->quota_booked;
+
+                if ($availableQuota < $paxCount) {
+                    throw ValidationException::withMessages([
+                        'pax_count' => "Sisa kuota tidak mencukupi (Tersisa {$availableQuota} kursi).",
+                    ]);
+                }
+            }
+
+            // Jika private trip diminta, pastikan gunung mendukung layanan private trip
+            if ($tripType === 'private') {
+                if (! $expedition->mountain->has_private_trip) {
+                    throw ValidationException::withMessages([
+                        'trip_type' => 'Layanan Private Trip belum dibuka untuk destinasi gunung ini.',
+                    ]);
+                }
+
+                if ($expedition->type !== 'private') {
+                    $privateExpedition = Expedition::where('mountain_id', $expedition->mountain_id)
+                        ->where('type', 'private')
+                        ->first();
+                    if ($privateExpedition) {
+                        $expedition = $privateExpedition;
+                    }
                 }
             }
 
@@ -75,9 +87,11 @@ class BookingService
                 }
             }
 
+            $hikingType = $data['hiking_type'] ?? $expedition->hiking_type ?? 'camping';
+
             if ($tripType === 'private') {
                 // Private Trip: Harga tier langsung terkunci sesuai jumlah pax, pembayaran langsung 100% tanpa DP
-                $lockedPricePerPax = $mountain->getTierPriceForPax($paxCount);
+                $lockedPricePerPax = $mountain->getTierPriceForPax($paxCount, $hikingType);
                 $tripCost = $lockedPricePerPax * $paxCount;
                 $grandTotal = $tripCost + $shuttleFeeTotal + $addonsFeeTotal;
                 $bookingFeePerPax = 0;
@@ -87,10 +101,21 @@ class BookingService
                 // Open Trip: Wajib bayar booking fee (DP), harga final terkunci menjelang keberangkatan
                 $bookingFeePerPax = $mountain->booking_fee_per_pax;
                 $totalBookingFee = $bookingFeePerPax * $paxCount;
-                $estimatedTripCost = $mountain->base_price * $paxCount;
+                $baseOpenPrice = $hikingType === 'tektok' ? $mountain->effective_price_tektok : $mountain->base_price;
+                $estimatedTripCost = $baseOpenPrice * $paxCount;
                 $grandTotal = $estimatedTripCost + $shuttleFeeTotal + $addonsFeeTotal;
                 $lockedPricePerPax = null;
                 $remainingPaymentTotal = null;
+            }
+
+            // Tentukan tanggal keberangkatan dan kepulangan
+            if ($tripType === 'private' && ! empty($data['departure_date'])) {
+                $departureDate = Carbon::parse($data['departure_date'])->toDateString();
+                $durationNights = $mountain?->duration_nights ?? 1;
+                $returnDate = Carbon::parse($departureDate)->addDays($durationNights)->toDateString();
+            } else {
+                $departureDate = $expedition->departure_date ? Carbon::parse($expedition->departure_date)->toDateString() : now()->toDateString();
+                $returnDate = $expedition->return_date ? Carbon::parse($expedition->return_date)->toDateString() : Carbon::parse($departureDate)->addDays(1)->toDateString();
             }
 
             // Generate Booking Code unik: MT-YYYYMMDD-XXXXX
@@ -104,6 +129,8 @@ class BookingService
                 'route_id' => $data['route_id'],
                 'meeting_point_id' => $data['meeting_point_id'] ?? null,
                 'trip_type' => $tripType,
+                'departure_date' => $departureDate,
+                'return_date' => $returnDate,
                 'customer_name' => $data['customer_name'],
                 'customer_email' => $data['customer_email'],
                 'customer_phone' => $data['customer_phone'],
@@ -134,9 +161,6 @@ class BookingService
             if (! empty($addonsToSync)) {
                 $booking->addons()->sync($addonsToSync);
             }
-
-            // Naikkan kuota terisi
-            $expedition->increment('quota_booked', $paxCount);
 
             return $booking;
         });

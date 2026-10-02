@@ -3,9 +3,14 @@
 namespace App\Http\Controllers;
 
 use App\Models\Addon;
+use App\Models\Expedition;
 use App\Models\Mountain;
+use App\Models\Route;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
+use Illuminate\Support\Collection;
+use Illuminate\Support\Str;
 
 class ExpeditionController extends Controller
 {
@@ -51,19 +56,47 @@ class ExpeditionController extends Controller
      */
     public function show(string $slug): View
     {
-        $expedition = $this->findExpeditionBySlug($slug);
+        $mountainModel = Mountain::where('slug', $slug)
+            ->with(['routes', 'priceTiers', 'meetingPoints', 'expeditions', 'primaryRoute'])
+            ->first();
 
-        if ($expedition === null) {
+        if ($mountainModel === null) {
             abort(404);
         }
 
-        $mountainModel = Mountain::where('slug', $slug)
-            ->with(['routes', 'priceTiers', 'meetingPoints', 'expeditions'])
-            ->first();
+        $expedition = $this->buildExpeditionDataFromMountain($mountainModel);
 
-        $openExpedition = $mountainModel?->expeditions->where('type', 'open')->where('status', 'open')->first();
-        $privateExpedition = $mountainModel?->expeditions->where('type', 'private')->where('status', 'open')->first();
+        $expedition['price_camping_open'] = $mountainModel->base_price;
+        $expedition['price_camping_private'] = $mountainModel->price_private ?? (int) round($mountainModel->base_price * 1.5);
+        $expedition['price_tektok_open'] = $mountainModel->effective_price_tektok;
+        $expedition['price_tektok_private'] = $mountainModel->effective_price_private_tektok;
+        $expedition['price_tektok'] = $mountainModel->effective_price_tektok;
+        $expedition['price_private_tektok'] = $mountainModel->effective_price_private_tektok;
+
+        $openExpedition = $mountainModel->expeditions->where('type', 'open')->where('status', 'open')->first();
+        $privateExpedition = $mountainModel->expeditions->where('type', 'private')->first();
+
         $addons = Addon::where('is_active', true)->get();
+
+        if ($openExpedition) {
+            $expedition['quota_current'] = $openExpedition->quota_booked;
+            $expedition['quota_max'] = $openExpedition->quota_max;
+            $expedition['departure_date'] = Carbon::parse($openExpedition->departure_date)->format('d/m/Y');
+            $expedition['has_open_schedule'] = true;
+        } else {
+            $expedition['quota_current'] = 0;
+            $expedition['quota_max'] = 0;
+            $expedition['departure_date'] = 'Belum ada jadwal';
+            $expedition['has_open_schedule'] = false;
+        }
+
+        $bookingConfig = $this->buildBookingConfig(
+            mountain: $mountainModel,
+            expeditionData: $expedition,
+            openExpedition: $openExpedition,
+            privateExpedition: $privateExpedition,
+            addons: $addons
+        );
 
         return view('customer.detail', [
             'expedition' => $expedition,
@@ -71,1087 +104,399 @@ class ExpeditionController extends Controller
             'openExpedition' => $openExpedition,
             'privateExpedition' => $privateExpedition,
             'addons' => $addons,
+            'bookingConfig' => $bookingConfig,
         ]);
     }
 
     /**
-     * Mendapatkan daftar ringkas ekspedisi untuk halaman katalog dan beranda.
+     * Menyusun konfigurasi modal pemesanan (window.bookingModalConfig) untuk view secara terpusat.
      *
-     * @return array<int, array<string, mixed>>
+     * @param  array<string, mixed>  $expeditionData
+     * @return array<string, mixed>
      */
-    public function getExpeditionList(): array
-    {
-        return array_map(function (array $item): array {
-            return [
-                'id' => $item['id'],
-                'slug' => $item['slug'],
-                'title' => $item['title'],
-                'mountain' => $item['mountain'],
-                'elevation' => $item['elevation'],
-                'grade' => $item['grade'],
-                'grade_label' => $item['grade_label'],
-                'type' => $item['type'],
-                'type_label' => $item['type_label'],
-                'price' => $item['price'],
-                'price_formatted' => $item['price_formatted'],
-                'image' => $item['image'],
-                'description' => $item['description'],
-            ];
-        }, $this->getAllExpeditions());
-    }
+    private function buildBookingConfig(
+        ?Mountain $mountain,
+        array $expeditionData,
+        ?Expedition $openExpedition,
+        ?Expedition $privateExpedition,
+        mixed $addons
+    ): array {
+        $user = auth()->user();
+        $primaryRoute = $mountain?->primaryRoute ?? $mountain?->routes->first();
 
-    /**
-     * Cari detail ekspedisi berdasarkan slug.
-     *
-     * @return array<string, mixed>|null
-     */
-    private function findExpeditionBySlug(string $slug): ?array
-    {
-        $all = $this->getAllExpeditions();
+        $openDepartureDate = $openExpedition?->departure_date ? Carbon::parse($openExpedition->departure_date) : null;
+        $openReturnDate = $openExpedition?->return_date
+            ? Carbon::parse($openExpedition->return_date)
+            : ($openDepartureDate ? $openDepartureDate->copy()->addDays(1) : null);
 
-        return $all[$slug] ?? null;
-    }
+        $privateDepartureDate = $privateExpedition?->departure_date ? Carbon::parse($privateExpedition->departure_date) : null;
+        $privateReturnDate = $privateExpedition?->return_date
+            ? Carbon::parse($privateExpedition->return_date)
+            : ($privateDepartureDate ? $privateDepartureDate->copy()->addDays(1) : null);
 
-    /**
-     * Dataset komprehensif seluruh ekspedisi gunung MiddleTrip.
-     *
-     * @return array<string, array<string, mixed>>
-     */
-    private function getAllExpeditions(): array
-    {
+        $hasOpenSchedule = $openExpedition !== null;
+        $defaultTripType = $hasOpenSchedule ? 'open' : ($mountain?->has_private_trip ? 'private' : 'open');
+
         return [
-            'mt-merbabu' => [
-                'id' => 1,
-                'slug' => 'mt-merbabu',
-                'title' => 'Mt. Merbabu Expedition',
-                'mountain' => 'Mt. Merbabu',
-                'elevation' => '3.142 mdpl',
-                'difficulty_badge' => 'Cocok utk Pemula',
-                'location' => 'Jawa Tengah',
-                'grade' => 'Grade A',
-                'grade_label' => 'Grade A – Pemula',
-                'type' => 'open',
-                'type_label' => 'Open Trip',
-                'price' => 500000,
-                'price_formatted' => 'Rp 500.000',
-                'price_tektok' => 400000,
-                'price_private' => 750000,
-                'price_private_tektok' => 600000,
-                'quota_current' => 5,
-                'quota_max' => 10,
-                'departure_date' => '15/06/2026',
-                'image' => 'https://images.unsplash.com/photo-1544735716-392fe2489ffa?q=80&w=1200&auto=format&fit=crop',
-                'description' => 'Jalur Selo yang ramah pemula, padang sabana nan luas, dan panorama matahari terbit berlatar megahnya Gunung Merapi.',
-                'overview' => 'Gunung Merbabu adalah gunung api tipe strato dengan ketinggian 3.142 mdpl. Secara administratif gunung ini berada di wilayah Kabupaten Magelang di lereng sebelah barat, Kabupaten Boyolali di lereng sebelah timur dan selatan, serta Kabupaten Semarang di lereng sebelah utara. Pendakian ini menawarkan panorama sabana yang luas dan pemandangan Gunung Merapi yang megah.',
-                'gallery' => [
-                    [
-                        'url' => 'https://images.unsplash.com/photo-1579618218290-24a26f63a708?q=80&w=1200&auto=format&fit=crop',
-                        'caption' => 'Sabana Merbabu Ridge',
-                    ],
-                    [
-                        'url' => 'https://images.unsplash.com/photo-1589182373726-e4f658ab50f0?q=80&w=600&auto=format&fit=crop',
-                        'caption' => 'View of Mt Merapi',
-                    ],
-                    [
-                        'url' => 'https://images.unsplash.com/photo-1551632811-561732d1e306?q=80&w=600&auto=format&fit=crop',
-                        'caption' => 'Pendaki di Padang Rumput',
-                    ],
-                    [
-                        'url' => 'https://images.unsplash.com/photo-1544717305-2782549b5136?q=80&w=600&auto=format&fit=crop',
-                        'caption' => 'Sabana Camp',
-                    ],
-                    [
-                        'url' => 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?q=80&w=600&auto=format&fit=crop',
-                        'caption' => 'Puncak Kenteng Songo',
-                    ],
-                ],
-                'stats' => [
-                    ['label' => 'Jarak Total', 'value' => '13.8 km', 'icon' => 'milestone'],
-                    ['label' => 'Durasi Waktu', 'value' => '6–7 Jam', 'icon' => 'clock'],
-                    ['label' => 'Suhu Rata-rata', 'value' => '8–15°C', 'icon' => 'thermometer'],
-                    ['label' => 'Sumber Air', 'value' => 'Pos 3', 'icon' => 'droplet'],
-                ],
-                'elevation_profile' => [
-                    'title' => 'Elevasi & Rute Pendakian (Via Selo)',
-                    'points' => [
-                        ['name' => 'Basecamp', 'elevation' => '1.800m', 'x' => 40, 'y' => 185],
-                        ['name' => 'Pos 1', 'elevation' => '2.100m', 'x' => 140, 'y' => 160],
-                        ['name' => 'Pos 2', 'elevation' => '2.400m', 'x' => 250, 'y' => 145],
-                        ['name' => 'Pos 3', 'elevation' => '2.600m', 'x' => 360, 'y' => 130],
-                        ['name' => 'Sabana 1', 'elevation' => '2.800m', 'x' => 470, 'y' => 95],
-                        ['name' => 'Sabana 2', 'elevation' => '2.950m', 'x' => 560, 'y' => 80],
-                        ['name' => 'Puncak', 'elevation' => '3.142m', 'x' => 650, 'y' => 45],
-                    ],
-                    'path' => 'M 40 185 L 140 160 L 250 145 L 360 130 L 470 95 L 560 80 L 650 45',
-                    'area' => 'M 40 185 L 140 160 L 250 145 L 360 130 L 470 95 L 560 80 L 650 45 L 650 210 L 40 210 Z',
-                    'notes' => [
-                        [
-                            'title' => 'Titik Air Terakhir:',
-                            'desc' => 'Pos 3 (Pastikan isi botol)',
-                            'type' => 'water',
-                            'badge_class' => 'bg-blue-50/80 border-blue-200/70 text-blue-800',
-                            'icon_class' => 'bg-blue-50 text-blue-600',
-                        ],
-                        [
-                            'title' => 'Zona Terpaan Angin:',
-                            'desc' => 'Kencang Sabana 2',
-                            'type' => 'wind',
-                            'badge_class' => 'bg-red-50/50 border-red-100 text-red-900',
-                            'icon_class' => 'bg-red-100 text-red-600',
-                        ],
-                        [
-                            'title' => 'Sinyal Seluler:',
-                            'desc' => '4G di BC & Pos 1-2',
-                            'type' => 'signal',
-                            'badge_class' => 'bg-emerald-50/40 border-emerald-100 text-emerald-950',
-                            'icon_class' => 'bg-emerald-100 text-emerald-600',
-                        ],
-                    ],
-                ],
-                'routes' => [
-                    [
-                        'id' => 'selo',
-                        'name' => 'Via Selo',
-                        'badge' => 'Rekomendasi Utama',
-                        'selected' => true,
-                        'stats' => [
-                            ['label' => 'Jarak Total', 'value' => '13.8 km', 'icon' => 'milestone'],
-                            ['label' => 'Durasi Waktu', 'value' => '6–7 Jam', 'icon' => 'clock'],
-                            ['label' => 'Suhu Rata-rata', 'value' => '8–15°C', 'icon' => 'thermometer'],
-                            ['label' => 'Sumber Air', 'value' => 'Pos 3', 'icon' => 'droplet'],
-                        ],
-                        'elevation_profile' => [
-                            'title' => 'Elevasi & Rute Pendakian (Via Selo)',
-                            'points' => [
-                                ['name' => 'Basecamp', 'elevation' => '1.800m', 'x' => 40, 'y' => 185],
-                                ['name' => 'Pos 1', 'elevation' => '2.100m', 'x' => 140, 'y' => 160],
-                                ['name' => 'Pos 2', 'elevation' => '2.400m', 'x' => 250, 'y' => 145],
-                                ['name' => 'Pos 3', 'elevation' => '2.600m', 'x' => 360, 'y' => 130],
-                                ['name' => 'Sabana 1', 'elevation' => '2.800m', 'x' => 470, 'y' => 95],
-                                ['name' => 'Sabana 2', 'elevation' => '2.950m', 'x' => 560, 'y' => 80],
-                                ['name' => 'Puncak', 'elevation' => '3.142m', 'x' => 650, 'y' => 45],
-                            ],
-                            'path' => 'M 40 185 L 140 160 L 250 145 L 360 130 L 470 95 L 560 80 L 650 45',
-                            'area' => 'M 40 185 L 140 160 L 250 145 L 360 130 L 470 95 L 560 80 L 650 45 L 650 210 L 40 210 Z',
-                            'notes' => [
-                                [
-                                    'title' => 'Titik Air Terakhir:',
-                                    'desc' => 'Pos 3 (Pastikan isi botol)',
-                                    'type' => 'water',
-                                    'badge_class' => 'bg-blue-50/80 border-blue-200/70 text-blue-800',
-                                    'icon_class' => 'bg-blue-50 text-blue-600',
-                                ],
-                                [
-                                    'title' => 'Zona Terpaan Angin:',
-                                    'desc' => 'Kencang Sabana 2',
-                                    'type' => 'wind',
-                                    'badge_class' => 'bg-red-50/50 border-red-100 text-red-900',
-                                    'icon_class' => 'bg-red-100 text-red-600',
-                                ],
-                                [
-                                    'title' => 'Sinyal Seluler:',
-                                    'desc' => '4G di BC & Pos 1-2',
-                                    'type' => 'signal',
-                                    'badge_class' => 'bg-emerald-50/40 border-emerald-100 text-emerald-950',
-                                    'icon_class' => 'bg-emerald-100 text-emerald-600',
-                                ],
-                            ],
-                        ],
-                        'itinerary' => [
-                            'title' => 'Itinerary 2D1N (Via Selo)',
-                            'days' => [
-                                [
-                                    'day' => 'Day 1',
-                                    'title' => 'Day 1: Basecamp ke Sabana (Camp)',
-                                    'description' => 'Memulai pendakian dari Basecamp Selo melewati hutan pinus dan lamtoro. Istirahat dan makan siang di Pos 2 sebelum melanjutkan ke Sabana untuk mendirikan tenda.',
-                                    'timeline' => [
-                                        ['time' => '08:00', 'activity' => 'Registrasi & Persiapan di Basecamp Selo'],
-                                        ['time' => '09:00', 'activity' => 'Mulai Trekking Menuju Pos 1 & 2'],
-                                        ['time' => '12:30', 'activity' => 'Makan Siang di Pos 2'],
-                                        ['time' => '16:00', 'activity' => 'Tiba di Sabana 1, Dirikan Tenda & Sunset'],
-                                    ],
-                                ],
-                                [
-                                    'day' => 'Day 2',
-                                    'title' => 'Day 2: Summit Push & Descent',
-                                    'description' => 'Bangun dini hari untuk muncak dan menikmati sunrise di Puncak Kenteng Songo. Setelah sarapan, turun kembali ke basecamp.',
-                                    'timeline' => [
-                                        ['time' => '03:30', 'activity' => 'Persiapan Summit Attack Menuju Puncak'],
-                                        ['time' => '05:30', 'activity' => 'Sunrise Spektakuler di Puncak Kenteng Songo'],
-                                        ['time' => '08:00', 'activity' => 'Kembali ke Camp, Sarapan & Packing'],
-                                        ['time' => '10:00', 'activity' => 'Perjalanan Turun Menuju Basecamp Selo'],
-                                        ['time' => '14:00', 'activity' => 'Tiba di Basecamp & Penutupan Ekspedisi'],
-                                    ],
-                                ],
-                            ],
-                        ],
-                    ],
-                    [
-                        'id' => 'suwanting',
-                        'name' => 'Via Suwanting',
-                        'badge' => 'Jalur Sabana Curam',
-                        'selected' => false,
-                        'stats' => [
-                            ['label' => 'Jarak Total', 'value' => '14.5 km', 'icon' => 'milestone'],
-                            ['label' => 'Durasi Waktu', 'value' => '8–9 Jam', 'icon' => 'clock'],
-                            ['label' => 'Suhu Rata-rata', 'value' => '7–14°C', 'icon' => 'thermometer'],
-                            ['label' => 'Sumber Air', 'value' => 'Pos 2', 'icon' => 'droplet'],
-                        ],
-                        'elevation_profile' => [
-                            'title' => 'Elevasi & Rute Pendakian (Via Suwanting)',
-                            'points' => [
-                                ['name' => 'Basecamp', 'elevation' => '1.280m', 'x' => 40, 'y' => 195],
-                                ['name' => 'Pos 1', 'elevation' => '1.650m', 'x' => 140, 'y' => 170],
-                                ['name' => 'Pos 2', 'elevation' => '2.200m', 'x' => 250, 'y' => 140],
-                                ['name' => 'Pos 3', 'elevation' => '2.750m', 'x' => 370, 'y' => 100],
-                                ['name' => 'Sabana', 'elevation' => '2.900m', 'x' => 480, 'y' => 75],
-                                ['name' => 'Triangulasi', 'elevation' => '3.138m', 'x' => 570, 'y' => 52],
-                                ['name' => 'Kenteng Songo', 'elevation' => '3.142m', 'x' => 650, 'y' => 45],
-                            ],
-                            'path' => 'M 40 195 L 140 170 L 250 140 L 370 100 L 480 75 L 570 52 L 650 45',
-                            'area' => 'M 40 195 L 140 170 L 250 140 L 370 100 L 480 75 L 570 52 L 650 45 L 650 210 L 40 210 Z',
-                            'notes' => [
-                                [
-                                    'title' => 'Titik Air Terakhir:',
-                                    'desc' => 'Pos 2 Lembah Mitigasi (Melimpah)',
-                                    'type' => 'water',
-                                    'badge_class' => 'bg-blue-50/80 border-blue-200/70 text-blue-800',
-                                    'icon_class' => 'bg-blue-50 text-blue-600',
-                                ],
-                                [
-                                    'title' => 'Zona Tanjakan Ekstrem:',
-                                    'desc' => 'Tanjakan Cendani & Sabana Terbuka',
-                                    'type' => 'wind',
-                                    'badge_class' => 'bg-red-50/50 border-red-100 text-red-900',
-                                    'icon_class' => 'bg-red-100 text-red-600',
-                                ],
-                                [
-                                    'title' => 'Sinyal Seluler:',
-                                    'desc' => 'Tersedia di Basecamp & Puncak',
-                                    'type' => 'signal',
-                                    'badge_class' => 'bg-emerald-50/40 border-emerald-100 text-emerald-950',
-                                    'icon_class' => 'bg-emerald-100 text-emerald-600',
-                                ],
-                            ],
-                        ],
-                        'itinerary' => [
-                            'title' => 'Itinerary 2D1N (Via Suwanting)',
-                            'days' => [
-                                [
-                                    'day' => 'Day 1',
-                                    'title' => 'Day 1: Basecamp Suwanting ke Sabana Indah (Camp)',
-                                    'description' => 'Mendaki jalur barat Magelang yang menantang menembus hutan pinus, tanjakan pipa, dan Tanjakan Cendani menuju Sabana.',
-                                    'timeline' => [
-                                        ['time' => '07:30', 'activity' => 'Registrasi di Basecamp Suwanting'],
-                                        ['time' => '08:30', 'activity' => 'Trekking menembus Hutan Lamtoro ke Pos 1'],
-                                        ['time' => '12:00', 'activity' => 'Istirahat & Isi Air di Pos 2 Lembah Mitigasi'],
-                                        ['time' => '16:30', 'activity' => 'Tiba di Sabana Suwanting & Pasang Tenda'],
-                                    ],
-                                ],
-                                [
-                                    'day' => 'Day 2',
-                                    'title' => 'Day 2: Muncak Triangulasi & Kenteng Songo',
-                                    'description' => 'Mendaki bukit sabana menuju Puncak Triangulasi dan Puncak Kenteng Songo saat fajar.',
-                                    'timeline' => [
-                                        ['time' => '03:45', 'activity' => 'Summit Push menyusuri Punggung Sabana'],
-                                        ['time' => '05:40', 'activity' => 'Sunrise di Puncak Triangulasi & Kenteng Songo'],
-                                        ['time' => '08:30', 'activity' => 'Kembali ke Camp & Sarapan Pagi'],
-                                        ['time' => '10:30', 'activity' => 'Perjalanan Turun ke Basecamp Suwanting'],
-                                        ['time' => '15:30', 'activity' => 'Tiba di Basecamp, Mandi & Istirahat'],
-                                    ],
-                                ],
-                            ],
-                        ],
-                    ],
-                    [
-                        'id' => 'thekelan',
-                        'name' => 'Via Thekelan',
-                        'badge' => 'Jalur Tebing & Sejarah',
-                        'selected' => false,
-                        'stats' => [
-                            ['label' => 'Jarak Total', 'value' => '15.0 km', 'icon' => 'milestone'],
-                            ['label' => 'Durasi Waktu', 'value' => '7–8 Jam', 'icon' => 'clock'],
-                            ['label' => 'Suhu Rata-rata', 'value' => '8–14°C', 'icon' => 'thermometer'],
-                            ['label' => 'Sumber Air', 'value' => 'Pos 2', 'icon' => 'droplet'],
-                        ],
-                        'elevation_profile' => [
-                            'title' => 'Elevasi & Rute Pendakian (Via Thekelan)',
-                            'points' => [
-                                ['name' => 'Basecamp', 'elevation' => '1.600m', 'x' => 40, 'y' => 190],
-                                ['name' => 'Pos 1', 'elevation' => '1.900m', 'x' => 140, 'y' => 165],
-                                ['name' => 'Pos 2', 'elevation' => '2.250m', 'x' => 250, 'y' => 140],
-                                ['name' => 'Pos 3', 'elevation' => '2.500m', 'x' => 360, 'y' => 120],
-                                ['name' => 'Pos 4', 'elevation' => '2.850m', 'x' => 460, 'y' => 90],
-                                ['name' => 'Pemancar', 'elevation' => '3.050m', 'x' => 560, 'y' => 65],
-                                ['name' => 'Puncak', 'elevation' => '3.142m', 'x' => 650, 'y' => 45],
-                            ],
-                            'path' => 'M 40 190 L 140 165 L 250 140 L 360 120 L 460 90 L 560 65 L 650 45',
-                            'area' => 'M 40 190 L 140 165 L 250 140 L 360 120 L 460 90 L 560 65 L 650 45 L 650 210 L 40 210 Z',
-                            'notes' => [
-                                [
-                                    'title' => 'Titik Air Terakhir:',
-                                    'desc' => 'Pos 2 (Bak Penampungan Air)',
-                                    'type' => 'water',
-                                    'badge_class' => 'bg-blue-50/80 border-blue-200/70 text-blue-800',
-                                    'icon_class' => 'bg-blue-50 text-blue-600',
-                                ],
-                                [
-                                    'title' => 'Zona Tebing Batu:',
-                                    'desc' => 'Watu Tulis & Punggung Kawah',
-                                    'type' => 'wind',
-                                    'badge_class' => 'bg-red-50/50 border-red-100 text-red-900',
-                                    'icon_class' => 'bg-red-100 text-red-600',
-                                ],
-                                [
-                                    'title' => 'Sinyal Seluler:',
-                                    'desc' => 'Sangat bagus di Puncak Pemancar',
-                                    'type' => 'signal',
-                                    'badge_class' => 'bg-emerald-50/40 border-emerald-100 text-emerald-950',
-                                    'icon_class' => 'bg-emerald-100 text-emerald-600',
-                                ],
-                            ],
-                        ],
-                        'itinerary' => [
-                            'title' => 'Itinerary 2D1N (Via Thekelan)',
-                            'days' => [
-                                [
-                                    'day' => 'Day 1',
-                                    'title' => 'Day 1: Basecamp Thekelan ke Pos 4 Camp',
-                                    'description' => 'Pendakian jalur legendaris tertua dari lereng utara Kopeng melewati perkebunan sayur dan hutan pinus.',
-                                    'timeline' => [
-                                        ['time' => '08:00', 'activity' => 'Briefing di Basecamp Thekelan'],
-                                        ['time' => '09:00', 'activity' => 'Mulai mendaki melewati Pos 1 & Pos 2'],
-                                        ['time' => '12:30', 'activity' => 'Makan siang & istirahat di Pos 3'],
-                                        ['time' => '16:00', 'activity' => 'Tiba di Camp Pos 4 / Watu Tulis'],
-                                    ],
-                                ],
-                                [
-                                    'day' => 'Day 2',
-                                    'title' => 'Day 2: Menembus Puncak Pemancar ke Puncak Sejati',
-                                    'description' => 'Menyeberangi punggungan tebing eksotis kawah mati menuju puncak tertinggi.',
-                                    'timeline' => [
-                                        ['time' => '04:00', 'activity' => 'Summit attack ke Puncak Pemancar & Syarif'],
-                                        ['time' => '06:00', 'activity' => 'Menikmati lautan awan di Kenteng Songo'],
-                                        ['time' => '08:30', 'activity' => 'Turun kembali ke tenda & makan pagi'],
-                                        ['time' => '10:30', 'activity' => 'Perjalanan turun ke Basecamp Thekelan'],
-                                    ],
-                                ],
-                            ],
-                        ],
-                    ],
-                    [
-                        'id' => 'wekas',
-                        'name' => 'Via Wekas',
-                        'badge' => 'Sumber Air Melimpah',
-                        'selected' => false,
-                        'stats' => [
-                            ['label' => 'Jarak Total', 'value' => '12.0 km', 'icon' => 'milestone'],
-                            ['label' => 'Durasi Waktu', 'value' => '6–7 Jam', 'icon' => 'clock'],
-                            ['label' => 'Suhu Rata-rata', 'value' => '9–15°C', 'icon' => 'thermometer'],
-                            ['label' => 'Sumber Air', 'value' => 'Pos 2 (Sungai)', 'icon' => 'droplet'],
-                        ],
-                        'elevation_profile' => [
-                            'title' => 'Elevasi & Rute Pendakian (Via Wekas)',
-                            'points' => [
-                                ['name' => 'Basecamp', 'elevation' => '1.700m', 'x' => 40, 'y' => 185],
-                                ['name' => 'Pos 1', 'elevation' => '1.950m', 'x' => 150, 'y' => 160],
-                                ['name' => 'Pos 2', 'elevation' => '2.400m', 'x' => 280, 'y' => 130],
-                                ['name' => 'Pos Kawah', 'elevation' => '2.700m', 'x' => 420, 'y' => 100],
-                                ['name' => 'Pertemuan', 'elevation' => '2.900m', 'x' => 540, 'y' => 75],
-                                ['name' => 'Puncak', 'elevation' => '3.142m', 'x' => 650, 'y' => 45],
-                            ],
-                            'path' => 'M 40 185 L 150 160 L 280 130 L 420 100 L 540 75 L 650 45',
-                            'area' => 'M 40 185 L 150 160 L 280 130 L 420 100 L 540 75 L 650 45 L 650 210 L 40 210 Z',
-                            'notes' => [
-                                [
-                                    'title' => 'Sumber Air:',
-                                    'desc' => 'Pos 2 (Paling Melimpah & Ada Pipa Alami)',
-                                    'type' => 'water',
-                                    'badge_class' => 'bg-blue-50/80 border-blue-200/70 text-blue-800',
-                                    'icon_class' => 'bg-blue-50 text-blue-600',
-                                ],
-                                [
-                                    'title' => 'Zona Kawah Mati:',
-                                    'desc' => 'Jalur Bebatuan & Tanah Berpasir',
-                                    'type' => 'wind',
-                                    'badge_class' => 'bg-amber-50/50 border-amber-100 text-amber-900',
-                                    'icon_class' => 'bg-amber-100 text-amber-600',
-                                ],
-                                [
-                                    'title' => 'Sinyal Seluler:',
-                                    'desc' => 'Stabil di Basecamp & Pos 1',
-                                    'type' => 'signal',
-                                    'badge_class' => 'bg-emerald-50/40 border-emerald-100 text-emerald-950',
-                                    'icon_class' => 'bg-emerald-100 text-emerald-600',
-                                ],
-                            ],
-                        ],
-                        'itinerary' => [
-                            'title' => 'Itinerary 2D1N (Via Wekas)',
-                            'days' => [
-                                [
-                                    'day' => 'Day 1',
-                                    'title' => 'Day 1: Basecamp Wekas ke Pos 2 Camp (Air Terjun)',
-                                    'description' => 'Pendakian relatif pendek menuju Pos 2 yang terkenal sebagai tempat camp ternyaman dengan sumber air melimpah.',
-                                    'timeline' => [
-                                        ['time' => '09:00', 'activity' => 'Registrasi di Basecamp Wekas'],
-                                        ['time' => '10:00', 'activity' => 'Trekking melewati ladang wortel dan kol'],
-                                        ['time' => '13:30', 'activity' => 'Tiba di Pos 2 Wekas, pasang tenda santai'],
-                                        ['time' => '16:00', 'activity' => 'Eksplorasi aliran air alami & api unggun malam'],
-                                    ],
-                                ],
-                                [
-                                    'day' => 'Day 2',
-                                    'title' => 'Day 2: Menuju Puncak via Bibir Kawah',
-                                    'description' => 'Mendaki dini hari melintasi jalur kawah mati dan pertemuan jalur Selo menuju Puncak Kenteng Songo.',
-                                    'timeline' => [
-                                        ['time' => '03:30', 'activity' => 'Summit push melintasi kawah mati'],
-                                        ['time' => '05:45', 'activity' => 'Golden sunrise di Puncak Triangulasi'],
-                                        ['time' => '08:30', 'activity' => 'Kembali ke Pos 2 & sarapan hangat'],
-                                        ['time' => '11:00', 'activity' => 'Perjalanan turun santai ke Basecamp Wekas'],
-                                    ],
-                                ],
-                            ],
-                        ],
-                    ],
-                ],
-                'itinerary' => [
-                    'title' => 'Itinerary 2D1N (Via Selo)',
-                    'days' => [
-                        [
-                            'day' => 'Day 1',
-                            'title' => 'Day 1: Basecamp ke Sabana (Camp)',
-                            'description' => 'Memulai pendakian dari Basecamp Selo melewati hutan pinus dan lamtoro. Istirahat dan makan siang di Pos 2 sebelum melanjutkan ke Sabana untuk mendirikan tenda.',
-                            'timeline' => [
-                                ['time' => '08:00', 'activity' => 'Registrasi & Persiapan'],
-                                ['time' => '09:00', 'activity' => 'Mulai Trekking'],
-                                ['time' => '12:30', 'activity' => 'Makan Siang di Pos 2'],
-                                ['time' => '16:00', 'activity' => 'Tiba di Sabana 1, Dirikan Tenda'],
-                            ],
-                        ],
-                        [
-                            'day' => 'Day 2',
-                            'title' => 'Day 2: Summit Push & Descent',
-                            'description' => 'Bangun dini hari untuk muncak dan menikmati sunrise di Puncak Kenteng Songo. Setelah sarapan, turun kembali ke basecamp.',
-                            'timeline' => [
-                                ['time' => '03:30', 'activity' => 'Persiapan Summit Attack Menuju Puncak'],
-                                ['time' => '05:30', 'activity' => 'Sunrise Spektakuler di Puncak Kenteng Songo'],
-                                ['time' => '08:00', 'activity' => 'Kembali ke Camp, Sarapan & Packing'],
-                                ['time' => '10:00', 'activity' => 'Perjalanan Turun Menuju Basecamp Selo'],
-                                ['time' => '14:00', 'activity' => 'Tiba di Basecamp & Penutupan Ekspedisi'],
-                            ],
-                        ],
-                    ],
-                ],
-                'facilities' => [
-                    'included' => [
-                        'Akomodasi Camp' => [
-                            'Tenda Kapasitas Fleksibel',
-                            'Common Area (Flysheet & Camp Lamp)',
-                            'Peralatan Masak & Gas (Kompor / Nesting)',
-                            'Set Alat Makan & Minum',
-                        ],
-                        'Perizinan & Keamanan' => [
-                            'Tiket Masuk & SIMAKSI Resmi',
-                            'Asuransi Pendakian Resmi',
-                        ],
-                        'Perlengkapan Personal' => [
-                            'Sleeping Bag / Warm Polar',
-                            'Matras Busa',
-                            'Jas Hujan & Emergency Blanket',
-                            'Tas Carrier / Daily Pack',
-                            'P3K Standar Pendakian',
-                        ],
-                    ],
-                    'excluded' => [
-                        'Kebutuhan & Perlengkapan Pribadi' => [
-                            'Pakaian & Sepatu Pendakian Pribadi',
-                            'Obat-obatan Pribadi Khusus',
-                        ],
-                        'Transportasi & Akses Awal' => [
-                            'Transportasi Kota Asal ke Meeting Point',
-                        ],
-                    ],
-                ],
+            'isLoggedIn' => $user !== null,
+            'loginUrl' => route('login'),
+            'defaultTripType' => $defaultTripType,
+            'hasOpenSchedule' => $hasOpenSchedule,
+            'hasPrivateTrip' => (bool) ($mountain?->has_private_trip ?? false),
+            'openExpeditionId' => $openExpedition?->id,
+            'privateExpeditionId' => $privateExpedition?->id ?? ($mountain?->expeditions->firstWhere('type', 'private')?->id ?? null),
+            'routeId' => $primaryRoute?->id ?? 1,
+            'routes' => $mountain?->routes?->toArray() ?? [],
+            'priceTiers' => $mountain?->priceTiers?->toArray() ?? [],
+            'meetingPoints' => $mountain?->meetingPoints?->toArray() ?? [],
+            'addons' => $addons instanceof Collection ? $addons->toArray() : ($addons ?? []),
+            'bookingFeePerPax' => $mountain?->booking_fee_per_pax ?? 150000,
+            'basePrice' => $mountain?->base_price ?? ($expeditionData['price'] ?? 500000),
+            'pricePrivate' => $mountain?->price_private ?? ($expeditionData['price_camping_private'] ?? 750000),
+            'priceTektok' => $mountain?->effective_price_tektok ?? ($expeditionData['price_tektok_open'] ?? 400000),
+            'pricePrivateTektok' => $mountain?->effective_price_private_tektok ?? ($expeditionData['price_tektok_private'] ?? 650000),
+            'maxQuota' => $openExpedition?->quota_max ?? 0,
+            'durationDays' => $mountain?->duration_days ?? 2,
+            'durationNights' => $mountain?->duration_nights ?? 1,
+            'minPrivateDate' => now()->addDays(1)->toDateString(),
+            'defaultPrivateDate' => $privateDepartureDate?->toDateString() ?? now()->addDays(7)->toDateString(),
+            'departureDateOpenShort' => $openDepartureDate?->format('d/m/Y') ?? 'Belum ada jadwal',
+            'departureDateOpenFull' => $openDepartureDate?->translatedFormat('d F Y') ?? 'Belum ada jadwal',
+            'returnDateOpenFull' => $openReturnDate?->translatedFormat('d F Y') ?? 'Belum ada jadwal',
+            'departureDatePrivateShort' => $privateDepartureDate?->format('d/m/Y') ?? 'Bebas Pilih',
+            'departureDatePrivateFull' => $privateDepartureDate?->translatedFormat('d F Y') ?? 'Bebas Pilih Tanggal',
+            'returnDatePrivateFull' => $privateReturnDate?->translatedFormat('d F Y') ?? 'Sesuai Durasi Trip',
+            'authCustomer' => [
+                'name' => $user?->name ?? 'Pendaki MiddleTrip',
+                'email' => $user?->email ?? 'pendaki@middletrip.com',
+                'phone' => $user?->phone ?? '081234567890',
+                'nik' => $user?->nik ?? '3301234567890001',
             ],
+        ];
+    }
 
-            'mt-sindoro' => [
-                'id' => 2,
-                'slug' => 'mt-sindoro',
-                'title' => 'Mt. Sindoro Expedition',
-                'mountain' => 'Mt. Sindoro',
-                'elevation' => '3.153 mdpl',
-                'difficulty_badge' => 'Jalur Berbatu Vulkanik',
-                'location' => 'Jawa Tengah',
-                'grade' => 'Grade B',
-                'grade_label' => 'Grade B – Menengah',
-                'type' => 'open',
-                'type_label' => 'Open Trip',
-                'price' => 650000,
-                'price_formatted' => 'Rp 650.000',
-                'price_tektok' => 500000,
-                'price_private' => 900000,
-                'price_private_tektok' => 750000,
-                'quota_current' => 6,
-                'quota_max' => 12,
-                'departure_date' => '22/06/2026',
-                'image' => 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?q=80&w=900&auto=format&fit=crop',
-                'description' => 'Trek bebatuan yang kokoh menuju kawah aktif dan lautan awan yang menakjubkan.',
-                'overview' => 'Gunung Sindoro berdiri kokoh di dataran tinggi Kledung, Temanggung. Jalur Kledung menyajikan medan berbatu khas gunung vulkanik aktif dengan kawah belerang eksotis di puncaknya dan lanskap pemandangan kembarannya, Gunung Sumbing.',
-                'gallery' => [
-                    [
-                        'url' => 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?q=80&w=1200&auto=format&fit=crop',
-                        'caption' => 'Kawah Aktif Sindoro',
+    /**
+     * Membangun dataset ekspedisi dinamis dari model Mountain database.
+     *
+     * @return array<string, mixed>
+     */
+    private function buildExpeditionDataFromMountain(Mountain $mountain): array
+    {
+        $primaryRoute = $mountain->primaryRoute ?? $mountain->routes->first();
+        $gradeVal = $primaryRoute?->grade?->value ?? ($mountain->default_grade?->value ?? 'Grade A');
+        $gradeLabel = match ($gradeVal) {
+            'Grade B' => 'Grade B – Menengah',
+            'Grade C' => 'Grade C – Ahli',
+            default => 'Grade A – Pemula',
+        };
+        $difficultyBadge = match ($gradeVal) {
+            'Grade B' => 'Jalur Menengah',
+            'Grade C' => 'Tantangan Ekstrem',
+            default => 'Cocok utk Pemula',
+        };
+
+        $openExpedition = $mountain->expeditions->where('type', 'open')->where('status', 'open')->first();
+        $hasOpenSchedule = $openExpedition !== null;
+        $departureDate = $openExpedition?->departure_date
+            ? Carbon::parse($openExpedition->departure_date)->format('d/m/Y')
+            : 'Belum ada jadwal';
+
+        $coverUrl = $mountain->cover_image ?: 'https://images.unsplash.com/photo-1544735716-392fe2489ffa?q=80&w=1200&auto=format&fit=crop';
+
+        $routesData = [];
+        if ($mountain->routes->isNotEmpty()) {
+            foreach ($mountain->routes as $index => $r) {
+                $rGradeVal = $r->grade?->value ?? $r->grade ?? 'Grade A';
+                $waterStat = ! empty($r->elevation_checkpoints['water_note'])
+                    ? Str::limit($r->elevation_checkpoints['water_note'], 20)
+                    : (! empty($mountain->elevation_checkpoints['water_note']) ? Str::limit($mountain->elevation_checkpoints['water_note'], 20) : 'Pos Air Terakhir');
+
+                $routesData[] = [
+                    'id' => $r->id,
+                    'slug' => $r->slug ?: 'via-'.$r->id,
+                    'name' => $r->name,
+                    'badge' => $r->is_primary ? 'Rekomendasi Utama' : $rGradeVal,
+                    'grade' => $rGradeVal,
+                    'grade_label' => match ($rGradeVal) {
+                        'Grade A' => 'Grade A - Jalur Tertata',
+                        'Grade B' => 'Grade B - Jalur Sedang',
+                        'Grade C' => 'Grade C - Jalur Berat',
+                        default => $rGradeVal,
+                    },
+                    'selected' => $r->is_primary || $index === 0,
+                    'stats' => [
+                        ['label' => 'Jarak Total', 'value' => ($r->distance_km ? $r->distance_km.' km' : '— km'), 'icon' => 'milestone'],
+                        ['label' => 'Durasi Waktu', 'value' => ($r->duration_hours ?? '— Jam'), 'icon' => 'clock'],
+                        ['label' => 'Suhu Rata-rata', 'value' => '8–16°C', 'icon' => 'thermometer'],
+                        ['label' => 'Sumber Air', 'value' => $waterStat, 'icon' => 'droplet'],
                     ],
-                    [
-                        'url' => 'https://images.unsplash.com/photo-1519681393784-d120267933ba?q=80&w=600&auto=format&fit=crop',
-                        'caption' => 'Sunrise di Kledung',
-                    ],
-                    [
-                        'url' => 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?q=80&w=600&auto=format&fit=crop',
-                        'caption' => 'Lautan Awan Sindoro',
-                    ],
-                    [
-                        'url' => 'https://images.unsplash.com/photo-1544717305-2782549b5136?q=80&w=600&auto=format&fit=crop',
-                        'caption' => 'Camp Pos 3 Sindoro',
-                    ],
-                    [
-                        'url' => 'https://images.unsplash.com/photo-1551632811-561732d1e306?q=80&w=600&auto=format&fit=crop',
-                        'caption' => 'Puncak Sejati 3.153 mdpl',
-                    ],
+                    'elevation_profile' => $this->buildElevationProfile($mountain, $r->name, $r->elevation_checkpoints),
+                    'itinerary' => $this->buildRouteItinerary($r),
+                ];
+            }
+        }
+
+        $overview = $mountain->overview ?: ($mountain->description ?: ('Gunung '.$mountain->name.' berketinggian '.number_format($mountain->elevation, 0, ',', '.').' mdpl berlokasi di '.$mountain->province.'. Rasakan pengalaman pendakian spektakuler dengan pendampingan guide profesional bersertifikasi MiddleTrip.'));
+
+        $facilitiesIncluded = ! empty($mountain->facilities_included) && is_array($mountain->facilities_included)
+            ? $mountain->facilities_included
+            : [
+                'Akomodasi Camp' => [
+                    'Tenda Kapasitas Fleksibel',
+                    'Common Area (Flysheet & Camp Lamp)',
+                    'Peralatan Masak & Gas (Kompor / Nesting)',
+                    'Set Alat Makan & Minum',
                 ],
-                'stats' => [
-                    ['label' => 'Jarak Total', 'value' => '11.5 km', 'icon' => 'milestone'],
-                    ['label' => 'Durasi Waktu', 'value' => '7–8 Jam', 'icon' => 'clock'],
-                    ['label' => 'Suhu Rata-rata', 'value' => '6–14°C', 'icon' => 'thermometer'],
-                    ['label' => 'Sumber Air', 'value' => 'Pos 2', 'icon' => 'droplet'],
+                'Perizinan & Keamanan' => [
+                    'Tiket Masuk & SIMAKSI Resmi',
+                    'Asuransi Pendakian Resmi',
                 ],
-                'elevation_profile' => [
-                    'title' => 'Elevasi & Rute Pendakian (Via Kledung)',
-                    'points' => [
-                        ['name' => 'Basecamp', 'elevation' => '1.400m', 'x' => 40, 'y' => 190],
-                        ['name' => 'Pos 1', 'elevation' => '1.900m', 'x' => 150, 'y' => 165],
-                        ['name' => 'Pos 2', 'elevation' => '2.300m', 'x' => 270, 'y' => 140],
-                        ['name' => 'Pos 3', 'elevation' => '2.650m', 'x' => 400, 'y' => 105],
-                        ['name' => 'Batu Tatah', 'elevation' => '2.900m', 'x' => 520, 'y' => 75],
-                        ['name' => 'Puncak', 'elevation' => '3.153m', 'x' => 650, 'y' => 42],
-                    ],
-                    'path' => 'M 40 190 L 150 165 L 270 140 L 400 105 L 520 75 L 650 42',
-                    'area' => 'M 40 190 L 150 165 L 270 140 L 400 105 L 520 75 L 650 42 L 650 210 L 40 210 Z',
-                    'notes' => [
-                        [
-                            'title' => 'Titik Air Terakhir:',
-                            'desc' => 'Pos 2 Kledung',
-                            'type' => 'water',
-                            'badge_class' => 'bg-blue-50/80 border-blue-200/70 text-blue-800',
-                            'icon_class' => 'bg-blue-50 text-blue-600',
-                        ],
-                        [
-                            'title' => 'Bau Belerang:',
-                            'desc' => 'Wajib masker dekat kawah',
-                            'type' => 'wind',
-                            'badge_class' => 'bg-amber-50/50 border-amber-100 text-amber-900',
-                            'icon_class' => 'bg-amber-100 text-amber-600',
-                        ],
-                        [
-                            'title' => 'Sinyal Seluler:',
-                            'desc' => 'Tersedia hingga Pos 3',
-                            'type' => 'signal',
-                            'badge_class' => 'bg-emerald-50/40 border-emerald-100 text-emerald-950',
-                            'icon_class' => 'bg-emerald-100 text-emerald-600',
-                        ],
-                    ],
+                'Perlengkapan Personal' => [
+                    'Sleeping Bag / Warm Polar',
+                    'Matras Busa',
+                    'Jas Hujan & Emergency Blanket',
+                    'P3K Standar Pendakian',
                 ],
-                'routes' => [
-                    ['id' => 'kledung', 'name' => 'Via Kledung', 'badge' => 'Jalur Terfavorit', 'selected' => true],
-                    ['id' => 'sigedang', 'name' => 'Via Sigedang (Tambi)', 'badge' => 'Kebun Teh Menawan', 'selected' => false],
-                    ['id' => 'bansari', 'name' => 'Via Bansari', 'badge' => 'Ojek Ramah Lutut', 'selected' => false],
+            ];
+
+        $facilitiesExcluded = ! empty($mountain->facilities_excluded) && is_array($mountain->facilities_excluded)
+            ? $mountain->facilities_excluded
+            : [
+                'Kebutuhan & Perlengkapan Pribadi' => [
+                    'Pakaian & Sepatu Pendakian Pribadi',
+                    'Obat-obatan Pribadi Khusus',
                 ],
-                'itinerary' => [
-                    'title' => 'Itinerary 2D1N (Via Kledung)',
-                    'days' => [
-                        [
-                            'day' => 'Day 1',
-                            'title' => 'Day 1: Basecamp ke Sunrise Camp Pos 3',
-                            'description' => 'Mulai mendaki melewati ladang tembakau dengan opsi naik ojek hingga Pos 1, lalu trekking menuju Pos 3 untuk mendirikan kemah.',
-                            'timeline' => [
-                                ['time' => '08:30', 'activity' => 'Registrasi & Persiapan di Basecamp Kledung'],
-                                ['time' => '09:30', 'activity' => 'Trekking Menuju Pos 2 & Pos 3'],
-                                ['time' => '13:00', 'activity' => 'Makan Siang di Area Hutan'],
-                                ['time' => '16:00', 'activity' => 'Tiba di Sunrise Camp Pos 3, Pasang Tenda'],
-                            ],
-                        ],
-                        [
-                            'day' => 'Day 2',
-                            'title' => 'Day 2: Summit Attack & Kawah Aktif',
-                            'description' => 'Mendaki jalur berbatu terjal dini hari menuju bibir kawah Sindoro. Menikmati sunrise spektakuler dengan latar Gunung Sumbing.',
-                            'timeline' => [
-                                ['time' => '03:00', 'activity' => 'Bangun & Summit Push'],
-                                ['time' => '05:45', 'activity' => 'Puncak Sindoro & Eksplorasi Kawah'],
-                                ['time' => '08:30', 'activity' => 'Kembali ke Tenda & Sarapan'],
-                                ['time' => '11:00', 'activity' => 'Turun ke Basecamp Kledung'],
-                            ],
-                        ],
-                    ],
+                'Transportasi & Akses Awal' => [
+                    'Transportasi Kota Asal ke Meeting Point',
                 ],
-                'facilities' => [
-                    'included' => [
-                        'Akomodasi Camp' => [
-                            'Tenda Kapasitas Fleksibel',
-                            'Common Area (Flysheet & Camp Lamp)',
-                            'Peralatan Masak & Gas',
-                            'Set Alat Makan & Minum',
-                        ],
-                        'Perizinan & Keamanan' => [
-                            'Tiket Masuk & SIMAKSI Resmi',
-                            'Asuransi Pendakian',
-                        ],
-                        'Perlengkapan Personal' => [
-                            'Sleeping Bag / Warm Polar',
-                            'Matras Busa',
-                            'Jas Hujan & Emergency Blanket',
-                            'P3K Standar Pendakian',
-                        ],
-                    ],
-                    'excluded' => [
-                        'Kebutuhan & Perlengkapan Pribadi' => [
-                            'Pakaian & Sepatu Pendakian Pribadi',
-                            'Masker Gas / Slayer Penahan Asap Kawah',
-                        ],
-                        'Transportasi' => [
-                            'Ojek Basecamp ke Pos 1 (Opsional Pribadi)',
-                        ],
-                    ],
-                ],
+            ];
+
+        $galleryItems = [
+            ['url' => $coverUrl, 'caption' => 'Cover '.$mountain->name],
+        ];
+
+        if (! empty($mountain->gallery) && is_array($mountain->gallery)) {
+            foreach ($mountain->gallery as $item) {
+                if (! empty($item['url'])) {
+                    $galleryItems[] = [
+                        'url' => $item['url'],
+                        'caption' => ! empty($item['caption']) ? $item['caption'] : 'Pemandangan '.$mountain->name,
+                    ];
+                }
+            }
+        }
+
+        return [
+            'id' => $mountain->id,
+            'slug' => $mountain->slug,
+            'title' => $mountain->name.' Expedition',
+            'mountain' => $mountain->name,
+            'elevation' => number_format($mountain->elevation, 0, ',', '.').' mdpl',
+            'difficulty_badge' => $difficultyBadge,
+            'location' => $mountain->province,
+            'grade' => $gradeVal,
+            'grade_label' => $gradeLabel,
+            'type' => $mountain->has_open_trip ? 'open' : 'private',
+            'type_label' => $mountain->has_open_trip ? 'Open Trip' : 'Private Trip',
+            'price' => $mountain->base_price,
+            'price_formatted' => 'Rp '.number_format($mountain->base_price, 0, ',', '.'),
+            'price_tektok' => (int) ($mountain->base_price * 0.8),
+            'price_private' => $mountain->price_private ?? (int) ($mountain->base_price * 1.5),
+            'price_private_tektok' => (int) (($mountain->price_private ?? ($mountain->base_price * 1.5)) * 0.8),
+            'quota_current' => $openExpedition?->quota_booked ?? 0,
+            'quota_max' => $openExpedition?->quota_max ?? 0,
+            'departure_date' => $departureDate,
+            'has_open_schedule' => $hasOpenSchedule,
+            'image' => $coverUrl,
+            'description' => $mountain->description ?: ('Jelajahi keindahan '.$mountain->name.' bersama tim profesional MiddleTrip.'),
+            'overview' => $overview,
+            'gallery' => $galleryItems,
+            'stats' => $routesData[0]['stats'] ?? [],
+            'elevation_profile' => $routesData[0]['elevation_profile'] ?? (! empty($mountain->elevation_checkpoints['points']) ? $this->buildElevationProfile($mountain, $mountain->name, $mountain->elevation_checkpoints) : null),
+            'routes' => $routesData,
+            'itinerary' => $routesData[0]['itinerary'] ?? null,
+            'facilities' => [
+                'included' => $facilitiesIncluded,
+                'excluded' => $facilitiesExcluded,
             ],
+        ];
+    }
 
-            'mt-prau' => [
-                'id' => 3,
-                'slug' => 'mt-prau',
-                'title' => 'Mt. Prau Expedition',
-                'mountain' => 'Mt. Prau',
-                'elevation' => '2.590 mdpl',
-                'difficulty_badge' => 'Sunrise Terindah Se-Jateng',
-                'location' => 'Jawa Tengah',
-                'grade' => 'Grade A',
-                'grade_label' => 'Grade A – Pemula',
-                'type' => 'private',
-                'type_label' => 'Private Trip',
-                'price' => 650000,
-                'price_formatted' => 'Rp 650.000',
-                'price_tektok' => 500000,
-                'price_private' => 650000,
-                'price_private_tektok' => 500000,
-                'quota_current' => 4,
-                'quota_max' => 8,
-                'departure_date' => '28/06/2026',
-                'image' => 'https://images.unsplash.com/photo-1589182373726-e4f658ab50f0?q=80&w=900&auto=format&fit=crop',
-                'description' => 'Sunrise terindah di Jawa Tengah dengan pemandangan 360 derajat jajaran gunung kembar.',
-                'overview' => 'Gunung Prau di Dataran Tinggi Dieng adalah ikon keindahan alam Jawa Tengah. Trek yang relatif singkat dan ramah pemula menghantarkan pendaki ke bukit teletubbies dengan hamparan bunga daisy dan panorama sunrise emas berlatar Gunung Sindoro dan Sumbing.',
-                'gallery' => [
-                    ['url' => 'https://images.unsplash.com/photo-1589182373726-e4f658ab50f0?q=80&w=1200&auto=format&fit=crop', 'caption' => 'Sunrise Bukit Teletubbies'],
-                    ['url' => 'https://images.unsplash.com/photo-1544735716-392fe2489ffa?q=80&w=600&auto=format&fit=crop', 'caption' => 'Padang Daisy Prau'],
-                    ['url' => 'https://images.unsplash.com/photo-1551632811-561732d1e306?q=80&w=600&auto=format&fit=crop', 'caption' => 'View Sindoro Sumbing'],
-                    ['url' => 'https://images.unsplash.com/photo-1544717305-2782549b5136?q=80&w=600&auto=format&fit=crop', 'caption' => 'Camping Ground Prau'],
-                    ['url' => 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?q=80&w=600&auto=format&fit=crop', 'caption' => 'Puncak 2.590 mdpl'],
-                ],
-                'stats' => [
-                    ['label' => 'Jarak Total', 'value' => '7.2 km', 'icon' => 'milestone'],
-                    ['label' => 'Durasi Waktu', 'value' => '3–4 Jam', 'icon' => 'clock'],
-                    ['label' => 'Suhu Rata-rata', 'value' => '5–12°C', 'icon' => 'thermometer'],
-                    ['label' => 'Sumber Air', 'value' => 'Basecamp', 'icon' => 'droplet'],
-                ],
-                'elevation_profile' => [
-                    'title' => 'Elevasi & Rute Pendakian (Via Patakbanteng)',
-                    'points' => [
-                        ['name' => 'Basecamp', 'elevation' => '2.050m', 'x' => 40, 'y' => 190],
-                        ['name' => 'Pos 1', 'elevation' => '2.200m', 'x' => 180, 'y' => 160],
-                        ['name' => 'Pos 2', 'elevation' => '2.350m', 'x' => 330, 'y' => 130],
-                        ['name' => 'Pos 3', 'elevation' => '2.480m', 'x' => 480, 'y' => 85],
-                        ['name' => 'Puncak', 'elevation' => '2.590m', 'x' => 650, 'y' => 45],
-                    ],
-                    'path' => 'M 40 190 L 180 160 L 330 130 L 480 85 L 650 45',
-                    'area' => 'M 40 190 L 180 160 L 330 130 L 480 85 L 650 45 L 650 210 L 40 210 Z',
-                    'notes' => [
-                        [
-                            'title' => 'Titik Air:',
-                            'desc' => 'Wajib bawa dari Basecamp',
-                            'type' => 'water',
-                            'badge_class' => 'bg-blue-50/80 border-blue-200/70 text-blue-800',
-                            'icon_class' => 'bg-blue-50 text-blue-600',
-                        ],
-                        [
-                            'title' => 'Suhu Ekstrem:',
-                            'desc' => 'Dapat mencapai 0°C saat kemarau',
-                            'type' => 'wind',
-                            'badge_class' => 'bg-amber-50/50 border-amber-100 text-amber-900',
-                            'icon_class' => 'bg-amber-100 text-amber-600',
-                        ],
-                        [
-                            'title' => 'Sinyal Seluler:',
-                            'desc' => 'Sangat stabil di sepanjang rute',
-                            'type' => 'signal',
-                            'badge_class' => 'bg-emerald-50/40 border-emerald-100 text-emerald-950',
-                            'icon_class' => 'bg-emerald-100 text-emerald-600',
-                        ],
-                    ],
-                ],
-                'routes' => [
-                    ['id' => 'patakbanteng', 'name' => 'Via Patakbanteng', 'badge' => 'Jalur Tercepat', 'selected' => true],
-                    ['id' => 'dieng', 'name' => 'Via Dieng Kulon', 'badge' => 'Landai & Santai', 'selected' => false],
-                    ['id' => 'kalilembu', 'name' => 'Via Kalilembu', 'badge' => 'Pemandangan Asri', 'selected' => false],
-                ],
-                'itinerary' => [
-                    'title' => 'Itinerary 2D1N (Via Patakbanteng)',
-                    'days' => [
-                        [
-                            'day' => 'Day 1',
-                            'title' => 'Day 1: Basecamp ke Sunrise Camp',
-                            'description' => 'Mulai trekking sore hari mendaki anak tangga dan kebun kentang hingga bukit teletubbies.',
-                            'timeline' => [
-                                ['time' => '13:00', 'activity' => 'Meeting point di Dieng & Makan Siang'],
-                                ['time' => '14:30', 'activity' => 'Mulai Pendakian Patakbanteng'],
-                                ['time' => '17:30', 'activity' => 'Tiba di Camp, Sunset & Makan Malam'],
-                            ],
-                        ],
-                        [
-                            'day' => 'Day 2',
-                            'title' => 'Day 2: Golden Sunrise & Turun',
-                            'description' => 'Menikmati lukisan langit fajar keemasan terbaik sebelum santai menuruni jalur.',
-                            'timeline' => [
-                                ['time' => '05:00', 'activity' => 'Golden Sunrise Dieng'],
-                                ['time' => '07:30', 'activity' => 'Sarapan & Sesi Foto'],
-                                ['time' => '09:30', 'activity' => 'Perjalanan Turun ke Basecamp'],
-                            ],
-                        ],
-                    ],
-                ],
-                'facilities' => [
-                    'included' => [
-                        'Akomodasi Camp' => [
-                            'Tenda Premium',
-                            'Sleeping Bag Tebal & Matras',
-                            'Lampu Tenda & Logistik Lengkap',
-                        ],
-                        'Perizinan' => [
-                            'SIMAKSI & Asuransi Resmi',
-                        ],
-                    ],
-                    'excluded' => [
-                        'Pribadi' => [
-                            'Jaket Gunung & Pakaian Hangat',
-                        ],
-                    ],
-                ],
-            ],
+    /**
+     * Membangun dataset itinerary per rute.
+     *
+     * @return array<string, mixed>
+     */
+    private function buildRouteItinerary(?Route $route, string $defaultName = 'Jalur Utama'): array
+    {
+        $routeName = $route?->name ?? $defaultName;
+        $itinData = $route?->itinerary;
 
-            'mt-slamet' => [
-                'id' => 4,
-                'slug' => 'mt-slamet',
-                'title' => 'Mt. Slamet Expedition',
-                'mountain' => 'Mt. Slamet',
-                'elevation' => '3.428 mdpl',
-                'difficulty_badge' => 'Atap Jawa Tengah',
-                'location' => 'Jawa Tengah',
-                'grade' => 'Grade C',
-                'grade_label' => 'Grade C – Ahli',
-                'type' => 'open',
-                'type_label' => 'Open Trip',
-                'price' => 950000,
-                'price_formatted' => 'Rp 950.000',
-                'price_tektok' => 750000,
-                'price_private' => 1350000,
-                'price_private_tektok' => 1100000,
-                'quota_current' => 3,
-                'quota_max' => 10,
-                'departure_date' => '05/07/2026',
-                'image' => 'https://images.unsplash.com/photo-1519681393784-d120267933ba?q=80&w=900&auto=format&fit=crop',
-                'description' => 'Atap Jawa Tengah dengan jalur kerikil merah vulkanik curam dan elevasi ekstrem.',
-                'overview' => 'Sebagai titik tertinggi di Jawa Tengah (3.428 mdpl), Gunung Slamet menghadirkan tantangan fisik tingkat lanjut. Karakteristik jalur Bambangan yang panjang berakar pohon serta tanjakan bebatuan vulkanik merah curam menuntut ketahanan mental dan fisik prima.',
-                'gallery' => [
-                    ['url' => 'https://images.unsplash.com/photo-1519681393784-d120267933ba?q=80&w=1200&auto=format&fit=crop', 'caption' => 'Kawah Segara Wedi Slamet'],
-                    ['url' => 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?q=80&w=600&auto=format&fit=crop', 'caption' => 'Trek Pasir Merah'],
-                    ['url' => 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?q=80&w=600&auto=format&fit=crop', 'caption' => 'Tugu Puncak 3.428 mdpl'],
-                    ['url' => 'https://images.unsplash.com/photo-1544717305-2782549b5136?q=80&w=600&auto=format&fit=crop', 'caption' => 'Camp Pos 7'],
-                    ['url' => 'https://images.unsplash.com/photo-1551632811-561732d1e306?q=80&w=600&auto=format&fit=crop', 'caption' => 'Batas Vegetasi Plawangan'],
-                ],
-                'stats' => [
-                    ['label' => 'Jarak Total', 'value' => '16.5 km', 'icon' => 'milestone'],
-                    ['label' => 'Durasi Waktu', 'value' => '9–11 Jam', 'icon' => 'clock'],
-                    ['label' => 'Suhu Rata-rata', 'value' => '4–12°C', 'icon' => 'thermometer'],
-                    ['label' => 'Sumber Air', 'value' => 'Pos 5', 'icon' => 'droplet'],
-                ],
-                'elevation_profile' => [
-                    'title' => 'Elevasi & Rute Pendakian (Via Bambangan)',
-                    'points' => [
-                        ['name' => 'Basecamp', 'elevation' => '1.500m', 'x' => 40, 'y' => 195],
-                        ['name' => 'Pos 3', 'elevation' => '2.100m', 'x' => 190, 'y' => 165],
-                        ['name' => 'Pos 5', 'elevation' => '2.550m', 'x' => 330, 'y' => 135],
-                        ['name' => 'Pos 7', 'elevation' => '2.950m', 'x' => 450, 'y' => 95],
-                        ['name' => 'Plawangan', 'elevation' => '3.150m', 'x' => 540, 'y' => 70],
-                        ['name' => 'Puncak', 'elevation' => '3.428m', 'x' => 650, 'y' => 35],
+        // 1. Tentukan Itinerary Camping
+        if ($itinData && ! empty($itinData['camping']) && is_array($itinData['camping'])) {
+            $camping = $itinData['camping'];
+        } elseif ($itinData && ! empty($itinData['days']) && is_array($itinData['days'])) {
+            $daysCount = count($itinData['days']);
+            $durationLabel = $itinData['duration_label'] ?? ($daysCount === 1 ? '1D (Tek-tok)' : "{$daysCount}D".($daysCount - 1).'N');
+            $camping = [
+                'title' => $itinData['title'] ?? ("Itinerary {$durationLabel} ({$routeName})"),
+                'duration_label' => $durationLabel,
+                'days_count' => $daysCount,
+                'days' => $itinData['days'],
+            ];
+        } else {
+            $camping = [
+                'title' => 'Itinerary 2D1N ('.$routeName.')',
+                'duration_label' => '2D1N',
+                'days_count' => 2,
+                'days' => [
+                    [
+                        'day' => 'Day 1',
+                        'title' => 'Day 1: Basecamp ke Camp Area',
+                        'description' => 'Mulai pendakian dari Basecamp '.$routeName.' melewati perkebunan dan vegetasi hutan, beristirahat di pos tengah dan mendirikan tenda di camp area.',
+                        'timeline' => [
+                            ['time' => '08:00', 'activity' => 'Registrasi & Persiapan di Basecamp'],
+                            ['time' => '09:00', 'activity' => 'Mulai Trekking Menuju Pos 1 & 2'],
+                            ['time' => '12:30', 'activity' => 'Makan Siang & Istirahat di Pos Tengah'],
+                            ['time' => '16:00', 'activity' => 'Tiba di Camp Area & Dirikan Tenda'],
+                        ],
                     ],
-                    'path' => 'M 40 195 L 190 165 L 330 135 L 450 95 L 540 70 L 650 35',
-                    'area' => 'M 40 195 L 190 165 L 330 135 L 450 95 L 540 70 L 650 35 L 650 210 L 40 210 Z',
-                    'notes' => [
-                        [
-                            'title' => 'Titik Air Terakhir:',
-                            'desc' => 'Pos 5 (Mata Air Samarantu)',
-                            'type' => 'water',
-                            'badge_class' => 'bg-blue-50/80 border-blue-200/70 text-blue-800',
-                            'icon_class' => 'bg-blue-50 text-blue-600',
-                        ],
-                        [
-                            'title' => 'Zona Kerikil Luncur:',
-                            'desc' => 'Wajib helm & gaiter di Plawangan',
-                            'type' => 'wind',
-                            'badge_class' => 'bg-red-50/50 border-red-100 text-red-900',
-                            'icon_class' => 'bg-red-100 text-red-600',
-                        ],
-                        [
-                            'title' => 'Sinyal:',
-                            'desc' => 'Terbatas di Pos 1 dan Puncak',
-                            'type' => 'signal',
-                            'badge_class' => 'bg-slate-50 border-slate-200 text-slate-700',
-                            'icon_class' => 'bg-slate-100 text-slate-600',
+                    [
+                        'day' => 'Day 2',
+                        'title' => 'Day 2: Summit Push & Turun Kembali',
+                        'description' => 'Bangun dini hari untuk summit push menikmati sunrise di puncak tertinggi, sarapan hangat, lalu berkemas turun kembali ke basecamp.',
+                        'timeline' => [
+                            ['time' => '03:30', 'activity' => 'Summit Push Menuju Puncak'],
+                            ['time' => '05:30', 'activity' => 'Sunrise Spektakuler di Puncak'],
+                            ['time' => '08:00', 'activity' => 'Kembali ke Camp, Sarapan & Packing'],
+                            ['time' => '10:00', 'activity' => 'Perjalanan Turun Menuju Basecamp'],
+                            ['time' => '14:00', 'activity' => 'Tiba di Basecamp & Penutupan Trip'],
                         ],
                     ],
                 ],
-                'routes' => [
-                    ['id' => 'bambangan', 'name' => 'Via Bambangan', 'badge' => 'Jalur Klasik Utama', 'selected' => true],
-                    ['id' => 'dipajaya', 'name' => 'Via Dipajaya (Pemalang)', 'badge' => 'Jalur Alternatif', 'selected' => false],
-                    ['id' => 'guci', 'name' => 'Via Guci (Tegal)', 'badge' => 'Pemandian Air Panas', 'selected' => false],
-                ],
-                'itinerary' => [
-                    'title' => 'Itinerary 2D1N (Via Bambangan)',
-                    'days' => [
-                        [
-                            'day' => 'Day 1',
-                            'title' => 'Day 1: Basecamp ke Pos 7 Camp',
-                            'description' => 'Pendakian panjang melintasi 7 pos peristirahatan hingga camp terakhir di batas vegetasi.',
-                            'timeline' => [
-                                ['time' => '07:00', 'activity' => 'Briefing & Mulai Pendakian'],
-                                ['time' => '12:00', 'activity' => 'Makan Siang di Pos 4'],
-                                ['time' => '16:30', 'activity' => 'Tiba di Pos 7, Pasang Tenda'],
-                            ],
-                        ],
-                        [
-                            'day' => 'Day 2',
-                            'title' => 'Day 2: Menembus Pasir Merah ke Atap Jateng',
-                            'description' => 'Trekking menantang melewati pasir kerikil curam Plawangan menuju bibir kawah raksasa.',
-                            'timeline' => [
-                                ['time' => '02:30', 'activity' => 'Summit Push Plawangan'],
-                                ['time' => '05:30', 'activity' => 'Puncak Gunung Slamet (3.428 mdpl)'],
-                                ['time' => '09:00', 'activity' => 'Turun ke Camp & Kembali ke Basecamp'],
-                            ],
-                        ],
-                    ],
-                ],
-                'facilities' => [
-                    'included' => [
-                        'Akomodasi & Tim' => [
-                            'Tenda Dome Tahan Badai',
-                            'Guide Berlisensi & Porter Tim',
-                            'Logistik Masak & Makan Hangat',
-                            'Helm Pengaman Pendakian',
-                        ],
-                        'Perizinan' => [
-                            'SIMAKSI & Asuransi Resmi',
-                        ],
-                    ],
-                    'excluded' => [
-                        'Pribadi' => [
-                            'Gaiter, Sarung Tangan, & Trekking Pole',
-                        ],
-                    ],
-                ],
-            ],
+            ];
+        }
 
-            'mt-sumbing' => [
-                'id' => 5,
-                'slug' => 'mt-sumbing',
-                'title' => 'Mt. Sumbing Expedition',
-                'mountain' => 'Mt. Sumbing',
-                'elevation' => '3.371 mdpl',
-                'difficulty_badge' => 'Negeri di Atas Awan',
-                'location' => 'Jawa Tengah',
-                'grade' => 'Grade B',
-                'grade_label' => 'Grade B – Menengah',
-                'type' => 'private',
-                'type_label' => 'Private Trip',
-                'price' => 750000,
-                'price_formatted' => 'Rp 750.000',
-                'price_tektok' => 600000,
-                'price_private' => 750000,
-                'price_private_tektok' => 600000,
-                'quota_current' => 4,
-                'quota_max' => 10,
-                'departure_date' => '12/07/2026',
-                'image' => 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?q=80&w=900&auto=format&fit=crop',
-                'description' => 'Melewati jalur eksotis Bowongso menuju puncak sejati beralaskan awan putih.',
-                'overview' => 'Gunung Sumbing (3.371 mdpl) adalah gunung tertinggi ketiga di Pulau Jawa. Memiliki kawah luas dengan tebing-tebing batu dramatis seperti Puncak Sejati, Puncak Rajawali, dan Puncak Buntu, serta jalur Bowongso dan Butuh (Nepal Van Java) yang memukau.',
-                'gallery' => [
-                    ['url' => 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?q=80&w=1200&auto=format&fit=crop', 'caption' => 'Puncak Sejati Sumbing'],
-                    ['url' => 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?q=80&w=600&auto=format&fit=crop', 'caption' => 'Kawah Sumbing'],
-                    ['url' => 'https://images.unsplash.com/photo-1519681393784-d120267933ba?q=80&w=600&auto=format&fit=crop', 'caption' => 'Nepal Van Java'],
-                    ['url' => 'https://images.unsplash.com/photo-1544717305-2782549b5136?q=80&w=600&auto=format&fit=crop', 'caption' => 'Sunrise di Atas Awan'],
-                    ['url' => 'https://images.unsplash.com/photo-1551632811-561732d1e306?q=80&w=600&auto=format&fit=crop', 'caption' => 'Tebing Batu Rajawali'],
-                ],
-                'stats' => [
-                    ['label' => 'Jarak Total', 'value' => '12.8 km', 'icon' => 'milestone'],
-                    ['label' => 'Durasi Waktu', 'value' => '7–8 Jam', 'icon' => 'clock'],
-                    ['label' => 'Suhu Rata-rata', 'value' => '7–14°C', 'icon' => 'thermometer'],
-                    ['label' => 'Sumber Air', 'value' => 'Pos 2', 'icon' => 'droplet'],
-                ],
-                'elevation_profile' => [
-                    'title' => 'Elevasi & Rute Pendakian (Via Bowongso)',
-                    'points' => [
-                        ['name' => 'Basecamp', 'elevation' => '1.600m', 'x' => 40, 'y' => 190],
-                        ['name' => 'Pos 1', 'elevation' => '2.100m', 'x' => 160, 'y' => 165],
-                        ['name' => 'Pos 2', 'elevation' => '2.500m', 'x' => 310, 'y' => 135],
-                        ['name' => 'Pos 3', 'elevation' => '2.900m', 'x' => 460, 'y' => 95],
-                        ['name' => 'Puncak', 'elevation' => '3.371m', 'x' => 650, 'y' => 40],
-                    ],
-                    'path' => 'M 40 190 L 160 165 L 310 135 L 460 95 L 650 40',
-                    'area' => 'M 40 190 L 160 165 L 310 135 L 460 95 L 650 40 L 650 210 L 40 210 Z',
-                    'notes' => [
-                        ['title' => 'Titik Air:', 'desc' => 'Pos 2 Bowongso', 'type' => 'water', 'badge_class' => 'bg-blue-50/80 border-blue-200/70 text-blue-800', 'icon_class' => 'bg-blue-50 text-blue-600'],
-                        ['title' => 'Tebing Terjal:', 'desc' => 'Hati-hati saat menuju Puncak Rajawali', 'type' => 'wind', 'badge_class' => 'bg-amber-50/50 border-amber-100 text-amber-900', 'icon_class' => 'bg-amber-100 text-amber-600'],
-                        ['title' => 'Sinyal:', 'desc' => 'Tersedia di Basecamp dan Pos 3', 'type' => 'signal', 'badge_class' => 'bg-emerald-50/40 border-emerald-100 text-emerald-950', 'icon_class' => 'bg-emerald-100 text-emerald-600'],
-                    ],
-                ],
-                'routes' => [
-                    ['id' => 'bowongso', 'name' => 'Via Bowongso', 'badge' => 'Jalur Hutan Asri', 'selected' => true],
-                    ['id' => 'butuh', 'name' => 'Via Butuh (Nepal Van Java)', 'badge' => 'Paling Populer', 'selected' => false],
-                    ['id' => 'garung', 'name' => 'Via Garung', 'badge' => 'Jalur Klasik', 'selected' => false],
-                ],
-                'itinerary' => [
-                    'title' => 'Itinerary 2D1N (Via Bowongso)',
-                    'days' => [
-                        [
-                            'day' => 'Day 1',
-                            'title' => 'Day 1: Basecamp ke Camp Pos 3',
-                            'description' => 'Mendaki melewati perkebunan dan hutan lindung menuju area camp Pos 3.',
-                            'timeline' => [
-                                ['time' => '08:30', 'activity' => 'Registrasi & Mulai Trekking'],
-                                ['time' => '12:30', 'activity' => 'Makan Siang di Pos 2'],
-                                ['time' => '16:00', 'activity' => 'Camp di Pos 3, Menikmati Sunset'],
-                            ],
-                        ],
-                        [
-                            'day' => 'Day 2',
-                            'title' => 'Day 2: Puncak Sejati & Tebing Kawah',
-                            'description' => 'Summit push dini hari menyambut fajar emas di Puncak Sejati.',
-                            'timeline' => [
-                                ['time' => '03:00', 'activity' => 'Summit Push'],
-                                ['time' => '05:30', 'activity' => 'Sunrise di Puncak Sejati (3.371 mdpl)'],
-                                ['time' => '10:00', 'activity' => 'Turun ke Basecamp'],
-                            ],
+        // 2. Tentukan Itinerary Tek-tok
+        if ($itinData && ! empty($itinData['tektok']) && is_array($itinData['tektok'])) {
+            $tektok = $itinData['tektok'];
+        } else {
+            $tektok = [
+                'title' => 'Itinerary 1D Tek-tok ('.$routeName.')',
+                'duration_label' => '1D (Tek-tok)',
+                'days_count' => 1,
+                'days' => [
+                    [
+                        'day' => 'Day 1',
+                        'title' => 'Trekking Tek-tok 1 Hari (Langsung Turun)',
+                        'description' => 'Pendakian cepat langsung turun dalam 1 hari tanpa bermalam di tenda. Memerlukan fisik prima dan ritme trekking yang teratur.',
+                        'timeline' => [
+                            ['time' => '00:00', 'activity' => 'Registrasi, Cek Logistik & Briefing di Basecamp'],
+                            ['time' => '01:00', 'activity' => 'Mulai Trekking Dini Hari Menuju Pos 1 & Pos 2'],
+                            ['time' => '03:30', 'activity' => 'Istirahat & Rehidrasi di Pos Tengah / Sabana'],
+                            ['time' => '05:30', 'activity' => 'Tiba di Puncak, Menikmati Sunrise Spektakuler'],
+                            ['time' => '07:30', 'activity' => 'Sesi Dokumentasi & Mulai Perjalanan Turun'],
+                            ['time' => '12:00', 'activity' => 'Tiba Kembali di Basecamp & Penutupan Trip'],
                         ],
                     ],
                 ],
-                'facilities' => [
-                    'included' => [
-                        'Akomodasi Camp' => ['Tenda Nyaman', 'Matras & Sleeping Bag', 'Logistik Lengkap'],
-                        'Perizinan' => ['Tiket Masuk & SIMAKSI Resmi'],
-                    ],
-                    'excluded' => [
-                        'Pribadi' => ['Peralatan Mandi & Pakaian Hangat Pribadi'],
-                    ],
-                ],
-            ],
+            ];
+        }
 
-            'mt-lawu' => [
-                'id' => 6,
-                'slug' => 'mt-lawu',
-                'title' => 'Mt. Lawu Expedition',
-                'mountain' => 'Mt. Lawu',
-                'elevation' => '3.265 mdpl',
-                'difficulty_badge' => 'Warung Tertinggi di Indonesia',
-                'location' => 'Jawa Timur & Tengah',
-                'grade' => 'Grade B',
-                'grade_label' => 'Grade B – Menengah',
-                'type' => 'open',
-                'type_label' => 'Open Trip',
-                'price' => 700000,
-                'price_formatted' => 'Rp 700.000',
-                'price_tektok' => 550000,
-                'price_private' => 950000,
-                'price_private_tektok' => 800000,
-                'quota_current' => 7,
-                'quota_max' => 12,
-                'departure_date' => '19/07/2026',
-                'image' => 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?q=80&w=900&auto=format&fit=crop',
-                'description' => 'Gunung sarat legenda sejarah dengan warung tertinggi di Indonesia milik Mbok Yem.',
-                'overview' => 'Gunung Lawu (3.265 mdpl) berdiri di perbatasan Jawa Tengah dan Jawa Timur. Menawarkan pengalaman mendaki yang unik dengan perpaduan jalur berbatu tertata, situs-situs bersejarah kuno, kawah Candradimuka, dan warung legendaris Mbok Yem di dekat Puncak Hargo Dumilah.',
-                'gallery' => [
-                    ['url' => 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?q=80&w=1200&auto=format&fit=crop', 'caption' => 'Puncak Hargo Dumilah'],
-                    ['url' => 'https://images.unsplash.com/photo-1544735716-392fe2489ffa?q=80&w=600&auto=format&fit=crop', 'caption' => 'Warung Mbok Yem'],
-                    ['url' => 'https://images.unsplash.com/photo-1589182373726-e4f658ab50f0?q=80&w=600&auto=format&fit=crop', 'caption' => 'Sendang Drajat'],
-                    ['url' => 'https://images.unsplash.com/photo-1544717305-2782549b5136?q=80&w=600&auto=format&fit=crop', 'caption' => 'Sunrise Hargo Dalem'],
-                    ['url' => 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?q=80&w=600&auto=format&fit=crop', 'caption' => 'Trek Bebatuan Candi Cetho'],
+        return [
+            'title' => $camping['title'],
+            'duration_label' => $camping['duration_label'],
+            'days_count' => $camping['days_count'],
+            'days' => $camping['days'],
+            'camping' => $camping,
+            'tektok' => $tektok,
+        ];
+    }
+
+    /**
+     * Membangun SVG grafik profil elevasi dan catatan pos berdasarkan checkpoint database.
+     *
+     * @param  array<string, mixed>|null  $routeCheckpoints
+     * @return array<string, mixed>
+     */
+    private function buildElevationProfile(Mountain $mountain, string $routeName, ?array $routeCheckpoints = null): array
+    {
+        $data = (! empty($routeCheckpoints) && ! empty($routeCheckpoints['points']))
+            ? $routeCheckpoints
+            : $mountain->elevation_checkpoints;
+
+        $pointsRaw = ! empty($data['points']) && is_array($data['points']) ? $data['points'] : null;
+
+        if (empty($pointsRaw) || count($pointsRaw) < 2) {
+            $baseElev = (int) max(500, $mountain->elevation * 0.45);
+            $summitElev = (int) $mountain->elevation;
+            $step = ($summitElev - $baseElev) / 4;
+
+            $pointsRaw = [
+                ['name' => 'Basecamp', 'elevation' => $baseElev],
+                ['name' => 'Pos 1', 'elevation' => (int) round($baseElev + ($step * 1))],
+                ['name' => 'Pos 2', 'elevation' => (int) round($baseElev + ($step * 2))],
+                ['name' => 'Pos 3', 'elevation' => (int) round($baseElev + ($step * 3))],
+                ['name' => 'Puncak', 'elevation' => $summitElev],
+            ];
+        }
+
+        $waterNote = $data['water_note'] ?? 'Pos Tengah (Sumber Air Terakhir)';
+        $windNote = $data['wind_note'] ?? 'Waspada terpaan angin kencang di punggungan';
+        $signalNote = $data['signal_note'] ?? 'Stabil di Basecamp & Pos 1';
+
+        $count = count($pointsRaw);
+        $elevations = array_map(fn ($p) => (int) $p['elevation'], $pointsRaw);
+        $minElev = min($elevations);
+        $maxElev = max($elevations);
+        $elevRange = max(1, $maxElev - $minElev);
+
+        $points = [];
+        $svgPoints = [];
+        foreach ($pointsRaw as $i => $pt) {
+            $x = (int) round(40 + ($i * (610 / max(1, $count - 1))));
+            $norm = ((int) $pt['elevation'] - $minElev) / $elevRange;
+            $y = (int) round(190 - ($norm * 145)); // 190 di bawah, 45 di atas
+            $points[] = [
+                'name' => $pt['name'],
+                'elevation' => number_format((int) $pt['elevation'], 0, ',', '.').'m',
+                'x' => $x,
+                'y' => $y,
+            ];
+            $svgPoints[] = "{$x} {$y}";
+        }
+
+        $path = 'M '.implode(' L ', $svgPoints);
+        $lastX = $points[$count - 1]['x'];
+        $firstX = $points[0]['x'];
+        $area = $path." L {$lastX} 210 L {$firstX} 210 Z";
+
+        return [
+            'title' => 'Elevasi & Rute Pendakian ('.$routeName.')',
+            'points' => $points,
+            'path' => $path,
+            'area' => $area,
+            'notes' => [
+                [
+                    'title' => 'Titik Air:',
+                    'desc' => $waterNote,
+                    'type' => 'water',
+                    'badge_class' => 'bg-blue-50/80 border-blue-200/70 text-blue-800',
+                    'icon_class' => 'bg-blue-50 text-blue-600',
                 ],
-                'stats' => [
-                    ['label' => 'Jarak Total', 'value' => '14.2 km', 'icon' => 'milestone'],
-                    ['label' => 'Durasi Waktu', 'value' => '7–9 Jam', 'icon' => 'clock'],
-                    ['label' => 'Suhu Rata-rata', 'value' => '6–15°C', 'icon' => 'thermometer'],
-                    ['label' => 'Sumber Air', 'value' => 'Sendang Drajat', 'icon' => 'droplet'],
+                [
+                    'title' => 'Zona Angin:',
+                    'desc' => $windNote,
+                    'type' => 'wind',
+                    'badge_class' => 'bg-amber-50/50 border-amber-100 text-amber-900',
+                    'icon_class' => 'bg-amber-100 text-amber-600',
                 ],
-                'elevation_profile' => [
-                    'title' => 'Elevasi & Rute Pendakian (Via Candi Cetho)',
-                    'points' => [
-                        ['name' => 'Basecamp', 'elevation' => '1.450m', 'x' => 40, 'y' => 190],
-                        ['name' => 'Pos 2', 'elevation' => '1.950m', 'x' => 170, 'y' => 160],
-                        ['name' => 'Pos 3', 'elevation' => '2.350m', 'x' => 310, 'y' => 135],
-                        ['name' => 'Gupakan Menjangan', 'elevation' => '2.950m', 'x' => 470, 'y' => 85],
-                        ['name' => 'Hargo Dumilah', 'elevation' => '3.265m', 'x' => 650, 'y' => 45],
-                    ],
-                    'path' => 'M 40 190 L 170 160 L 310 135 L 470 85 L 650 45',
-                    'area' => 'M 40 190 L 170 160 L 310 135 L 470 85 L 650 45 L 650 210 L 40 210 Z',
-                    'notes' => [
-                        ['title' => 'Mata Air Sakral:', 'desc' => 'Sendang Drajat di Pos 5', 'type' => 'water', 'badge_class' => 'bg-blue-50/80 border-blue-200/70 text-blue-800', 'icon_class' => 'bg-blue-50 text-blue-600'],
-                        ['title' => 'Sabana Luas:', 'desc' => 'Gupakan Menjangan cocok untuk camp', 'type' => 'wind', 'badge_class' => 'bg-emerald-50/50 border-emerald-100 text-emerald-950', 'icon_class' => 'bg-emerald-100 text-emerald-600'],
-                        ['title' => 'Sinyal:', 'desc' => 'Tersedia di warung puncak', 'type' => 'signal', 'badge_class' => 'bg-emerald-50/40 border-emerald-100 text-emerald-950', 'icon_class' => 'bg-emerald-100 text-emerald-600'],
-                    ],
-                ],
-                'routes' => [
-                    ['id' => 'cetho', 'name' => 'Via Candi Cetho', 'badge' => 'Sabana & Mistis Eksotis', 'selected' => true],
-                    ['id' => 'cemorosewu', 'name' => 'Via Cemoro Sewu', 'badge' => 'Jalur Tangga Batu Cepat', 'selected' => false],
-                    ['id' => 'cemorokandang', 'name' => 'Via Cemoro Kandang', 'badge' => 'Landai Santai', 'selected' => false],
-                ],
-                'itinerary' => [
-                    'title' => 'Itinerary 2D1N (Via Candi Cetho)',
-                    'days' => [
-                        [
-                            'day' => 'Day 1',
-                            'title' => 'Day 1: Basecamp ke Sabana Gupakan Menjangan',
-                            'description' => 'Mendaki melewati kompleks Candi Cetho dan hutan pinus menuju padang sabana luas.',
-                            'timeline' => [
-                                ['time' => '08:00', 'activity' => 'Registrasi & Mulai Pendakian'],
-                                ['time' => '12:00', 'activity' => 'Makan Siang di Pos 3'],
-                                ['time' => '16:00', 'activity' => 'Camp di Gupakan Menjangan'],
-                            ],
-                        ],
-                        [
-                            'day' => 'Day 2',
-                            'title' => 'Day 2: Muncak Hargo Dumilah & Kuliner Mbok Yem',
-                            'description' => 'Menyapa pagi di titik tertinggi Lawu, mampir mencicipi nasi pecel legendaris Mbok Yem.',
-                            'timeline' => [
-                                ['time' => '04:00', 'activity' => 'Summit Push ke Hargo Dumilah'],
-                                ['time' => '05:45', 'activity' => 'Sunrise di Puncak Lawu (3.265 mdpl)'],
-                                ['time' => '07:30', 'activity' => 'Sarapan di Warung Mbok Yem & Turun'],
-                            ],
-                        ],
-                    ],
-                ],
-                'facilities' => [
-                    'included' => [
-                        'Akomodasi' => ['Tenda Kapasitas Fleksibel', 'Sleeping Bag & Matras', 'Logistik Lengkap'],
-                        'Perizinan' => ['Tiket Masuk SIMAKSI & Asuransi Resmi'],
-                    ],
-                    'excluded' => [
-                        'Pribadi' => ['Jajan di Warung Mbok Yem (Opsional Pribadi)'],
-                    ],
+                [
+                    'title' => 'Sinyal Seluler:',
+                    'desc' => $signalNote,
+                    'type' => 'signal',
+                    'badge_class' => 'bg-emerald-50/40 border-emerald-100 text-emerald-950',
+                    'icon_class' => 'bg-emerald-100 text-emerald-600',
                 ],
             ],
         ];

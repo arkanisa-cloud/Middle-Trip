@@ -13,6 +13,7 @@ export default {
         extend: {
             fontFamily: {
                 sans: ['"Plus Jakarta Sans"', ...defaultTheme.fontFamily.sans],
+                outfit: ['"Outfit"', ...defaultTheme.fontFamily.sans],
             },
             colors: {
                 primary: '#9E3924',

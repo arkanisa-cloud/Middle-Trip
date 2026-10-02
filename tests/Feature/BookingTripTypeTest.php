@@ -196,34 +196,44 @@ class BookingTripTypeTest extends TestCase
         $privatePage->assertSee(Carbon::parse($customDeparture)->translatedFormat('d F Y'));
     }
 
-    public function test_private_trip_can_be_booked_when_mountain_has_zero_admin_batches_and_validates_route_id(): void
+    public function test_visiting_detail_does_not_auto_generate_private_trip_batch(): void
+    {
+        $mountain = Mountain::where('slug', 'mt-merbabu')->first();
+
+        // Hapus batch private trip yang dibuat seeder
+        Expedition::where('mountain_id', $mountain->id)->where('type', 'private')->delete();
+        $this->assertEquals(0, Expedition::where('mountain_id', $mountain->id)->where('type', 'private')->count());
+
+        // Kunjungi halaman detail
+        $detailResponse = $this->get(route('ekspedisi.show', $mountain->slug));
+        $detailResponse->assertOk();
+        $detailResponse->assertViewHas('bookingConfig', function ($config) {
+            return $config['hasPrivateTrip'] === true
+                && $config['privateExpeditionId'] === null;
+        });
+
+        // Pastikan tidak ada batch private trip yang ter-generate otomatis
+        $this->assertDatabaseMissing('expeditions', [
+            'mountain_id' => $mountain->id,
+            'type' => 'private',
+        ]);
+    }
+
+    public function test_private_trip_can_be_booked_without_creating_private_expedition_batch(): void
     {
         $user = User::factory()->create();
         $mountain = Mountain::where('slug', 'mt-merbabu')->first();
 
-        // Hapus semua ekspedisi yang dibuat seeder untuk mensimulasikan belum ada batch yang dibuat admin
-        Expedition::where('mountain_id', $mountain->id)->delete();
-        $this->assertEquals(0, Expedition::where('mountain_id', $mountain->id)->count());
+        // Hapus batch private trip yang dibuat seeder
+        Expedition::where('mountain_id', $mountain->id)->where('type', 'private')->delete();
 
-        // 1. Kunjungi halaman detail
-        $detailResponse = $this->get(route('ekspedisi.show', $mountain->slug));
-        $detailResponse->assertOk();
-        $detailResponse->assertViewHas('bookingConfig', function ($config) {
-            return $config['hasOpenSchedule'] === false
-                && $config['hasPrivateTrip'] === true
-                && is_int($config['privateExpeditionId'])
-                && is_int($config['routeId']);
-        });
-
-        // 2. Kirim booking private trip dengan route_id integer dan auto-created privateExpeditionId
-        $privateExpedition = Expedition::where('mountain_id', $mountain->id)->where('type', 'private')->first();
-        $this->assertNotNull($privateExpedition);
-
+        $openExpedition = Expedition::where('mountain_id', $mountain->id)->where('type', 'open')->first();
+        $initialOpenQuota = $openExpedition->quota_booked;
         $route = $mountain->routes()->first();
         $customDate = now()->addDays(10)->toDateString();
 
         $payload = [
-            'expedition_id' => $privateExpedition->id,
+            'expedition_id' => $openExpedition->id,
             'route_id' => $route->id,
             'trip_type' => 'private',
             'hiking_type' => 'camping',
@@ -248,6 +258,16 @@ class BookingTripTypeTest extends TestCase
             'trip_type' => 'private',
             'route_id' => $route->id,
             'departure_date' => $customDate,
+        ]);
+
+        // Kuota open expedition tidak boleh berkurang/bertambah
+        $openExpedition->refresh();
+        $this->assertEquals($initialOpenQuota, $openExpedition->quota_booked);
+
+        // Dan tidak ada batch private trip baru yang ter-generate di database
+        $this->assertDatabaseMissing('expeditions', [
+            'mountain_id' => $mountain->id,
+            'type' => 'private',
         ]);
     }
 }

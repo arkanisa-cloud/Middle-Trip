@@ -1,14 +1,16 @@
-<x-public-layout title="MiddleTrip - Jalan Tengah Menuju Puncak yang Sesungguhnya" active="home" :hero="true" body-class="bg-canvas-alt text-ink antialiased selection:bg-primary selection:text-white font-sans overflow-x-hidden">
+<x-public-layout title="MiddleTrip - Jalan Tengah Menuju Puncak yang Sesungguhnya" active="home" :hero="true"
+    body-class="bg-canvas-alt text-ink antialiased selection:bg-primary selection:text-white font-sans overflow-x-hidden">
 
     {{-- =====================================================================
          1. HERO HEADER & FLOATING EXPRESS SEARCH BAR
     ===================================================================== --}}
     <header class="relative w-full h-screen min-h-[660px] bg-cover bg-center flex flex-col justify-between"
-        style="background-image: linear-gradient(180deg, rgba(16, 24, 40, 0.45) 0%, rgba(16, 24, 40, 0.15) 40%, rgba(0,0,0,0.3) 100%), url('https://images.unsplash.com/photo-1589182373726-e4f658ab50f0?q=80&w=2000&auto=format&fit=crop');">
+        style="background-image: linear-gradient(180deg, rgba(16, 24, 40, 0.45) 0%, rgba(16, 24, 40, 0.15) 40%, rgba(0,0,0,0.3) 100%), url('{{ asset('storage/mountains/hero-section.png') }}');">
 
         <!-- Hero Title Center -->
         <div class="flex-1 flex flex-col items-center justify-center text-center px-4 pt-20 z-10">
-            <h1 class="text-3xl sm:text-4xl md:text-5xl lg:text-[54px] font-extrabold text-white leading-tight max-w-3xl drop-shadow-md">
+            <h1
+                class="text-3xl sm:text-4xl md:text-5xl lg:text-[54px] font-extrabold text-white leading-tight max-w-3xl drop-shadow-lg [-webkit-text-stroke:1px_rgba(0,0,0,0.4)] [text-shadow:_0_2px_10px_rgba(0,0,0,0.5)]">
                 Jalan Tengah Menuju<br class="hidden sm:inline"> Puncak yang Sesungguhnya
             </h1>
         </div>
@@ -38,8 +40,10 @@
                                 autocomplete="off"
                                 class="w-full bg-transparent border-none focus:border-none focus:ring-0 focus:outline-none text-[13px] font-semibold text-body-strong placeholder-muted cursor-pointer p-0 shadow-none" />
                         </div>
-                        <svg id="mountain-chevron" class="w-4 h-4 text-muted transition-transform duration-200 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                        <svg id="mountain-chevron" class="w-4 h-4 text-muted transition-transform duration-200 shrink-0"
+                            fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7">
+                            </path>
                         </svg>
                     </div>
 
@@ -53,11 +57,13 @@
                             class="mountain-option w-full text-left px-4 py-2 hover:bg-gray-50 text-body-strong font-medium flex items-center justify-between cursor-pointer">
                             <span>Semua Gunung</span>
                         </button>
-                        @foreach($mountains as $mountain)
-                            <button type="button" onclick="selectMountain('{{ $mountain->slug }}', '{{ $mountain->name }}')"
+                        @foreach ($mountains as $mountain)
+                            <button type="button"
+                                onclick="selectMountain('{{ $mountain->slug }}', '{{ $mountain->name }}')"
                                 class="mountain-option w-full text-left px-4 py-2 hover:bg-gray-50 text-body-strong font-medium flex items-center justify-between cursor-pointer">
                                 <span>{{ $mountain->name }}</span>
-                                <span class="text-[10px] text-muted font-normal font-liberation">{{ $mountain->formatted_elevation }}</span>
+                                <span
+                                    class="text-[10px] text-muted font-normal font-liberation">{{ $mountain->formatted_elevation }}</span>
                             </button>
                         @endforeach
                     </div>
@@ -75,16 +81,19 @@
                                 d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
                         </svg>
                         <div class="flex-1 text-left min-w-0">
-                            <span id="jalur-display-label" class="text-[13px] font-semibold text-body-strong block truncate">Pilih Jalur</span>
+                            <span id="jalur-display-label"
+                                class="text-[13px] font-semibold text-body-strong block truncate">Pilih Jalur</span>
                         </div>
-                        <svg id="jalur-chevron" class="w-4 h-4 text-muted transition-transform duration-200 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                        <svg id="jalur-chevron" class="w-4 h-4 text-muted transition-transform duration-200 shrink-0"
+                            fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7">
+                            </path>
                         </svg>
                     </div>
 
                     <!-- Dropdown List Jalur (Dinamis sesuai Gunung) -->
                     <div id="jalur-dropdown-list"
-                        class="hidden absolute left-0 right-0 md:w-72 mt-2 bg-white border border-hairline rounded-2xl shadow-xl py-2 z-50 max-h-56 overflow-y-auto text-xs">
+                        class="hidden absolute left-0 right-0 md:w-72 mt-2 bg-white border border-hairline rounded-2xl shadow-xl py-2 z-50 max-h-56 overflow-y-auto no-scrollbar text-xs">
                         <div class="px-3 py-1.5 text-[10px] uppercase font-bold text-muted-soft tracking-wider">
                             Pilih Jalur
                         </div>
@@ -108,14 +117,23 @@
                                 d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
                         </svg>
                         <div class="flex-1 text-left min-w-0">
-                            <span id="grade-hero-display-label" class="text-[13px] font-semibold text-body-strong block truncate">Semua Level</span>
-                            <span id="grade-hero-status" class="text-[10px] text-muted font-medium hidden block truncate">Terkunci (sesuai jalur)</span>
+                            <span id="grade-hero-display-label"
+                                class="text-[13px] font-semibold text-body-strong block truncate">Semua Level</span>
+                            <span id="grade-hero-status"
+                                class="text-[10px] text-muted font-medium hidden block truncate">Terkunci (sesuai
+                                jalur)</span>
                         </div>
-                        <svg id="grade-hero-chevron" class="w-4 h-4 text-muted transition-transform duration-200 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                        <svg id="grade-hero-chevron"
+                            class="w-4 h-4 text-muted transition-transform duration-200 shrink-0" fill="none"
+                            stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7">
+                            </path>
                         </svg>
-                        <svg id="grade-hero-lock" class="w-4 h-4 text-muted-soft hidden shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" title="Terkunci sesuai jalur yang dipilih">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                        <svg id="grade-hero-lock" class="w-4 h-4 text-muted-soft hidden shrink-0" fill="none"
+                            viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"
+                            title="Terkunci sesuai jalur yang dipilih">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
                         </svg>
                     </div>
 
@@ -180,12 +198,11 @@
         <!-- Bento Grid -->
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-5 items-stretch">
 
-            @if($featuredHero)
+            @if ($featuredHero)
                 <!-- Big Hero Card: Featured Order 1 (Span 7) -->
                 <a href="{{ route('ekspedisi.show', $featuredHero->slug) }}"
                     class="lg:col-span-7 relative min-h-[380px] md:min-h-[440px] lg:h-full lg:min-h-0 rounded-2xl overflow-hidden group shadow-sm bg-gray-900 cursor-pointer block">
-                    <img src="{{ $featuredHero->cover_image }}"
-                        alt="{{ $featuredHero->name }}"
+                    <img src="{{ $featuredHero->cover_image }}" alt="{{ $featuredHero->name }}"
                         class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition duration-500" />
                     <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-black/30"></div>
 
@@ -215,7 +232,8 @@
                         </div>
                         <div class="text-right">
                             <p class="text-[11px] text-white/75 font-normal">Mulai dari</p>
-                            <p class="text-lg md:text-xl font-bold text-white whitespace-nowrap">{{ $featuredHero->formatted_short_price }} <span
+                            <p class="text-lg md:text-xl font-bold text-white whitespace-nowrap">
+                                {{ $featuredHero->formatted_short_price }} <span
                                     class="text-xs font-normal text-white/80 font-sans">/ pax</span></p>
                         </div>
                     </div>
@@ -224,12 +242,11 @@
 
             <!-- Right Column: 2 Stacked Cards (Span 5) -->
             <div class="lg:col-span-5 flex flex-col gap-4">
-                @foreach($featuredCards as $card)
+                @foreach ($featuredCards as $card)
                     <a href="{{ route('ekspedisi.show', $card->slug) }}"
                         class="flex-1 bg-surface-card rounded-2xl p-3.5 border border-gray-100 shadow-sm hover:shadow-md transition duration-200 cursor-pointer group flex flex-col justify-between block">
                         <div class="relative h-28 rounded-xl overflow-hidden mb-3 bg-gray-200">
-                            <img src="{{ $card->cover_image }}"
-                                alt="{{ $card->name }}"
+                            <img src="{{ $card->cover_image }}" alt="{{ $card->name }}"
                                 class="w-full h-full object-cover group-hover:scale-105 transition duration-500" />
                             <div class="absolute inset-0 bg-black/20"></div>
                             <div class="absolute top-2.5 left-2.5 right-2.5 flex items-center justify-between">
@@ -249,13 +266,14 @@
                         </div>
 
                         <div class="px-1">
-                            <h4 class="text-base font-bold text-ink-heading group-hover:text-primary transition">{{ $card->name }}</h4>
+                            <h4 class="text-base font-bold text-ink-heading group-hover:text-primary transition">
+                                {{ $card->name }}</h4>
                             <p class="text-[11px] text-muted mt-1 line-clamp-1">
                                 {{ $card->description }}
                             </p>
                             <div class="flex items-center justify-between mt-3 pt-2 border-t border-hairline-soft">
-                                <span class="text-[13px] font-bold text-primary">{{ $card->formatted_short_price }} <span
-                                        class="text-[11px] font-normal text-muted font-sans">/ pax</span></span>
+                                <span class="text-[13px] font-bold text-primary">{{ $card->formatted_short_price }}
+                                    <span class="text-[11px] font-normal text-muted font-sans">/ pax</span></span>
                                 <span
                                     class="text-muted-soft group-hover:text-primary group-hover:translate-x-0.5 transition text-sm">→</span>
                             </div>
@@ -306,7 +324,8 @@
                     <!-- Left Specs -->
                     <div class="lg:col-span-7 flex flex-col justify-between h-full">
                         <div>
-                            <h3 id="grade-title" class="text-2xl font-bold tracking-tight text-white mb-2">Kelas A - Pemula</h3>
+                            <h3 id="grade-title" class="text-2xl font-bold tracking-tight text-white mb-2">Kelas A -
+                                Pemula</h3>
                             <p id="grade-desc" class="text-xs md:text-sm text-gray-300 leading-relaxed max-w-md">
                                 Sangat direkomendasikan bagi Anda yang baru pertama kali ingin mencicipi dinginnya
                                 udara puncak gunung.
@@ -323,9 +342,11 @@
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                             d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                                     </svg>
-                                    <span class="text-[10px] uppercase font-bold tracking-wider text-gray-400">Durasi Trek</span>
+                                    <span class="text-[10px] uppercase font-bold tracking-wider text-gray-400">Durasi
+                                        Trek</span>
                                 </div>
-                                <p id="grade-duration" class="text-sm md:text-base font-bold text-white">2 – 5 Jam / Hari</p>
+                                <p id="grade-duration" class="text-sm md:text-base font-bold text-white">2 – 5 Jam /
+                                    Hari</p>
                             </div>
 
                             <!-- Effort Box -->
@@ -335,9 +356,12 @@
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                             d="M13 10V3L4 14h7v7l9-11h-7z"></path>
                                     </svg>
-                                    <span class="text-[10px] uppercase font-bold tracking-wider text-gray-400">Kebutuhan Fisik</span>
+                                    <span
+                                        class="text-[10px] uppercase font-bold tracking-wider text-gray-400">Kebutuhan
+                                        Fisik</span>
                                 </div>
-                                <p id="grade-effort" class="text-sm md:text-base font-bold text-white">Jogging Ringan</p>
+                                <p id="grade-effort" class="text-sm md:text-base font-bold text-white">Jogging Ringan
+                                </p>
                             </div>
 
                         </div>
@@ -346,9 +370,15 @@
                         <div>
                             <span class="text-[11px] text-gray-400 block mb-2 font-medium">Rekomendasi Gunung:</span>
                             <div id="grade-tags" class="flex flex-wrap gap-2">
-                                <span class="text-xs bg-surface-forest-tag border border-white/10 px-3.5 py-1.5 rounded-full text-gray-200">Mt. Merbabu</span>
-                                <span class="text-xs bg-surface-forest-tag border border-white/10 px-3.5 py-1.5 rounded-full text-gray-200">Mt. Prau</span>
-                                <span class="text-xs bg-surface-forest-tag border border-white/10 px-3.5 py-1.5 rounded-full text-gray-200">Mt. Papandayan</span>
+                                <span
+                                    class="text-xs bg-surface-forest-tag border border-white/10 px-3.5 py-1.5 rounded-full text-gray-200">Mt.
+                                    Merbabu</span>
+                                <span
+                                    class="text-xs bg-surface-forest-tag border border-white/10 px-3.5 py-1.5 rounded-full text-gray-200">Mt.
+                                    Prau</span>
+                                <span
+                                    class="text-xs bg-surface-forest-tag border border-white/10 px-3.5 py-1.5 rounded-full text-gray-200">Mt.
+                                    Papandayan</span>
                             </div>
                         </div>
 
@@ -356,11 +386,13 @@
 
                     <!-- Right Image Card -->
                     <div class="lg:col-span-5">
-                        <div class="relative w-full aspect-[4/3] rounded-2xl overflow-hidden shadow-lg border border-white/10">
-                            <img id="grade-image"
-                                src="https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?q=80&w=800&auto=format&fit=crop"
-                                alt="Jalur Pemula" class="w-full h-full object-cover" />
-                            <div class="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent"></div>
+                        <div
+                            class="relative w-full aspect-[4/3] rounded-2xl overflow-hidden shadow-lg border border-white/10">
+                            <img id="grade-image" src="/storage/mountains/merbabu.jpeg" alt="Jalur Pemula"
+                                class="w-full h-full object-cover" />
+                            <div
+                                class="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent">
+                            </div>
                         </div>
                     </div>
 
@@ -383,53 +415,65 @@
         <div class="space-y-3.5 max-w-2xl mx-auto">
 
             <!-- FAQ 1 (Open by default) -->
-            <div class="border border-hairline bg-surface-card rounded-2xl overflow-hidden transition-all duration-200 shadow-sm">
+            <div
+                class="border border-hairline bg-surface-card rounded-2xl overflow-hidden transition-all duration-200 shadow-sm">
                 <button onclick="toggleFaq(1)" type="button"
                     class="w-full text-left px-6 py-4 flex items-center justify-between gap-4 font-semibold text-ink text-xs md:text-[13px] hover:text-primary transition">
                     <span>Apa saja yang perlu saya bawa untuk ikut Open Trip?</span>
                     <svg id="faq-icon-1"
                         class="w-4 h-4 text-muted shrink-0 transform rotate-180 transition-transform duration-200"
                         fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7">
+                        </path>
                     </svg>
                 </button>
                 <div id="faq-content-1"
                     class="px-6 pb-4 pt-1 text-body text-xs md:text-[13px] leading-relaxed border-t border-hairline-soft">
-                    Anda hanya perlu membawa perlengkapan pribadi (jaket gunung, sepatu mendaki, headlamp, dan obat-obatan pribadi). Kami menyediakan tenda premium, alat masak, porter, guide serta logistik makan.
+                    Anda hanya perlu membawa perlengkapan pribadi (jaket gunung, sepatu mendaki, headlamp, dan
+                    obat-obatan pribadi). Kami menyediakan tenda premium, alat masak, porter, guide serta logistik
+                    makan.
                 </div>
             </div>
 
             <!-- FAQ 2 (Collapsed) -->
-            <div class="border border-hairline bg-surface-card rounded-2xl overflow-hidden transition-all duration-200 shadow-sm">
+            <div
+                class="border border-hairline bg-surface-card rounded-2xl overflow-hidden transition-all duration-200 shadow-sm">
                 <button onclick="toggleFaq(2)" type="button"
                     class="w-full text-left px-6 py-4 flex items-center justify-between gap-4 font-semibold text-ink text-xs md:text-[13px] hover:text-primary transition">
                     <span>Bagaimana jika cuaca buruk saat hari pendakian?</span>
                     <svg id="faq-icon-2"
-                        class="w-4 h-4 text-muted shrink-0 transform transition-transform duration-200"
-                        fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                        class="w-4 h-4 text-muted shrink-0 transform transition-transform duration-200" fill="none"
+                        stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7">
+                        </path>
                     </svg>
                 </button>
                 <div id="faq-content-2"
                     class="hidden px-6 pb-4 pt-1 text-body text-xs md:text-[13px] leading-relaxed border-t border-hairline-soft">
-                    Keselamatan adalah prioritas utama kami. Tim leader berhak menunda atau menyesuaikan jalur demi keselamatan, serta menyediakan opsi reschedule jadwal jika jalur ditutup resmi oleh pengelola taman nasional.
+                    Keselamatan adalah prioritas utama kami. Tim leader berhak menunda atau menyesuaikan jalur demi
+                    keselamatan, serta menyediakan opsi reschedule jadwal jika jalur ditutup resmi oleh pengelola taman
+                    nasional.
                 </div>
             </div>
 
             <!-- FAQ 3 (Collapsed) -->
-            <div class="border border-hairline bg-surface-card rounded-2xl overflow-hidden transition-all duration-200 shadow-sm">
+            <div
+                class="border border-hairline bg-surface-card rounded-2xl overflow-hidden transition-all duration-200 shadow-sm">
                 <button onclick="toggleFaq(3)" type="button"
                     class="w-full text-left px-6 py-4 flex items-center justify-between gap-4 font-semibold text-ink text-xs md:text-[13px] hover:text-primary transition">
                     <span>Apakah pemula tanpa pengalaman boleh langsung ikut Grade B?</span>
                     <svg id="faq-icon-3"
-                        class="w-4 h-4 text-muted shrink-0 transform transition-transform duration-200"
-                        fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                        class="w-4 h-4 text-muted shrink-0 transform transition-transform duration-200" fill="none"
+                        stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7">
+                        </path>
                     </svg>
                 </button>
                 <div id="faq-content-3"
                     class="hidden px-6 pb-4 pt-1 text-body text-xs md:text-[13px] leading-relaxed border-t border-hairline-soft">
-                    Kami sangat menyarankan pemula untuk memulai dari Grade A (seperti Merbabu via Selo atau Prau). Namun jika Anda memiliki rutinitas kardio aktif dan didampingi guide privat kami, Grade B tetap dapat dipertimbangkan setelah konsultasi awal.
+                    Kami sangat menyarankan pemula untuk memulai dari Grade A (seperti Merbabu via Selo atau Prau).
+                    Namun jika Anda memiliki rutinitas kardio aktif dan didampingi guide privat kami, Grade B tetap
+                    dapat dipertimbangkan setelah konsultasi awal.
                 </div>
             </div>
 
@@ -449,7 +493,7 @@
                     duration: '2 – 5 Jam / Hari',
                     effort: 'Jogging Ringan',
                     tags: ['Mt. Merbabu', 'Mt. Prau', 'Mt. Papandayan'],
-                    img: 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?q=80&w=800&auto=format&fit=crop'
+                    img: '/storage/mountains/merbabu.jpeg'
                 },
                 'B': {
                     title: 'Kelas B - Menengah',
@@ -487,9 +531,11 @@
                 ['A', 'B', 'C'].forEach(g => {
                     const btn = document.getElementById(`tab-grade-${g.toLowerCase()}`);
                     if (g === grade) {
-                        btn.className = 'px-6 py-2 rounded-full text-xs font-semibold bg-primary text-white shadow-sm transition';
+                        btn.className =
+                            'px-6 py-2 rounded-full text-xs font-semibold bg-primary text-white shadow-sm transition';
                     } else {
-                        btn.className = 'px-6 py-2 rounded-full text-xs font-semibold text-gray-300 hover:text-white transition';
+                        btn.className =
+                            'px-6 py-2 rounded-full text-xs font-semibold text-gray-300 hover:text-white transition';
                     }
                 });
             }
@@ -623,7 +669,9 @@
 
                 mountain.routes.forEach(route => {
                     const gradeLabel = route.grade || 'Grade A';
-                    const isPrimary = route.is_primary ? '<span class="text-[9px] bg-primary-subtle text-primary font-bold px-1.5 py-0.5 rounded-full ml-1.5">Utama</span>' : '';
+                    const isPrimary = route.is_primary ?
+                        '<span class="text-[9px] bg-primary-subtle text-primary font-bold px-1.5 py-0.5 rounded-full ml-1.5">Utama</span>' :
+                        '';
                     html += `
                         <button type="button" onclick="selectJalur('${route.slug}', '${route.name}', '${route.grade}')"
                             class="jalur-option w-full text-left px-4 py-2 hover:bg-gray-50 text-body-strong font-medium flex items-center justify-between cursor-pointer">

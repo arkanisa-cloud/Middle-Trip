@@ -76,9 +76,30 @@
             </div>
         </div>
 
+        @if(session('warning'))
+            <div class="mb-6 p-4 rounded-xl bg-amber-50 border border-amber-200 flex items-start gap-3 text-amber-800">
+                <svg class="w-5 h-5 text-amber-600 mt-0.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+                </svg>
+                <div class="text-xs sm:text-sm font-medium">
+                    {{ session('warning') }}
+                </div>
+            </div>
+        @endif
+        @if(session('error'))
+            <div class="mb-6 p-4 rounded-xl bg-rose-50 border border-rose-200 flex items-start gap-3 text-rose-800">
+                <svg class="w-5 h-5 text-rose-600 mt-0.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+                <div class="text-xs sm:text-sm font-medium">
+                    {{ session('error') }}
+                </div>
+            </div>
+        @endif
+
         <form action="{{ route('checkout.pay_private', $booking->booking_code) }}" method="POST" id="payment-form">
             @csrf
-            <div class="grid grid-cols-1 lg:grid-cols-12 gap-7">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-7 items-start">
 
             <!-- Left Column (7 cols) -->
             <div class="lg:col-span-7 space-y-4">
@@ -352,6 +373,9 @@
                                 </div>
                             @endfor
                         @endif
+                        </div>
+                    </div>
+
                     <!-- Card 5: Pilih Metode Pembayaran (Dropdown Accordion Sesuai payment_open_trip_1.html) -->
                     <div class="bg-white rounded-2xl border border-hairline p-5 sm:p-6 shadow-xs">
                         <div class="flex items-center gap-2 mb-4">
@@ -380,8 +404,8 @@
                                             <input type="radio" name="payment_method" value="bca" checked class="w-4 h-4 text-primary accent-primary focus:ring-primary cursor-pointer">
                                             <span class="text-neutral-800 font-medium">Bank BCA</span>
                                         </div>
-                                        <div class="h-5 flex items-center">
-                                            <span class="text-[#005B9C] font-extrabold italic text-sm tracking-tighter">BCA</span>
+                                        <div class="h-6 flex items-center">
+                                            <img src="{{ asset('storage/payment/BCA.png') }}" alt="Bank BCA" class="h-5 max-h-5 w-auto object-contain">
                                         </div>
                                     </label>
 
@@ -391,8 +415,8 @@
                                             <input type="radio" name="payment_method" value="bni" class="w-4 h-4 text-primary accent-primary focus:ring-primary cursor-pointer">
                                             <span class="text-neutral-800 font-medium">Bank BNI</span>
                                         </div>
-                                        <div class="h-5 flex items-center">
-                                            <span class="text-[#E55300] font-black italic text-sm tracking-tight">BNI</span>
+                                        <div class="h-6 flex items-center">
+                                            <img src="{{ asset('storage/payment/BNI.png') }}" alt="Bank BNI" class="h-5 max-h-5 w-auto object-contain">
                                         </div>
                                     </label>
 
@@ -402,8 +426,8 @@
                                             <input type="radio" name="payment_method" value="bri" class="w-4 h-4 text-primary accent-primary focus:ring-primary cursor-pointer">
                                             <span class="text-neutral-800 font-medium">Bank BRI</span>
                                         </div>
-                                        <div class="h-5 flex items-center">
-                                            <span class="text-[#00529C] font-black tracking-tight text-xs uppercase px-1.5 py-0.5 border border-[#00529C] rounded font-mono">BRI</span>
+                                        <div class="h-6 flex items-center">
+                                            <img src="{{ asset('storage/payment/BRI.png') }}" alt="Bank BRI" class="h-5 max-h-5 w-auto object-contain">
                                         </div>
                                     </label>
 
@@ -413,8 +437,8 @@
                                             <input type="radio" name="payment_method" value="mandiri" class="w-4 h-4 text-primary accent-primary focus:ring-primary cursor-pointer">
                                             <span class="text-neutral-800 font-medium">Bank Mandiri</span>
                                         </div>
-                                        <div class="h-5 flex items-center">
-                                            <span class="text-[#0B3979] font-black text-xs lowercase italic">mandir<span class="text-[#E7A600]">ı</span></span>
+                                        <div class="h-6 flex items-center">
+                                            <img src="{{ asset('storage/payment/Mandiri.png') }}" alt="Bank Mandiri" class="h-5 max-h-5 w-auto object-contain">
                                         </div>
                                     </label>
                                 </div>
@@ -460,7 +484,7 @@
                                             </div>
                                         </div>
                                         <div class="flex items-center gap-1.5">
-                                            <span class="text-[10px] font-bold text-blue-700 bg-blue-50 px-1.5 py-0.5 rounded border border-blue-200">Visa</span>
+                                            <img src="{{ asset('storage/payment/Visa.jpeg') }}" alt="Visa" class="h-3.5 max-h-4 w-auto object-contain">
                                             <span class="text-[10px] font-bold text-rose-700 bg-rose-50 px-1.5 py-0.5 rounded border border-rose-200">Mastercard</span>
                                         </div>
                                     </label>
@@ -493,11 +517,9 @@
 
                 </div>
 
-            </div>
-
             <!-- Right Column (5 cols) -->
             <div class="lg:col-span-5">
-                <div class="sticky top-6">
+                <div class="sticky top-20">
                     <div class="bg-white rounded-2xl border border-hairline p-6 shadow-sm">
                         <div class="flex items-center justify-between mb-4">
                             <h2 class="text-sm font-bold text-ink-heading">Pembayaran Penuh (100%)</h2>
@@ -655,7 +677,8 @@
                                 window.location.href = "{{ route('checkout.success', $booking->booking_code) }}";
                             },
                             onPending: function (result) {
-                                window.location.href = "{{ route('checkout.success', $booking->booking_code) }}";
+                                alert('Tagihan pembayaran telah dibuat. Silakan selesaikan pembayaran sesuai petunjuk yang diberikan.');
+                                resetPayButton();
                             },
                             onError: function (result) {
                                 alert('Pembayaran gagal atau dibatalkan. Silakan coba kembali.');

@@ -57,7 +57,21 @@ class Expedition extends Model
      */
     public function calculatePriceLockPrice(): int
     {
-        return $this->mountain->getTierPriceForPax($this->quota_booked);
+        return $this->mountain->getTierPriceForPax($this->quota_booked, $this->hiking_type ?? 'camping');
+    }
+
+    /**
+     * Sinkronisasi kuota terisi berdasarkan akumulasi booking aktif (reserved, price_locked, paid).
+     */
+    public function syncQuotaBooked(): int
+    {
+        $activeQuota = (int) $this->bookings()
+            ->whereIn('status', ['reserved', 'price_locked', 'paid'])
+            ->sum('pax_count');
+
+        $this->update(['quota_booked' => $activeQuota]);
+
+        return $activeQuota;
     }
 
     /**

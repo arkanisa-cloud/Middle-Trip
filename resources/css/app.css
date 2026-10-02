@@ -7,3 +7,30 @@
                       radial-gradient(circle at 80% 80%, rgba(255, 255, 255, 0.03) 0%, transparent 25%),
                       repeating-radial-gradient(ellipse at 50% 50%, transparent 0, transparent 40px, rgba(255, 255, 255, 0.02) 41px, transparent 42px);
 }
+
+/* MiddleTrip Form Controls: Checkbox & Radio */
+input[type="checkbox"],
+input[type="radio"] {
+    accent-color: #9E3924;
+}
+
+input[type="checkbox"]:checked,
+input[type="radio"]:checked {
+    background-color: #9E3924;
+    border-color: #9E3924;
+}
+
+input[type="checkbox"]:focus,
+input[type="radio"]:focus {
+    --tw-ring-color: #9E3924;
+    outline: none;
+}
+
+/* Hide scrollbar utility */
+.no-scrollbar::-webkit-scrollbar {
+    display: none;
+}
+.no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}

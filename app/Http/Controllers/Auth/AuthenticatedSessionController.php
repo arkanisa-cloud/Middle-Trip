@@ -16,6 +16,10 @@ class AuthenticatedSessionController extends Controller
      */
     public function create(): View
     {
+        if (! session()->has('url.intended') && url()->previous() !== route('login')) {
+            session()->put('url.intended', url()->previous());
+        }
+
         return view('auth.login');
     }
 
@@ -27,6 +31,10 @@ class AuthenticatedSessionController extends Controller
         $request->authenticate();
 
         $request->session()->regenerate();
+
+        if ($request->user()->isAdmin()) {
+            return redirect()->route('admin.dashboard');
+        }
 
         return redirect()->intended(route('dashboard', absolute: false));
     }

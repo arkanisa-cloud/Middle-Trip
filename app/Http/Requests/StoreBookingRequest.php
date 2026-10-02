@@ -27,6 +27,8 @@ class StoreBookingRequest extends FormRequest
             'route_id' => ['required', 'exists:routes,id'],
             'meeting_point_id' => ['nullable', 'exists:meeting_points,id'],
             'trip_type' => ['nullable', 'string', 'in:open,private'],
+            'hiking_type' => ['nullable', 'string', 'in:camping,tektok'],
+            'departure_date' => ['nullable', 'date', 'after_or_equal:today'],
             'customer_name' => ['required', 'string', 'min:3', 'max:150'],
             'customer_email' => ['required', 'email', 'max:150'],
             'customer_phone' => ['required', 'string', 'min:9', 'max:25'],

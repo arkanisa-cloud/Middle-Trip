@@ -29,4 +29,12 @@ class BookingParticipant extends Model
     {
         return $this->belongsTo(Booking::class);
     }
+
+    /**
+     * Accessor untuk kompatibilitas jika dipanggil via $participant->name.
+     */
+    public function getNameAttribute(): string
+    {
+        return (string) ($this->attributes['full_name'] ?? '');
+    }
 }

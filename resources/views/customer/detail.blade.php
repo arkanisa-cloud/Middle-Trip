@@ -269,7 +269,7 @@
                         onclick="openPhotoModal(0)">
                         <img src="{{ $expedition['gallery'][0]['url'] ?? $expedition['image'] }}"
                             alt="{{ $expedition['gallery'][0]['caption'] ?? $expedition['title'] }}"
-                            onerror="this.src='{{ $expedition['image'] ?? 'https://placehold.co/900x900/203a43/ffffff?text=Sabana+Merbabu' }}'"
+                            onerror="this.src='{{ $expedition['image'] ?? 'https://placehold.co/900x900/203a43/ffffff?text=MiddleTrip+Ekspedisi' }}'"
                             class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                         <div class="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent">
                         </div>
@@ -367,58 +367,61 @@
                     </p>
 
                     <!-- 4 Stat Summary Cards (Dinamis sesuai jalur yang dipilih) -->
+                    @php
+                        $activeRoute = $expedition['routes'][0] ?? null;
+                        $currentStats = $activeRoute['stats'] ?? ($expedition['stats'] ?? []);
+                    @endphp
                     <div id="overview-stats-grid"
                         class="grid grid-cols-2 sm:grid-cols-4 gap-3.5 pt-2 transition-all duration-300">
-                        @php
-                            $activeRoute = $expedition['routes'][0] ?? null;
-                            $currentStats = $activeRoute['stats'] ?? $expedition['stats'];
-                        @endphp
-                        @foreach ($currentStats as $stat)
-                            <div
-                                class="border border-hairline rounded-2xl p-4 text-center bg-surface-card shadow-xs hover:border-primary/40 hover:shadow-sm transition-all duration-200">
+                        @if (! empty($currentStats))
+                            @foreach ($currentStats as $stat)
                                 <div
-                                    class="w-9 h-9 mx-auto mb-2.5 rounded-xl bg-primary-subtle text-primary flex items-center justify-center">
-                                    @if ($stat['icon'] === 'milestone')
-                                        <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24"
-                                            stroke="currentColor" stroke-width="2">
-                                            <path stroke-linecap="round" stroke-linejoin="round"
-                                                d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
-                                        </svg>
-                                    @elseif($stat['icon'] === 'clock')
-                                        <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24"
-                                            stroke="currentColor" stroke-width="2">
-                                            <path stroke-linecap="round" stroke-linejoin="round"
-                                                d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                        </svg>
-                                    @elseif($stat['icon'] === 'thermometer')
-                                        <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24"
-                                            stroke="currentColor" stroke-width="2">
-                                            <path stroke-linecap="round" stroke-linejoin="round"
-                                                d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-                                        </svg>
-                                    @elseif($stat['icon'] === 'droplet')
-                                        <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24"
-                                            stroke="currentColor" stroke-width="2">
-                                            <path stroke-linecap="round" stroke-linejoin="round"
-                                                d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" />
-                                        </svg>
-                                    @endif
+                                    class="border border-hairline rounded-2xl p-4 text-center bg-surface-card shadow-xs hover:border-primary/40 hover:shadow-sm transition-all duration-200">
+                                    <div
+                                        class="w-9 h-9 mx-auto mb-2.5 rounded-xl bg-primary-subtle text-primary flex items-center justify-center">
+                                        @if ($stat['icon'] === 'milestone')
+                                            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24"
+                                                stroke="currentColor" stroke-width="2">
+                                                <path stroke-linecap="round" stroke-linejoin="round"
+                                                    d="M18 6H5a2 2 0 00-2 2v3a2 2 0 002 2h13l4-3.5L18 6zM12 13v8M12 3v3" />
+                                            </svg>
+                                        @elseif($stat['icon'] === 'clock')
+                                            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24"
+                                                stroke="currentColor" stroke-width="2">
+                                                <path stroke-linecap="round" stroke-linejoin="round"
+                                                    d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                            </svg>
+                                        @elseif($stat['icon'] === 'thermometer')
+                                            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24"
+                                                stroke="currentColor" stroke-width="2">
+                                                <path stroke-linecap="round" stroke-linejoin="round"
+                                                    d="M14 14.76V3.5a2.5 2.5 0 00-5 0v11.26a4.5 4.5 0 105 0z" />
+                                            </svg>
+                                        @elseif($stat['icon'] === 'droplet')
+                                            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24"
+                                                stroke="currentColor" stroke-width="2">
+                                                <path stroke-linecap="round" stroke-linejoin="round"
+                                                    d="M12 2.69l5.66 5.66a8 8 0 11-11.31 0z" />
+                                            </svg>
+                                        @endif
+                                    </div>
+                                    <p class="text-[11px] font-medium text-muted mb-0.5">{{ $stat['label'] }}</p>
+                                    <p class="text-sm font-bold text-ink-heading">{{ $stat['value'] }}</p>
                                 </div>
-                                <p class="text-[11px] font-medium text-muted mb-0.5">{{ $stat['label'] }}</p>
-                                <p class="text-sm font-bold text-ink-heading">{{ $stat['value'] }}</p>
-                            </div>
-                        @endforeach
+                            @endforeach
+                        @endif
                     </div>
                 </section>
 
                 <!-- SECTION 2: ELEVASI & RUTE PENDAKIAN (Dinamis sesuai jalur) -->
                 @php
-                    $currentElevProfile = $activeRoute['elevation_profile'] ?? $expedition['elevation_profile'];
+                    $currentElevProfile = $activeRoute['elevation_profile'] ?? ($expedition['elevation_profile'] ?? null);
                 @endphp
+                @if (! empty($currentElevProfile))
                 <section id="elevasi" class="space-y-4 pt-2 scroll-mt-28">
                     <h2 id="elevation-section-title"
                         class="text-2xl font-extrabold text-ink-heading tracking-tight transition-all duration-300">
-                        {{ $currentElevProfile['title'] }}
+                        {{ $currentElevProfile['title'] ?? 'Elevasi & Rute Pendakian' }}
                     </h2>
 
                     <div
@@ -509,15 +512,17 @@
                         </div>
                     </div>
                 </section>
+                @endif
 
                 <!-- SECTION 3: ITINERARY 2D1N (Dinamis sesuai jalur) -->
                 @php
-                    $currentItinerary = $activeRoute['itinerary'] ?? $expedition['itinerary'];
+                    $currentItinerary = $activeRoute['itinerary'] ?? ($expedition['itinerary'] ?? null);
                 @endphp
+                @if (! empty($currentItinerary) && ! empty($currentItinerary['days']))
                 <section id="itinerary" class="space-y-4 pt-2 scroll-mt-28">
                     <h2 id="itinerary-section-title"
                         class="text-2xl font-extrabold text-ink-heading tracking-tight transition-all duration-300">
-                        {{ $currentItinerary['title'] }}
+                        {{ $currentItinerary['title'] ?? 'Itinerary Pendakian' }}
                     </h2>
 
                     <div id="itinerary-days-container"
@@ -565,6 +570,7 @@
                         @endforeach
                     </div>
                 </section>
+                @endif
 
                 <!-- SECTION 4: FASILITAS TERMASUK & TIDAK TERMASUK -->
                 <section id="fasilitas" class="space-y-4 pt-2 scroll-mt-28">
@@ -704,12 +710,14 @@
                                         </svg>
                                         <span id="jalur-display-label"
                                             class="text-xs font-semibold text-body-strong block truncate">
-                                            {{ $expedition['routes'][0]['name'] }}
-                                            ({{ $expedition['routes'][0]['badge'] }})
+                                            {{ $expedition['routes'][0]['name'] ?? 'Pilih Jalur' }}
+                                            @if (! empty($expedition['routes'][0]['badge']))
+                                                ({{ $expedition['routes'][0]['badge'] }})
+                                            @endif
                                         </span>
                                     </div>
                                     <input type="hidden" name="jalur" id="jalur-hidden-input"
-                                        value="{{ $expedition['routes'][0]['name'] }}" />
+                                        value="{{ $expedition['routes'][0]['name'] ?? '' }}" />
                                     <svg id="jalur-chevron"
                                         class="w-3.5 h-3.5 text-muted transition-transform duration-200 shrink-0"
                                         fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -725,7 +733,7 @@
                                         class="px-3 py-1 text-[10px] uppercase font-bold text-muted-soft tracking-wider">
                                         Pilih Jalur Pendakian
                                     </div>
-                                    @foreach ($expedition['routes'] as $route)
+                                    @foreach ($expedition['routes'] ?? [] as $route)
                                         <button type="button"
                                             onclick="selectJalurOption('{{ $route['id'] }}', '{{ $route['name'] }}', '{{ $route['badge'] }}')"
                                             class="jalur-option w-full text-left px-3.5 py-2 hover:bg-gray-50 text-body-strong font-medium flex items-center justify-between cursor-pointer transition-colors">
@@ -1093,7 +1101,7 @@
                             </div>
                             <div
                                 class="bg-white border border-slate-200 rounded-xl px-3 py-2 text-xs font-medium text-slate-700 shadow-2xs flex items-center justify-between">
-                                <span id="summaryRoute" x-text="selectedRouteName">Via Selo (Boyolali)</span>
+                                <span id="summaryRoute" x-text="selectedRouteName">-</span>
                                 <svg class="w-3.5 h-3.5 text-slate-400" fill="none" viewBox="0 0 24 24"
                                     stroke="currentColor" stroke-width="2">
                                     <path stroke-linecap="round" stroke-linejoin="round"
@@ -1512,16 +1520,16 @@
                     let iconSvg = '';
                     if (stat.icon === 'milestone') {
                         iconSvg =
-                            `<svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" /></svg>`;
+                            `<svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M18 6H5a2 2 0 00-2 2v3a2 2 0 002 2h13l4-3.5L18 6zM12 13v8M12 3v3" /></svg>`;
                     } else if (stat.icon === 'clock') {
                         iconSvg =
                             `<svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>`;
                     } else if (stat.icon === 'thermometer') {
                         iconSvg =
-                            `<svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" /></svg>`;
+                            `<svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M14 14.76V3.5a2.5 2.5 0 00-5 0v11.26a4.5 4.5 0 105 0z" /></svg>`;
                     } else {
                         iconSvg =
-                            `<svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" /></svg>`;
+                            `<svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 2.69l5.66 5.66a8 8 0 11-11.31 0z" /></svg>`;
                     }
 
                     return `
@@ -1814,7 +1822,7 @@
                         if (found) return found.name;
                         return this.routes[0].name;
                     }
-                    return '{{ $expedition['routes'][0]['name'] ?? 'Via Selo (Boyolali)' }}';
+                    return '{{ $expedition['routes'][0]['name'] ?? '-' }}';
                 },
 
                 get shuttleSummaryLabel() {

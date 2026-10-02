@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\ProfileUpdateRequest;
+use App\Models\Booking;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -12,12 +13,32 @@ use Illuminate\View\View;
 class ProfileController extends Controller
 {
     /**
-     * Display the user's profile form.
+     * Menampilkan profil pengguna dan riwayat pesanan ekspedisi.
      */
     public function edit(Request $request): View
     {
+        $user = $request->user();
+
+        // Otomatis kaitkan pesanan lama yang belum ada user_id namun menggunakan email yang sama
+        Booking::whereNull('user_id')
+            ->where('customer_email', $user->email)
+            ->update(['user_id' => $user->id]);
+
+        $bookings = Booking::where('user_id', $user->id)
+            ->with([
+                'expedition.mountain.routes',
+                'route.mountain',
+                'meetingPoint',
+                'participants',
+                'addons',
+                'paymentTransactions',
+            ])
+            ->latest()
+            ->get();
+
         return view('profile.edit', [
-            'user' => $request->user(),
+            'user' => $user,
+            'bookings' => $bookings,
         ]);
     }
 

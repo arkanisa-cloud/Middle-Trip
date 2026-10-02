@@ -143,4 +143,34 @@ class MidtransService
 
         return ['status' => 'pending', 'is_success' => false];
     }
+
+    /**
+     * Memeriksa status transaksi langsung dari Midtrans Core API secara real-time.
+     *
+     * @return array<string, mixed>|null
+     */
+    public function getTransactionStatus(string $orderId): ?array
+    {
+        $serverKey = config('midtrans.server_key');
+        if (empty($serverKey)) {
+            return null;
+        }
+
+        $coreUrl = rtrim((string) config('midtrans.core_api_url'), '/').'/'.$orderId.'/status';
+
+        try {
+            $response = Http::withBasicAuth($serverKey, '')
+                ->acceptJson()
+                ->timeout(5)
+                ->get($coreUrl);
+
+            if ($response->successful()) {
+                return $response->json();
+            }
+        } catch (\Throwable) {
+            // Abaikan kesalahan koneksi sementara
+        }
+
+        return null;
+    }
 }

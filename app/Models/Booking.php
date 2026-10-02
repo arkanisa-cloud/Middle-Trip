@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -29,7 +30,33 @@ class Booking extends Model
             'remaining_payment_total' => 'integer',
             'grand_total' => 'integer',
             'payment_deadline' => 'datetime',
+            'departure_date' => 'date',
+            'return_date' => 'date',
         ];
+    }
+
+    /**
+     * Accessor tanggal keberangkatan dengan fallback ke batch ekspedisi.
+     */
+    public function getDepartureDateAttribute($value): ?Carbon
+    {
+        if ($value) {
+            return Carbon::parse($value);
+        }
+
+        return $this->expedition?->departure_date ? Carbon::parse($this->expedition->departure_date) : null;
+    }
+
+    /**
+     * Accessor tanggal kepulangan dengan fallback ke batch ekspedisi.
+     */
+    public function getReturnDateAttribute($value): ?Carbon
+    {
+        if ($value) {
+            return Carbon::parse($value);
+        }
+
+        return $this->expedition?->return_date ? Carbon::parse($this->expedition->return_date) : null;
     }
 
     /**
@@ -69,7 +96,7 @@ class Booking extends Model
      */
     public function participants(): HasMany
     {
-        return $this->hasMany(BookingParticipant::class);
+        return $this->hasMany(BookingParticipant::class)->orderByDesc('is_leader')->orderBy('id');
     }
 
     /**
@@ -86,6 +113,14 @@ class Booking extends Model
      * Relasi ke riwayat transaksi pembayaran.
      */
     public function transactions(): HasMany
+    {
+        return $this->hasMany(PaymentTransaction::class);
+    }
+
+    /**
+     * Alias relasi ke riwayat transaksi pembayaran.
+     */
+    public function paymentTransactions(): HasMany
     {
         return $this->hasMany(PaymentTransaction::class);
     }

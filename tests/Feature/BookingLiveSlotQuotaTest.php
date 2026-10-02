@@ -86,8 +86,13 @@ class BookingLiveSlotQuotaTest extends TestCase
             'snap_token' => 'snap-test-token-quota',
         ]);
 
-        // Verifikasi bahwa kuota di database SEKARANG bertambah sesuai pax saat pay_dp mengunci slot
-        $this->assertEquals(2, $expedition->fresh()->quota_booked);
+        // Verifikasi bahwa kuota di database BELUM bertambah hanya karena pay_dp (karena belum dibayar)
+        $this->assertEquals(0, $expedition->fresh()->quota_booked);
+
+        // Verifikasi bahwa user yang belum bayar dilarang mengakses halaman status reserved
+        $statusBeforePaymentResponse = $this->actingAs($user)->get(route('checkout.status', $bookingCode));
+        $statusBeforePaymentResponse->assertRedirect(route('checkout.step1', $bookingCode));
+        $statusBeforePaymentResponse->assertSessionHas('warning');
 
         // Simulasi webhook notifikasi Midtrans settlement untuk mengubah status booking menjadi 'reserved'
         $transaction = PaymentTransaction::where('transaction_code', $payDpResponse->json('order_id'))->first();
@@ -108,6 +113,13 @@ class BookingLiveSlotQuotaTest extends TestCase
             'booking_code' => $bookingCode,
             'status' => 'reserved',
         ]);
+
+        // Verifikasi bahwa kuota di database SEKARANG bertambah menjadi 2
+        $this->assertEquals(2, $expedition->fresh()->quota_booked);
+
+        // Verifikasi bahwa user sekarang dapat mengakses halaman status reserved
+        $statusAfterPaymentResponse = $this->actingAs($user)->get(route('checkout.status', $bookingCode));
+        $statusAfterPaymentResponse->assertOk();
 
         // Verifikasi bahwa bar live slot di halaman detail gunung SEKARANG bertambah menjadi 2 dari 10 peserta
         $detailAfterPaymentResponse = $this->get(route('ekspedisi.show', $mountain->slug));

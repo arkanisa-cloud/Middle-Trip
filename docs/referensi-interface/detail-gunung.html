@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,7 +10,9 @@
   <!-- Google Fonts: Inter -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap"
+    rel="stylesheet">
   <!-- Lucide Icons CDN -->
   <script src="https://unpkg.com/lucide@latest"></script>
   <script>
@@ -39,15 +42,18 @@
       background-color: #ffffff;
       -webkit-font-smoothing: antialiased;
     }
+
     .custom-scrollbar::-webkit-scrollbar {
       width: 6px;
     }
+
     .custom-scrollbar::-webkit-scrollbar-thumb {
       background: #cbd5e1;
       border-radius: 4px;
     }
   </style>
 </head>
+
 <body class="bg-white text-slate-800 antialiased selection:bg-orange-100 selection:text-brand-brown">
 
   <!-- Header / Navigation Bar -->
@@ -56,8 +62,9 @@
       <!-- Logo -->
       <a href="#" class="flex items-center gap-2">
         <div class="flex items-center gap-2 text-slate-900 font-extrabold text-xl tracking-tight">
-          <svg class="w-6 h-6 text-slate-900" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round">
-            <path d="m8 3 4 8 5-5 5 15H2L8 3z"/>
+          <svg class="w-6 h-6 text-slate-900" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3"
+            stroke-linecap="round" stroke-linejoin="round">
+            <path d="m8 3 4 8 5-5 5 15H2L8 3z" />
           </svg>
           <span>Middle<span class="text-slate-900">Trip</span></span>
         </div>
@@ -66,21 +73,23 @@
       <!-- Center Navigation Links -->
       <nav class="hidden md:flex items-center gap-10 text-sm font-medium text-slate-600">
         <a href="#overview" class="hover:text-slate-900 transition-colors">Home</a>
-        <a href="#rute" class="text-slate-900 font-semibold relative after:content-[''] after:absolute after:-bottom-1.5 after:left-1/2 after:-translate-x-1/2 after:w-4 after:h-0.5 after:bg-slate-900 after:rounded-full">Ekspedisi</a>
+        <a href="#rute"
+          class="text-slate-900 font-semibold relative after:content-[''] after:absolute after:-bottom-1.5 after:left-1/2 after:-translate-x-1/2 after:w-4 after:h-0.5 after:bg-slate-900 after:rounded-full">Ekspedisi</a>
         <a href="#itinerary" class="hover:text-slate-900 transition-colors">Contact</a>
       </nav>
 
       <!-- Auth Buttons -->
       <div class="flex items-center gap-4 text-sm font-medium">
         <button class="text-slate-700 hover:text-slate-900 font-medium px-2 py-1 transition-colors">Login</button>
-        <button class="bg-slate-900 hover:bg-slate-800 text-white px-5 py-2 rounded-full font-medium transition-all shadow-sm">Daftar</button>
+        <button
+          class="bg-slate-900 hover:bg-slate-800 text-white px-5 py-2 rounded-full font-medium transition-all shadow-sm">Daftar</button>
       </div>
     </div>
   </header>
 
   <!-- Main Container -->
   <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 pb-24">
-    
+
     <!-- Breadcrumb -->
     <nav class="flex items-center gap-2 text-xs font-medium text-slate-400 mb-3">
       <a href="#" class="hover:text-slate-600">Home</a>
@@ -93,18 +102,21 @@
     <!-- Page Title & Badges -->
     <div class="mb-6">
       <h1 class="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight mb-3.5">Mt. Merbabu Expedition</h1>
-      
+
       <!-- Key Meta Badges -->
       <div class="flex flex-wrap items-center gap-2 text-xs font-semibold text-slate-600">
-        <div class="flex items-center gap-1.5 bg-slate-100/90 text-slate-700 px-3 py-1.5 rounded-full border border-slate-200/60">
+        <div
+          class="flex items-center gap-1.5 bg-slate-100/90 text-slate-700 px-3 py-1.5 rounded-full border border-slate-200/60">
           <i data-lucide="mountain" class="w-3.5 h-3.5 text-slate-500"></i>
           <span>3.142 mdpl</span>
         </div>
-        <div class="flex items-center gap-1.5 bg-slate-100/90 text-slate-700 px-3 py-1.5 rounded-full border border-slate-200/60">
+        <div
+          class="flex items-center gap-1.5 bg-slate-100/90 text-slate-700 px-3 py-1.5 rounded-full border border-slate-200/60">
           <i data-lucide="shield-check" class="w-3.5 h-3.5 text-slate-500"></i>
           <span>Cocok utk Pemula</span>
         </div>
-        <div class="flex items-center gap-1.5 bg-slate-100/90 text-slate-700 px-3 py-1.5 rounded-full border border-slate-200/60">
+        <div
+          class="flex items-center gap-1.5 bg-slate-100/90 text-slate-700 px-3 py-1.5 rounded-full border border-slate-200/60">
           <i data-lucide="map-pin" class="w-3.5 h-3.5 text-slate-500"></i>
           <span>Jawa Tengah</span>
         </div>
@@ -115,12 +127,10 @@
     <section class="grid grid-cols-1 md:grid-cols-12 gap-3 mb-10">
       <!-- Big Hero Image Left -->
       <div class="md:col-span-6 relative rounded-2xl overflow-hidden group h-[340px] sm:h-[450px]">
-        <img 
-          src="https://images.unsplash.com/photo-1579618218290-24a26f63a708?q=80&w=1200&auto=format&fit=crop" 
-          alt="Mt Merbabu Savanna Ridge" 
+        <img src="https://images.unsplash.com/photo-1579618218290-24a26f63a708?q=80&w=1200&auto=format&fit=crop"
+          alt="Mt Merbabu Savanna Ridge"
           class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-          onerror="this.src='https://placehold.co/900x900/203a43/ffffff?text=Sabana+Merbabu'"
-        />
+          onerror="this.src='https://placehold.co/900x900/203a43/ffffff?text=Sabana+Merbabu'" />
         <div class="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent"></div>
       </div>
 
@@ -128,41 +138,34 @@
       <div class="md:col-span-6 grid grid-cols-2 gap-3 h-[340px] sm:h-[450px]">
         <!-- Top Left -->
         <div class="relative rounded-2xl overflow-hidden group h-full">
-          <img 
-            src="https://images.unsplash.com/photo-1589182373726-e4f658ab50f0?q=80&w=600&auto=format&fit=crop" 
-            alt="View of Mt Merapi" 
+          <img src="https://images.unsplash.com/photo-1589182373726-e4f658ab50f0?q=80&w=600&auto=format&fit=crop"
+            alt="View of Mt Merapi"
             class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-            onerror="this.src='https://placehold.co/600x400/294861/ffffff?text=View+Merapi'"
-          />
+            onerror="this.src='https://placehold.co/600x400/294861/ffffff?text=View+Merapi'" />
         </div>
         <!-- Top Right -->
         <div class="relative rounded-2xl overflow-hidden group h-full">
-          <img 
-            src="https://images.unsplash.com/photo-1551632811-561732d1e306?q=80&w=600&auto=format&fit=crop" 
-            alt="Hiker in meadow" 
+          <img src="https://images.unsplash.com/photo-1551632811-561732d1e306?q=80&w=600&auto=format&fit=crop"
+            alt="Hiker in meadow"
             class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-            onerror="this.src='https://placehold.co/600x400/39566e/ffffff?text=Pendaki+Merbabu'"
-          />
+            onerror="this.src='https://placehold.co/600x400/39566e/ffffff?text=Pendaki+Merbabu'" />
         </div>
         <!-- Bottom Left -->
         <div class="relative rounded-2xl overflow-hidden group h-full">
-          <img 
-            src="https://images.unsplash.com/photo-1544717305-2782549b5136?q=80&w=600&auto=format&fit=crop" 
-            alt="Hiker in warm jacket" 
+          <img src="https://images.unsplash.com/photo-1544717305-2782549b5136?q=80&w=600&auto=format&fit=crop"
+            alt="Hiker in warm jacket"
             class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-            onerror="this.src='https://placehold.co/600x400/536976/ffffff?text=Sabana+Camp'"
-          />
+            onerror="this.src='https://placehold.co/600x400/536976/ffffff?text=Sabana+Camp'" />
         </div>
         <!-- Bottom Right with "Lihat 12+ Foto Asli" -->
         <div class="relative rounded-2xl overflow-hidden group h-full cursor-pointer">
-          <img 
-            src="https://images.unsplash.com/photo-1506744038136-46273834b3fb?q=80&w=600&auto=format&fit=crop" 
-            alt="Puncak Kenteng Songo Ridge" 
+          <img src="https://images.unsplash.com/photo-1506744038136-46273834b3fb?q=80&w=600&auto=format&fit=crop"
+            alt="Puncak Kenteng Songo Ridge"
             class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 brightness-90"
-            onerror="this.src='https://placehold.co/600x400/232526/ffffff?text=Puncak+Merbabu'"
-          />
+            onerror="this.src='https://placehold.co/600x400/232526/ffffff?text=Puncak+Merbabu'" />
           <div class="absolute inset-0 bg-black/35 flex items-center justify-center p-3">
-            <button class="bg-black/55 backdrop-blur-md border border-white/20 text-white text-xs font-semibold px-4 py-2.5 rounded-full flex items-center gap-2 hover:bg-black/75 transition-all shadow-lg">
+            <button
+              class="bg-black/55 backdrop-blur-md border border-white/20 text-white text-xs font-semibold px-4 py-2.5 rounded-full flex items-center gap-2 hover:bg-black/75 transition-all shadow-lg">
               <i data-lucide="image" class="w-3.5 h-3.5"></i>
               <span>Lihat 12+ Foto Asli</span>
             </button>
@@ -173,14 +176,16 @@
 
     <!-- Two Columns Layout: Main Content (Left) & Booking Sticky Sidebar (Right) -->
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
-      
+
       <!-- LEFT CONTENT COLUMN (7 cols or ~65%) -->
       <div class="lg:col-span-8 space-y-10">
-        
+
         <!-- Segmented Navigation Pills -->
-        <div class="inline-flex bg-slate-100/90 p-1.5 rounded-full border border-slate-200/60 max-w-full overflow-x-auto text-xs sm:text-sm font-semibold text-slate-600">
+        <div
+          class="inline-flex bg-slate-100/90 p-1.5 rounded-full border border-slate-200/60 max-w-full overflow-x-auto text-xs sm:text-sm font-semibold text-slate-600">
           <a href="#overview" class="bg-white text-slate-900 px-5 py-2 rounded-full shadow-sm">Ringkasan</a>
-          <a href="#elevasi" class="px-5 py-2 hover:text-slate-900 transition-colors whitespace-nowrap">Elevasi & Rute</a>
+          <a href="#elevasi" class="px-5 py-2 hover:text-slate-900 transition-colors whitespace-nowrap">Elevasi &
+            Rute</a>
           <a href="#itinerary" class="px-5 py-2 hover:text-slate-900 transition-colors whitespace-nowrap">Itinerary</a>
           <a href="#fasilitas" class="px-5 py-2 hover:text-slate-900 transition-colors whitespace-nowrap">Fasilitas</a>
         </div>
@@ -189,13 +194,17 @@
         <section id="overview" class="space-y-6">
           <h2 class="text-xl font-bold text-slate-900">Overview</h2>
           <p class="text-slate-600 text-sm leading-relaxed text-justify">
-            Gunung Merbabu adalah gunung api tipe strato dengan ketinggian 3.142 mdpl. Secara administratif gunung ini berada di wilayah Kabupaten Magelang di lereng sebelah barat, Kabupaten Boyolali di lereng sebelah timur dan selatan, serta Kabupaten Semarang di lereng sebelah utara. Pendakian ini menawarkan panorama sabana yang luas dan pemandangan Gunung Merapi yang megah.
+            Gunung Merbabu adalah gunung api tipe strato dengan ketinggian 3.142 mdpl. Secara administratif gunung ini
+            berada di wilayah Kabupaten Magelang di lereng sebelah barat, Kabupaten Boyolali di lereng sebelah timur dan
+            selatan, serta Kabupaten Semarang di lereng sebelah utara. Pendakian ini menawarkan panorama sabana yang
+            luas dan pemandangan Gunung Merapi yang megah.
           </p>
 
           <!-- 4 Stat Summary Cards -->
           <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-2">
             <!-- Jarak Total -->
-            <div class="border border-slate-200 rounded-2xl p-4 text-center bg-white shadow-xs hover:border-slate-300 transition-all">
+            <div
+              class="border border-slate-200 rounded-2xl p-4 text-center bg-white shadow-xs hover:border-slate-300 transition-all">
               <div class="w-8 h-8 mx-auto mb-2 text-slate-700 flex items-center justify-center">
                 <i data-lucide="milestone" class="w-5 h-5"></i>
               </div>
@@ -204,7 +213,8 @@
             </div>
 
             <!-- Durasi Waktu -->
-            <div class="border border-slate-200 rounded-2xl p-4 text-center bg-white shadow-xs hover:border-slate-300 transition-all">
+            <div
+              class="border border-slate-200 rounded-2xl p-4 text-center bg-white shadow-xs hover:border-slate-300 transition-all">
               <div class="w-8 h-8 mx-auto mb-2 text-slate-700 flex items-center justify-center">
                 <i data-lucide="clock" class="w-5 h-5"></i>
               </div>
@@ -213,7 +223,8 @@
             </div>
 
             <!-- Suhu Rata-rata -->
-            <div class="border border-slate-200 rounded-2xl p-4 text-center bg-white shadow-xs hover:border-slate-300 transition-all">
+            <div
+              class="border border-slate-200 rounded-2xl p-4 text-center bg-white shadow-xs hover:border-slate-300 transition-all">
               <div class="w-8 h-8 mx-auto mb-2 text-slate-700 flex items-center justify-center">
                 <i data-lucide="thermometer" class="w-5 h-5"></i>
               </div>
@@ -222,7 +233,8 @@
             </div>
 
             <!-- Sumber Air -->
-            <div class="border border-slate-200 rounded-2xl p-4 text-center bg-white shadow-xs hover:border-slate-300 transition-all">
+            <div
+              class="border border-slate-200 rounded-2xl p-4 text-center bg-white shadow-xs hover:border-slate-300 transition-all">
               <div class="w-8 h-8 mx-auto mb-2 text-slate-700 flex items-center justify-center">
                 <i data-lucide="droplet" class="w-5 h-5"></i>
               </div>
@@ -235,7 +247,7 @@
         <!-- SECTION 2: ELEVASI & RUTE PENDAKIAN -->
         <section id="elevasi" class="space-y-4">
           <h2 class="text-xl font-bold text-slate-900">Elevasi & Rute Pendakian (Via Selo)</h2>
-          
+
           <div class="border border-slate-200 rounded-2xl p-6 bg-white shadow-xs">
             <!-- Elevation Graph Illustration (Responsive SVG) -->
             <div class="w-full h-56 sm:h-64 py-2 relative flex items-center justify-center">
@@ -252,16 +264,19 @@
                 </defs>
 
                 <!-- Soft Mountain Silhouette Area -->
-                <path d="M 40 185 L 140 160 L 250 145 L 360 130 L 470 95 L 560 80 L 650 45 L 650 210 L 40 210 Z" fill="url(#areaGradient)" />
+                <path d="M 40 185 L 140 160 L 250 145 L 360 130 L 470 95 L 560 80 L 650 45 L 650 210 L 40 210 Z"
+                  fill="url(#areaGradient)" />
 
                 <!-- Elevation Line -->
-                <path d="M 40 185 L 140 160 L 250 145 L 360 130 L 470 95 L 560 80 L 650 45" fill="none" stroke="url(#elevationLine)" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" />
+                <path d="M 40 185 L 140 160 L 250 145 L 360 130 L 470 95 L 560 80 L 650 45" fill="none"
+                  stroke="url(#elevationLine)" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" />
 
                 <!-- Points & Labels -->
                 <!-- Basecamp -->
                 <circle cx="40" cy="185" r="4.5" fill="#fff" stroke="#993f1d" stroke-width="2.5" />
                 <text x="40" y="172" text-anchor="middle" class="text-[10px] font-bold fill-slate-400">1.800m</text>
-                <text x="40" y="202" text-anchor="middle" class="text-[11px] font-semibold fill-slate-700">Basecamp</text>
+                <text x="40" y="202" text-anchor="middle"
+                  class="text-[11px] font-semibold fill-slate-700">Basecamp</text>
 
                 <!-- Pos 1 -->
                 <circle cx="140" cy="160" r="4.5" fill="#fff" stroke="#993f1d" stroke-width="2.5" />
@@ -281,12 +296,14 @@
                 <!-- Sabana 1 -->
                 <circle cx="470" cy="95" r="4.5" fill="#fff" stroke="#993f1d" stroke-width="2.5" />
                 <text x="470" y="82" text-anchor="middle" class="text-[10px] font-bold fill-slate-400">2.800m</text>
-                <text x="470" y="113" text-anchor="middle" class="text-[11px] font-semibold fill-slate-700">Sabana 1</text>
+                <text x="470" y="113" text-anchor="middle" class="text-[11px] font-semibold fill-slate-700">Sabana
+                  1</text>
 
                 <!-- Sabana 2 -->
                 <circle cx="560" cy="80" r="4.5" fill="#fff" stroke="#993f1d" stroke-width="2.5" />
                 <text x="560" y="67" text-anchor="middle" class="text-[10px] font-bold fill-slate-400">2.950m</text>
-                <text x="560" y="98" text-anchor="middle" class="text-[11px] font-semibold fill-slate-700">Sabana 2</text>
+                <text x="560" y="98" text-anchor="middle" class="text-[11px] font-semibold fill-slate-700">Sabana
+                  2</text>
 
                 <!-- Puncak Kenteng Songo -->
                 <circle cx="650" cy="45" r="5" fill="#993f1d" stroke="#fff" stroke-width="2" />
@@ -298,7 +315,8 @@
             <!-- Route Notes & Warning Badges -->
             <div class="grid grid-cols-1 md:grid-cols-3 gap-2.5 pt-4 border-t border-slate-100 text-xs">
               <!-- Water Source -->
-              <div class="flex items-center gap-2.5 bg-slate-50/80 border border-slate-200/70 px-3.5 py-2.5 rounded-xl text-slate-700">
+              <div
+                class="flex items-center gap-2.5 bg-slate-50/80 border border-slate-200/70 px-3.5 py-2.5 rounded-xl text-slate-700">
                 <div class="w-6 h-6 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center shrink-0">
                   <i data-lucide="droplets" class="w-3.5 h-3.5"></i>
                 </div>
@@ -309,7 +327,8 @@
               </div>
 
               <!-- High Wind Warning -->
-              <div class="flex items-center gap-2.5 bg-red-50/50 border border-red-100 px-3.5 py-2.5 rounded-xl text-slate-700">
+              <div
+                class="flex items-center gap-2.5 bg-red-50/50 border border-red-100 px-3.5 py-2.5 rounded-xl text-slate-700">
                 <div class="w-6 h-6 rounded-full bg-red-100 text-red-600 flex items-center justify-center shrink-0">
                   <i data-lucide="alert-triangle" class="w-3.5 h-3.5"></i>
                 </div>
@@ -320,8 +339,10 @@
               </div>
 
               <!-- Cellular Signal -->
-              <div class="flex items-center gap-2.5 bg-emerald-50/40 border border-emerald-100 px-3.5 py-2.5 rounded-xl text-slate-700">
-                <div class="w-6 h-6 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center shrink-0">
+              <div
+                class="flex items-center gap-2.5 bg-emerald-50/40 border border-emerald-100 px-3.5 py-2.5 rounded-xl text-slate-700">
+                <div
+                  class="w-6 h-6 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center shrink-0">
                   <i data-lucide="signal" class="w-3.5 h-3.5"></i>
                 </div>
                 <div class="text-[11px] leading-tight">
@@ -335,19 +356,23 @@
         <!-- SECTION 3: ITINERARY 2D1N -->
         <section id="itinerary" class="space-y-4">
           <h2 class="text-xl font-bold text-slate-900">Itinerary 2D1N (Via Selo)</h2>
-          
-          <div class="relative pl-6 space-y-6 before:content-[''] before:absolute before:top-3 before:bottom-3 before:left-[11px] before:w-[2px] before:bg-slate-200">
-            
+
+          <div
+            class="relative pl-6 space-y-6 before:content-[''] before:absolute before:top-3 before:bottom-3 before:left-[11px] before:w-[2px] before:bg-slate-200">
+
             <!-- Day 1 -->
             <div class="relative group">
               <!-- Dot -->
-              <div class="absolute -left-6 top-1 w-[22px] h-[22px] rounded-full bg-slate-900 border-4 border-white shadow-sm flex items-center justify-center"></div>
-              
+              <div
+                class="absolute -left-6 top-1 w-[22px] h-[22px] rounded-full bg-slate-900 border-4 border-white shadow-sm flex items-center justify-center">
+              </div>
+
               <!-- Card -->
               <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-xs">
                 <h3 class="text-sm font-bold text-slate-900 mb-1">Day 1: Basecamp ke Sabana (Camp)</h3>
                 <p class="text-xs text-slate-500 mb-4 leading-relaxed">
-                  Memulai pendakian dari Basecamp Selo melewati hutan pinus dan lamtoro. Istirahat dan makan siang di Pos 2 sebelum melanjutkan ke Sabana untuk mendirikan tenda.
+                  Memulai pendakian dari Basecamp Selo melewati hutan pinus dan lamtoro. Istirahat dan makan siang di
+                  Pos 2 sebelum melanjutkan ke Sabana untuk mendirikan tenda.
                 </p>
 
                 <!-- Schedule timeline items -->
@@ -379,13 +404,16 @@
             <!-- Day 2 -->
             <div class="relative group">
               <!-- Dot (Inactive / Outline) -->
-              <div class="absolute -left-6 top-1 w-[22px] h-[22px] rounded-full bg-slate-300 border-4 border-white shadow-sm"></div>
-              
+              <div
+                class="absolute -left-6 top-1 w-[22px] h-[22px] rounded-full bg-slate-300 border-4 border-white shadow-sm">
+              </div>
+
               <!-- Card -->
               <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-xs">
                 <h3 class="text-sm font-bold text-slate-900 mb-1">Day 2: Summit Push & Descent</h3>
                 <p class="text-xs text-slate-500 leading-relaxed">
-                  Bangun dini hari untuk muncak dan menikmati sunrise di Puncak Kenteng Songo. Setelah sarapan, turun kembali ke basecamp.
+                  Bangun dini hari untuk muncak dan menikmati sunrise di Puncak Kenteng Songo. Setelah sarapan, turun
+                  kembali ke basecamp.
                 </p>
               </div>
             </div>
@@ -400,7 +428,8 @@
           <!-- Termasuk (Included) Card -->
           <div class="border border-slate-200 rounded-2xl p-6 bg-white shadow-xs">
             <!-- Header Tag -->
-            <div class="flex items-center justify-center gap-1.5 text-xs font-bold text-emerald-700 bg-emerald-50 border border-emerald-200/60 rounded-full py-1.5 px-4 w-fit mx-auto mb-6">
+            <div
+              class="flex items-center justify-center gap-1.5 text-xs font-bold text-emerald-700 bg-emerald-50 border border-emerald-200/60 rounded-full py-1.5 px-4 w-fit mx-auto mb-6">
               <i data-lucide="check-circle" class="w-3.5 h-3.5 text-emerald-600"></i>
               <span>Termasuk (Included)</span>
             </div>
@@ -455,7 +484,8 @@
           <!-- Tidak Termasuk (Exclude) Card -->
           <div class="border border-slate-200 rounded-2xl p-6 bg-white shadow-xs">
             <!-- Header Tag -->
-            <div class="flex items-center justify-center gap-1.5 text-xs font-bold text-red-600 bg-red-50 border border-red-200/60 rounded-full py-1.5 px-4 w-fit mx-auto mb-6">
+            <div
+              class="flex items-center justify-center gap-1.5 text-xs font-bold text-red-600 bg-red-50 border border-red-200/60 rounded-full py-1.5 px-4 w-fit mx-auto mb-6">
               <i data-lucide="x-circle" class="w-3.5 h-3.5 text-red-500"></i>
               <span>Tidak Termasuk (Exclude)</span>
             </div>
@@ -493,7 +523,7 @@
       <!-- RIGHT SIDEBAR: BOOKING CARD (Sticky) -->
       <div class="lg:col-span-4 w-full">
         <div class="sticky top-24 bg-white border border-slate-200 rounded-3xl p-6 shadow-sm space-y-6">
-          
+
           <!-- Card Title -->
           <div class="flex items-center gap-2 text-slate-900 font-bold text-sm">
             <i data-lucide="hiking" class="w-4 h-4 text-slate-700"></i>
@@ -505,13 +535,15 @@
             <label class="block text-xs font-bold text-slate-800">1. Tipe Pendakian</label>
             <div class="grid grid-cols-2 gap-2.5">
               <!-- Camping (Selected) -->
-              <button type="button" class="border-2 border-slate-900 bg-slate-50/50 rounded-2xl p-3 text-left transition-all">
+              <button type="button"
+                class="border-2 border-slate-900 bg-slate-50/50 rounded-2xl p-3 text-left transition-all">
                 <span class="block text-xs font-bold text-slate-900">Camping</span>
                 <span class="block text-[11px] text-slate-500 font-medium">2D1N</span>
                 <span class="block text-[10px] text-slate-400">1 Malam</span>
               </button>
               <!-- Tek-tok (Unselected) -->
-              <button type="button" class="border border-slate-200 hover:border-slate-300 rounded-2xl p-3 text-left transition-all">
+              <button type="button"
+                class="border border-slate-200 hover:border-slate-300 rounded-2xl p-3 text-left transition-all">
                 <span class="block text-xs font-bold text-slate-800">Tek-tok</span>
                 <span class="block text-[11px] text-slate-400 font-medium">One Day Hike</span>
               </button>
@@ -522,7 +554,8 @@
           <div class="space-y-2">
             <label class="block text-xs font-bold text-slate-800">2. Pilih Jalur (Via)</label>
             <div class="relative">
-              <select class="w-full bg-white border border-slate-200 rounded-2xl py-2.5 px-3.5 text-xs text-slate-800 font-medium appearance-none focus:outline-none focus:border-slate-400">
+              <select
+                class="w-full bg-white border border-slate-200 rounded-2xl py-2.5 px-3.5 text-xs text-slate-800 font-medium appearance-none focus:outline-none focus:border-slate-400">
                 <option selected>Via Selo (Rekomendasi)</option>
                 <option>Via Suwanting</option>
                 <option>Via Thekelan</option>
@@ -547,12 +580,8 @@
           <div class="space-y-2">
             <label class="block text-xs font-bold text-slate-800">4. Tanggal Terdekat</label>
             <div class="relative">
-              <input 
-                type="text" 
-                value="15/06/2026" 
-                readonly
-                class="w-full bg-white border border-slate-200 rounded-2xl py-2.5 px-3.5 text-xs text-slate-800 font-medium focus:outline-none"
-              />
+              <input type="text" value="15/06/2026" readonly
+                class="w-full bg-white border border-slate-200 rounded-2xl py-2.5 px-3.5 text-xs text-slate-800 font-medium focus:outline-none" />
               <div class="absolute inset-y-0 right-0 flex items-center pr-3.5 pointer-events-none text-slate-400">
                 <i data-lucide="calendar" class="w-4 h-4"></i>
               </div>
@@ -582,11 +611,8 @@
           </div>
 
           <!-- Booking Button -->
-          <button 
-            id="btn-booking"
-            onclick="handleBooking()"
-            class="w-full bg-brand-brown hover:bg-brand-brown-hover active:scale-[0.99] transition-all text-white py-3.5 px-4 rounded-2xl font-bold text-sm shadow-md hover:shadow-lg flex items-center justify-center gap-2"
-          >
+          <button id="btn-booking" onclick="handleBooking()"
+            class="w-full bg-brand-brown hover:bg-brand-brown-hover active:scale-[0.99] transition-all text-white py-3.5 px-4 rounded-2xl font-bold text-sm shadow-md hover:shadow-lg flex items-center justify-center gap-2">
             <span>Booking Sekarang</span>
           </button>
 
@@ -607,8 +633,9 @@
     <div class="max-w-7xl mx-auto px-4 space-y-4">
       <!-- Footer Logo -->
       <div class="flex items-center justify-center gap-2 text-slate-900 font-extrabold text-base tracking-tight">
-        <svg class="w-5 h-5 text-slate-900" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round">
-          <path d="m8 3 4 8 5-5 5 15H2L8 3z"/>
+        <svg class="w-5 h-5 text-slate-900" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3"
+          stroke-linecap="round" stroke-linejoin="round">
+          <path d="m8 3 4 8 5-5 5 15H2L8 3z" />
         </svg>
         <span>MiddleTrip</span>
       </div>
@@ -629,18 +656,22 @@
   </footer>
 
   <!-- Modal Toast Notification (No alert()) -->
-  <div id="bookingModal" class="fixed inset-0 bg-black/40 backdrop-blur-xs flex items-center justify-center z-50 opacity-0 pointer-events-none transition-opacity duration-300 px-4">
-    <div class="bg-white rounded-3xl p-6 max-w-sm w-full shadow-2xl transform scale-95 transition-transform duration-300 text-center space-y-4">
+  <div id="bookingModal"
+    class="fixed inset-0 bg-black/40 backdrop-blur-xs flex items-center justify-center z-50 opacity-0 pointer-events-none transition-opacity duration-300 px-4">
+    <div
+      class="bg-white rounded-3xl p-6 max-w-sm w-full shadow-2xl transform scale-95 transition-transform duration-300 text-center space-y-4">
       <div class="w-12 h-12 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto">
         <i data-lucide="check" class="w-6 h-6 stroke-[3]"></i>
       </div>
       <div>
         <h3 class="text-base font-bold text-slate-900">Slot Terpesan!</h3>
         <p class="text-xs text-slate-500 mt-1 leading-relaxed">
-          Terima kasih telah memilih ekspedisi Mt. Merbabu bersama MiddleTrip. Admin kami akan segera menghubungi via WhatsApp.
+          Terima kasih telah memilih ekspedisi Mt. Merbabu bersama MiddleTrip. Admin kami akan segera menghubungi via
+          WhatsApp.
         </p>
       </div>
-      <button onclick="closeBookingModal()" class="w-full py-2.5 bg-slate-900 text-white rounded-xl text-xs font-bold hover:bg-slate-800 transition-all">
+      <button onclick="closeBookingModal()"
+        class="w-full py-2.5 bg-slate-900 text-white rounded-xl text-xs font-bold hover:bg-slate-800 transition-all">
         Mengerti
       </button>
     </div>
@@ -666,4 +697,5 @@
     }
   </script>
 </body>
+
 </html>

@@ -67,8 +67,6 @@ class CheckoutController extends Controller
                         'quota' => 'Maaf, kuota untuk batch ekspedisi ini sudah habis.',
                     ]);
                 }
-
-                $expedition->increment('quota_booked', $booking->pax_count);
             }
 
             // Minta Snap Token dari Midtrans
@@ -102,11 +100,40 @@ class CheckoutController extends Controller
     /**
      * Menampilkan status pemesanan & countdown / formulir pelunasan (Step 2).
      */
-    public function status(string $bookingCode): View
+    public function status(string $bookingCode): View|RedirectResponse
     {
         $booking = Booking::with(['expedition.mountain', 'route', 'meetingPoint', 'participants', 'addons'])
             ->where('booking_code', $bookingCode)
             ->firstOrFail();
+
+        if ($booking->status === 'open') {
+            $latestTx = $booking->paymentTransactions()
+                ->where('payment_stage', 'booking_fee')
+                ->latest()
+                ->first();
+
+            if ($latestTx) {
+                $statusData = $this->midtrans->getTransactionStatus($latestTx->transaction_code);
+                if ($statusData) {
+                    $parsed = $this->midtrans->parseTransactionStatus($statusData);
+                    if ($parsed['is_success']) {
+                        $latestTx->update([
+                            'status' => 'success',
+                            'payment_method' => $statusData['payment_type'] ?? $latestTx->payment_method,
+                            'payment_payload' => $statusData,
+                            'paid_at' => now(),
+                        ]);
+                        $booking->update(['status' => 'reserved']);
+                        $booking->expedition?->syncQuotaBooked();
+
+                        return view('customer.checkout.step2_status', compact('booking'));
+                    }
+                }
+            }
+
+            return redirect()->route('checkout.step1', $booking->booking_code)
+                ->with('warning', 'Pembayaran Booking Fee belum selesai. Silakan lakukan pembayaran terlebih dahulu untuk mengamankan slot Anda.');
+        }
 
         return view('customer.checkout.step2_status', compact('booking'));
     }
@@ -144,13 +171,15 @@ class CheckoutController extends Controller
             return redirect()->route('checkout.success', $booking->booking_code);
         }
 
-        $snapData = $this->midtrans->createSnapToken($booking, 'settlement', $amount);
+        $paymentMethod = $request->input('payment_method');
+
+        $snapData = $this->midtrans->createSnapToken($booking, 'settlement', $amount, $paymentMethod);
 
         PaymentTransaction::create([
             'booking_id' => $booking->id,
             'transaction_code' => $snapData['order_id'],
             'payment_stage' => 'settlement',
-            'payment_method' => 'midtrans',
+            'payment_method' => $paymentMethod ?? 'midtrans',
             'amount' => $amount,
             'status' => 'pending',
         ]);
@@ -232,13 +261,51 @@ class CheckoutController extends Controller
     /**
      * Menampilkan halaman sukses pembayaran & tautan grup WA (Step 3).
      */
-    public function success(string $bookingCode): View
+    public function success(string $bookingCode): View|RedirectResponse
     {
         $booking = Booking::with(['expedition.mountain', 'route', 'meetingPoint', 'participants', 'addons'])
             ->where('booking_code', $bookingCode)
             ->firstOrFail();
 
-        if ($booking->trip_type === 'private' || $booking->expedition->type === 'private') {
+        if ($booking->status !== 'paid') {
+            $latestTx = $booking->paymentTransactions()
+                ->whereIn('payment_stage', ['full_payment', 'settlement'])
+                ->latest()
+                ->first();
+
+            if ($latestTx) {
+                $statusData = $this->midtrans->getTransactionStatus($latestTx->transaction_code);
+                if ($statusData) {
+                    $parsed = $this->midtrans->parseTransactionStatus($statusData);
+                    if ($parsed['is_success']) {
+                        $latestTx->update([
+                            'status' => 'success',
+                            'payment_method' => $statusData['payment_type'] ?? $latestTx->payment_method,
+                            'payment_payload' => $statusData,
+                            'paid_at' => now(),
+                        ]);
+                        $booking->update(['status' => 'paid']);
+                        $booking->expedition?->syncQuotaBooked();
+
+                        if ($booking->trip_type === 'private' || $booking->expedition?->type === 'private') {
+                            return view('customer.checkout.private_success', compact('booking'));
+                        }
+
+                        return view('customer.checkout.step3_success', compact('booking'));
+                    }
+                }
+            }
+
+            if ($booking->trip_type === 'private' || $booking->expedition?->type === 'private') {
+                return redirect()->route('checkout.private', $booking->booking_code)
+                    ->with('warning', 'Pembayaran belum selesai. Silakan lakukan pembayaran terlebih dahulu.');
+            }
+
+            return redirect()->route('checkout.status', $booking->booking_code)
+                ->with('warning', 'Pelunasan belum selesai. Silakan selesaikan pembayaran terlebih dahulu.');
+        }
+
+        if ($booking->trip_type === 'private' || $booking->expedition?->type === 'private') {
             return view('customer.checkout.private_success', compact('booking'));
         }
 
