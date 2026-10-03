@@ -29,6 +29,12 @@
             <div class="w-full sm:max-w-md bg-white border border-hairline shadow-xs rounded-2xl p-6 sm:p-8">
                 {{ $slot }}
             </div>
+
+            <div class="mt-6 text-center text-xs text-muted">
+                <a href="{{ route('home') }}" class="hover:text-primary transition-colors inline-flex items-center gap-1 font-semibold">
+                    ← Kembali ke Beranda
+                </a>
+            </div>
         </div>
     </body>
 </html>

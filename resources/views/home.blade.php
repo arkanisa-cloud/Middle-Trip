@@ -181,19 +181,23 @@
     ===================================================================== --}}
     <main id="ekspedisi" class="w-full max-w-6xl mx-auto px-4 pt-10 sm:pt-14 md:pt-28 pb-16">
         <!-- Section Title Bar -->
-        <div class="flex items-end justify-between mb-7">
+        <div class="flex items-center sm:items-end justify-between gap-3 mb-6 sm:mb-7">
             <div>
-                <span class="text-[11px] uppercase tracking-wider font-bold text-primary block mb-1">
+                <span class="text-[11px] uppercase tracking-wider font-bold text-primary block mb-0.5 sm:mb-1">
                     TOP PILIHAN KAMI
                 </span>
-                <h2 class="text-2xl md:text-[28px] font-extrabold text-ink-heading tracking-tight">
+                <h2
+                    class="text-xl sm:text-2xl md:text-[28px] font-extrabold text-ink-heading tracking-tight leading-tight">
                     Puncak Telah Menanti!
                 </h2>
             </div>
             <a href="{{ route('ekspedisi.index') }}"
-                class="group text-primary hover:text-primary-hover text-[13px] font-semibold flex items-center gap-1.5 transition">
-                Lihat Semua
-                <span class="group-hover:translate-x-1 transition-transform inline-block">→</span>
+                class="group inline-flex items-center gap-1.5 px-3 py-1.5 sm:px-4 sm:py-2 bg-primary-subtle text-primary hover:bg-primary hover:text-white border border-primary/20 rounded-full text-xs sm:text-[13px] font-bold transition-all duration-200 shadow-2xs hover:shadow-sm shrink-0">
+                <span>Lihat Semua</span>
+                <svg class="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" fill="none"
+                    viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
+                </svg>
             </a>
         </div>
 
