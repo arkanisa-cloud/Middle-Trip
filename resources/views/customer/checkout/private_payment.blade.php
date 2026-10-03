@@ -7,7 +7,8 @@
     <title>Pembayaran Private Trip - MiddleTrip</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+    <link
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
         rel="stylesheet">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <script type="text/javascript" src="{{ config('midtrans.snap_url') }}"
@@ -57,12 +58,14 @@
             <div class="flex items-center justify-between sm:justify-center">
                 <!-- Step 1: DATA (Done) -->
                 <div class="flex flex-col items-center">
-                    <div class="w-5 h-5 rounded-full bg-emerald-500 flex items-center justify-center text-white shrink-0">
+                    <div
+                        class="w-5 h-5 rounded-full bg-emerald-500 flex items-center justify-center text-white shrink-0">
                         <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" />
                         </svg>
                     </div>
-                    <span class="text-[8px] sm:text-[9px] uppercase tracking-wider text-emerald-600 font-bold mt-1 text-center">Data</span>
+                    <span
+                        class="text-[8px] sm:text-[9px] uppercase tracking-wider text-emerald-600 font-bold mt-1 text-center">Data</span>
                 </div>
 
                 <div class="w-10 sm:w-16 md:w-20 h-[2px] bg-primary -mt-3.5 mx-1 sm:mx-2"></div>
@@ -73,17 +76,22 @@
                         class="w-5 h-5 rounded-full bg-primary ring-2 ring-primary/20 flex items-center justify-center text-white shrink-0">
                         <span class="text-[10px] font-bold">2</span>
                     </div>
-                    <span class="text-[8px] sm:text-[9px] uppercase tracking-wider text-primary font-bold mt-1 text-center">Bayar 100%</span>
+                    <span
+                        class="text-[8px] sm:text-[9px] uppercase tracking-wider text-primary font-bold mt-1 text-center">Bayar
+                        100%</span>
                 </div>
 
-                <div class="w-10 sm:w-16 md:w-20 h-[2px] border-t-2 border-dotted border-gray-300 -mt-3.5 mx-1 sm:mx-2"></div>
+                <div class="w-10 sm:w-16 md:w-20 h-[2px] border-t-2 border-dotted border-gray-300 -mt-3.5 mx-1 sm:mx-2">
+                </div>
 
                 <!-- Step 3: SELESAI -->
                 <div class="flex flex-col items-center">
-                    <div class="w-5 h-5 rounded-full bg-neutral-200 flex items-center justify-center text-neutral-400 shrink-0">
+                    <div
+                        class="w-5 h-5 rounded-full bg-neutral-200 flex items-center justify-center text-neutral-400 shrink-0">
                         <span class="text-[10px] font-bold">3</span>
                     </div>
-                    <span class="text-[8px] sm:text-[9px] uppercase tracking-wider text-neutral-400 font-bold mt-1 text-center">Selesai</span>
+                    <span
+                        class="text-[8px] sm:text-[9px] uppercase tracking-wider text-neutral-400 font-bold mt-1 text-center">Selesai</span>
                 </div>
             </div>
         </div>
@@ -213,8 +221,7 @@
                                 <label class="block text-muted font-medium mb-1">Nama Lengkap Pemesan <span
                                         class="text-rose-500">*</span></label>
                                 <input type="text" name="customer_name" id="input_customer_name"
-                                    value="{{ old('customer_name') }}" required
-                                    minlength="3" maxlength="150"
+                                    value="{{ old('customer_name') }}" required minlength="3" maxlength="150"
                                     class="w-full px-3.5 py-2.5 border border-slate-200 focus:border-primary focus:ring-1 focus:ring-primary rounded-lg bg-white text-slate-800 font-outfit text-sm font-normal transition placeholder:text-slate-400"
                                     placeholder="Nama sesuai KTP">
                                 @error('customer_name')
@@ -226,10 +233,9 @@
                                     <label class="block text-muted font-medium mb-1">Nomor WhatsApp Aktif <span
                                             class="text-rose-500">*</span></label>
                                     <input type="tel" name="customer_phone" id="input_customer_phone"
-                                        value="{{ old('customer_phone') }}" required
-                                        minlength="9" maxlength="25"
+                                        value="{{ old('customer_phone') }}" required minlength="9" maxlength="25"
                                         class="w-full px-3.5 py-2.5 border border-slate-200 focus:border-primary focus:ring-1 focus:ring-primary rounded-lg bg-white text-slate-800 font-outfit text-sm font-normal transition placeholder:text-slate-400"
-                                        placeholder="Contoh: 08123456789">
+                                        placeholder="08123456789">
                                     @error('customer_phone')
                                         <p class="text-rose-600 text-[11px] mt-1">{{ $message }}</p>
                                     @enderror
@@ -238,8 +244,8 @@
                                     <label class="block text-muted font-medium mb-1">NIK Pemesan (16 Digit) <span
                                             class="text-rose-500">*</span></label>
                                     <input type="text" name="customer_nik" id="input_customer_nik"
-                                        value="{{ old('customer_nik') }}" required
-                                        minlength="16" maxlength="16" pattern="[0-9]{16}"
+                                        value="{{ old('customer_nik') }}" required minlength="16" maxlength="16"
+                                        pattern="[0-9]{16}"
                                         class="w-full px-3.5 py-2.5 border border-slate-200 focus:border-primary focus:ring-1 focus:ring-primary rounded-lg bg-white text-slate-800 font-outfit text-sm font-normal transition placeholder:text-slate-400"
                                         placeholder="16 digit angka KTP">
                                     @error('customer_nik')
@@ -251,8 +257,7 @@
                                 <label class="block text-muted font-medium mb-1">Email <span
                                         class="text-rose-500">*</span></label>
                                 <input type="email" name="customer_email" id="input_customer_email"
-                                    value="{{ old('customer_email') }}" required
-                                    maxlength="150"
+                                    value="{{ old('customer_email') }}" required maxlength="150"
                                     class="w-full sm:w-1/2 px-3.5 py-2.5 border border-slate-200 focus:border-primary focus:ring-1 focus:ring-primary rounded-lg bg-white text-slate-800 font-outfit text-sm font-normal transition placeholder:text-slate-400"
                                     placeholder="alamat@email.com">
                                 @error('customer_email')
@@ -281,8 +286,10 @@
                             </div>
                             <button type="button" onclick="copyPemesanToKetua()"
                                 class="inline-flex items-center text-xs text-primary hover:underline font-semibold cursor-pointer shrink-0 self-start sm:self-center">
-                                <svg class="w-3.5 h-3.5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7v8a2 2 0 002 2h6M8 7V5a2 2 0 012-2h4.586a1 1 0 01.707.293l4.414 4.414a1 1 0 01.293.707V15a2 2 0 01-2 2h-2M8 7H6a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2v-2" />
+                                <svg class="w-3.5 h-3.5 mr-1" fill="none" stroke="currentColor"
+                                    viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M8 7v8a2 2 0 002 2h6M8 7V5a2 2 0 012-2h4.586a1 1 0 01.707.293l4.414 4.414a1 1 0 01.293.707V15a2 2 0 01-2 2h-2M8 7H6a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2v-2" />
                                 </svg>
                                 Salin Pemesan ke Ketua
                             </button>
@@ -309,8 +316,8 @@
                                                 Nama Lengkap Ketua <span class="text-rose-500">*</span>
                                             </label>
                                             <input type="text" name="participants[0][full_name]"
-                                                id="participant_name_0" value="{{ old('participants.0.full_name') }}" required
-                                                minlength="3" maxlength="150"
+                                                id="participant_name_0" value="{{ old('participants.0.full_name') }}"
+                                                required minlength="3" maxlength="150"
                                                 class="w-full px-3.5 py-2.5 border border-slate-200 focus:border-primary focus:ring-1 focus:ring-primary rounded-lg bg-white text-slate-800 font-outfit text-sm font-normal transition placeholder:text-slate-400"
                                                 placeholder="Nama lengkap sesuai KTP">
                                             @error('participants.0.full_name')
@@ -322,8 +329,8 @@
                                                 NIK KTP (16 Digit) <span class="text-rose-500">*</span>
                                             </label>
                                             <input type="text" name="participants[0][nik]" id="participant_nik_0"
-                                                value="{{ old('participants.0.nik') }}" required minlength="16" maxlength="16"
-                                                pattern="[0-9]{16}"
+                                                value="{{ old('participants.0.nik') }}" required minlength="16"
+                                                maxlength="16" pattern="[0-9]{16}"
                                                 class="w-full px-3.5 py-2.5 border border-slate-200 focus:border-primary focus:ring-1 focus:ring-primary rounded-lg bg-white text-slate-800 font-outfit text-sm font-normal transition placeholder:text-slate-400"
                                                 placeholder="16 digit NIK">
                                             @error('participants.0.nik')
@@ -338,8 +345,8 @@
                                     @php
                                         $isLeader = $i === 0;
                                         $hasError =
-                                             $errors->has("participants.{$i}.full_name") ||
-                                             $errors->has("participants.{$i}.nik");
+                                            $errors->has("participants.{$i}.full_name") ||
+                                            $errors->has("participants.{$i}.nik");
                                         $isOpen = $isLeader || $hasError;
                                         $itemTitle = $isLeader ? 'Ketua' : 'Anggota ' . $i;
                                     @endphp
@@ -378,8 +385,8 @@
                                                     <input type="text"
                                                         name="participants[{{ $i }}][full_name]"
                                                         id="participant_name_{{ $i }}"
-                                                        value="{{ old("participants.{$i}.full_name") }}" required minlength="3"
-                                                        maxlength="150"
+                                                        value="{{ old("participants.{$i}.full_name") }}" required
+                                                        minlength="3" maxlength="150"
                                                         class="w-full px-3.5 py-2.5 border border-slate-200 focus:border-primary focus:ring-1 focus:ring-primary rounded-lg bg-white text-slate-800 font-outfit text-sm font-normal transition placeholder:text-slate-400"
                                                         placeholder="Nama lengkap sesuai KTP">
                                                     @error("participants.{$i}.full_name")
@@ -393,8 +400,8 @@
                                                     <input type="text"
                                                         name="participants[{{ $i }}][nik]"
                                                         id="participant_nik_{{ $i }}"
-                                                        value="{{ old("participants.{$i}.nik") }}" required minlength="16"
-                                                        maxlength="16" pattern="[0-9]{16}"
+                                                        value="{{ old("participants.{$i}.nik") }}" required
+                                                        minlength="16" maxlength="16" pattern="[0-9]{16}"
                                                         class="w-full px-3.5 py-2.5 border border-slate-200 focus:border-primary focus:ring-1 focus:ring-primary rounded-lg bg-white text-slate-800 font-outfit text-sm font-normal transition placeholder:text-slate-400"
                                                         placeholder="16 digit NIK">
                                                     @error("participants.{$i}.nik")

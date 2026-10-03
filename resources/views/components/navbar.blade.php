@@ -85,10 +85,7 @@
                         </a>
                     @endif
                     <a href="{{ route('profile.edit') }}" id="nav-user-btn"
-                        class="{{ $initialRegister }} font-semibold px-4 py-1.5 rounded-full shadow-sm transition-colors inline-flex items-center gap-2 max-w-[200px]">
-                        @if (Auth::user()->avatar)
-                            <img src="{{ Auth::user()->avatar }}" alt="{{ Auth::user()->name }}" class="w-5 h-5 rounded-full object-cover shrink-0 border border-white/40">
-                        @endif
+                        class="{{ $initialRegister }} font-semibold px-5 py-2 rounded-full shadow-sm transition-colors inline-flex items-center gap-2 max-w-[200px]">
                         <span class="truncate">{{ Auth::user()->name }}</span>
                     </a>
                 @else
@@ -173,11 +170,8 @@
             <div class="border-t border-slate-100 pt-3">
                 @auth
                     <div class="space-y-2">
-                        <div class="flex items-center gap-2.5 px-3.5 py-2 bg-slate-50 rounded-xl">
-                            @if (Auth::user()->avatar)
-                                <img src="{{ Auth::user()->avatar }}" alt="{{ Auth::user()->name }}" class="w-8 h-8 rounded-full object-cover shrink-0 border border-slate-200">
-                            @endif
-                            <div class="min-w-0 flex-1">
+                        <div class="flex items-center justify-between px-3.5 py-2 bg-slate-50 rounded-xl">
+                            <div class="min-w-0">
                                 <p class="text-xs font-bold text-slate-800 truncate">{{ Auth::user()->name }}</p>
                                 <p class="text-[11px] text-slate-500 truncate">{{ Auth::user()->email }}</p>
                             </div>

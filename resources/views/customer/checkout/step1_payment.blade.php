@@ -58,12 +58,14 @@
             <div class="flex items-center justify-between sm:justify-center">
                 <!-- Step 1: DATA (Done) -->
                 <div class="flex flex-col items-center">
-                    <div class="w-5 h-5 rounded-full bg-emerald-500 flex items-center justify-center text-white shrink-0">
+                    <div
+                        class="w-5 h-5 rounded-full bg-emerald-500 flex items-center justify-center text-white shrink-0">
                         <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" />
                         </svg>
                     </div>
-                    <span class="text-[8px] sm:text-[9px] uppercase tracking-wider text-emerald-600 font-bold mt-1 text-center">Data</span>
+                    <span
+                        class="text-[8px] sm:text-[9px] uppercase tracking-wider text-emerald-600 font-bold mt-1 text-center">Data</span>
                 </div>
 
                 <div class="w-6 sm:w-12 md:w-16 h-[2px] bg-emerald-500 -mt-3.5 mx-1 sm:mx-2"></div>
@@ -74,7 +76,8 @@
                         class="w-5 h-5 rounded-full bg-emerald-800 ring-2 ring-emerald-200 flex items-center justify-center text-white shrink-0">
                         <div class="w-2 h-2 rounded-full bg-white"></div>
                     </div>
-                    <span class="text-[8px] sm:text-[9px] uppercase tracking-wider text-emerald-900 font-bold mt-1 text-center">Reservasi</span>
+                    <span
+                        class="text-[8px] sm:text-[9px] uppercase tracking-wider text-emerald-900 font-bold mt-1 text-center">Reservasi</span>
                 </div>
 
                 <div class="w-6 sm:w-12 md:w-16 border-t-2 border-dotted border-gray-300 -mt-3.5 mx-1 sm:mx-2"></div>
@@ -82,7 +85,9 @@
                 <!-- Step 3: PRICE LOCK (Dotted) -->
                 <div class="flex flex-col items-center">
                     <div class="w-5 h-5 rounded-full border border-gray-300 bg-transparent shrink-0"></div>
-                    <span class="text-[8px] sm:text-[9px] uppercase tracking-wider text-muted-soft font-medium mt-1 text-center">Price Lock</span>
+                    <span
+                        class="text-[8px] sm:text-[9px] uppercase tracking-wider text-muted-soft font-medium mt-1 text-center">Price
+                        Lock</span>
                 </div>
 
                 <div class="w-6 sm:w-12 md:w-16 border-t-2 border-dotted border-gray-300 -mt-3.5 mx-1 sm:mx-2"></div>
@@ -90,7 +95,8 @@
                 <!-- Step 4: PAY (Dotted) -->
                 <div class="flex flex-col items-center">
                     <div class="w-5 h-5 rounded-full border border-gray-300 bg-transparent shrink-0"></div>
-                    <span class="text-[8px] sm:text-[9px] uppercase tracking-wider text-muted-soft font-medium mt-1 text-center">Pay</span>
+                    <span
+                        class="text-[8px] sm:text-[9px] uppercase tracking-wider text-muted-soft font-medium mt-1 text-center">Pay</span>
                 </div>
             </div>
         </div>
@@ -258,7 +264,7 @@
                                     <input type="tel" name="customer_phone" id="input_customer_phone"
                                         value="{{ old('customer_phone') }}" required minlength="9" maxlength="25"
                                         class="w-full px-3.5 py-2.5 border border-slate-200 focus:border-primary focus:ring-1 focus:ring-primary rounded-lg bg-white text-slate-800 font-outfit text-sm font-normal transition placeholder:text-slate-400"
-                                        placeholder="Contoh: 08123456789">
+                                        placeholder="08123456789">
                                     @error('customer_phone')
                                         <p class="text-rose-600 text-[11px] mt-1">{{ $message }}</p>
                                     @enderror
@@ -301,8 +307,10 @@
                             </div>
                             <button type="button" onclick="copyPemesanToKetua()"
                                 class="inline-flex items-center text-xs text-primary hover:underline font-semibold cursor-pointer shrink-0 self-start sm:self-center">
-                                <svg class="w-3.5 h-3.5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7v8a2 2 0 002 2h6M8 7V5a2 2 0 012-2h4.586a1 1 0 01.707.293l4.414 4.414a1 1 0 01.293.707V15a2 2 0 01-2 2h-2M8 7H6a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2v-2" />
+                                <svg class="w-3.5 h-3.5 mr-1" fill="none" stroke="currentColor"
+                                    viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M8 7v8a2 2 0 002 2h6M8 7V5a2 2 0 012-2h4.586a1 1 0 01.707.293l4.414 4.414a1 1 0 01.293.707V15a2 2 0 01-2 2h-2M8 7H6a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2v-2" />
                                 </svg>
                                 Salin Pemesan ke Ketua
                             </button>

@@ -28,7 +28,8 @@
     <main class="max-w-7xl mx-auto px-3.5 sm:px-6 lg:px-8 pt-20 sm:pt-24 md:pt-28 pb-16 sm:pb-20 w-full flex-1">
 
         <!-- Breadcrumb Navigation -->
-        <nav class="flex items-center gap-1.5 sm:gap-2 text-[11px] sm:text-xs font-medium text-muted mb-3 sm:mb-4 overflow-x-auto whitespace-nowrap no-scrollbar" aria-label="Breadcrumb">
+        <nav class="flex items-center gap-1.5 sm:gap-2 text-[11px] sm:text-xs font-medium text-muted mb-3 sm:mb-4 overflow-x-auto whitespace-nowrap no-scrollbar"
+            aria-label="Breadcrumb">
             <a href="{{ route('home') }}" class="hover:text-primary transition-colors">Home</a>
             <span class="text-muted-soft">&gt;</span>
             <span class="text-body-strong font-semibold">Kontak & Pusat Bantuan</span>
@@ -46,7 +47,8 @@
                 <span>Pusat Bantuan & Komunikasi</span>
             </div>
 
-            <h1 class="text-2xl sm:text-4xl lg:text-[44px] font-extrabold text-ink-heading tracking-tight mb-2 sm:mb-3 leading-tight">
+            <h1
+                class="text-2xl sm:text-4xl lg:text-[44px] font-extrabold text-ink-heading tracking-tight mb-2 sm:mb-3 leading-tight">
                 Ada Pertanyaan Seputar Ekspedisi?
             </h1>
 
@@ -91,9 +93,10 @@
                         target="_blank" rel="noopener noreferrer"
                         class="inline-flex items-center justify-between w-full px-3.5 sm:px-4 py-2 sm:py-2.5 bg-emerald-50/70 hover:bg-emerald-100 text-emerald-900 border border-emerald-200/80 rounded-xl sm:rounded-2xl font-bold text-xs transition-colors">
                         <span class="flex items-center gap-2">
-                            <span>+62 812-3456-7890</span>
+                            <span>+62 857-2578-0424</span>
                         </span>
-                        <span class="text-emerald-700 group-hover:translate-x-0.5 transition-transform font-bold">Buka WhatsApp →</span>
+                        <span class="text-emerald-700 group-hover:translate-x-0.5 transition-transform font-bold">Buka
+                            WhatsApp →</span>
                     </a>
                 </div>
 
@@ -111,7 +114,8 @@
                         </div>
                         <div>
                             <h3 class="text-sm sm:text-base font-bold text-ink-heading">Email Resmi</h3>
-                            <span class="text-[10.5px] sm:text-[11px] text-muted font-medium">Administrasi & Kerjasama</span>
+                            <span class="text-[10.5px] sm:text-[11px] text-muted font-medium">Administrasi &
+                                Kerjasama</span>
                         </div>
                     </div>
 
@@ -122,8 +126,9 @@
 
                     <a href="mailto:halo@middletrip.id"
                         class="inline-flex items-center justify-between w-full px-3.5 sm:px-4 py-2 sm:py-2.5 bg-canvas-alt hover:bg-gray-100 text-body-strong border border-hairline rounded-xl sm:rounded-2xl font-bold text-xs transition-colors">
-                        <span>halo@middletrip.id</span>
-                        <span class="text-primary group-hover:translate-x-0.5 transition-transform font-bold">Kirim Email →</span>
+                        <span>middletrip@gmail.com</span>
+                        <span class="text-primary group-hover:translate-x-0.5 transition-transform font-bold">Kirim
+                            Email →</span>
                     </a>
                 </div>
 
@@ -131,7 +136,9 @@
                 <div
                     class="bg-surface-forest border border-surface-forest-border rounded-2xl sm:rounded-3xl p-4 sm:p-6 text-white shadow-xl relative overflow-hidden topo-pattern">
                     <!-- Subtle Glow Accent -->
-                    <div class="absolute -top-12 -right-12 w-32 h-32 bg-primary/20 rounded-full blur-2xl pointer-events-none"></div>
+                    <div
+                        class="absolute -top-12 -right-12 w-32 h-32 bg-primary/20 rounded-full blur-2xl pointer-events-none">
+                    </div>
 
                     <div class="flex items-center justify-between gap-2 mb-2.5 sm:mb-3">
                         <span
@@ -150,14 +157,15 @@
                     </h4>
 
                     <p class="text-on-dark-soft text-[11px] sm:text-xs leading-relaxed mb-3 sm:mb-4">
-                        Bagi keluarga atau peserta trip aktif yang membutuhkan koordinasi darurat cuaca puncak, logistik,
+                        Bagi keluarga atau peserta trip aktif yang membutuhkan koordinasi darurat cuaca puncak,
+                        logistik,
                         maupun evakuasi medis lapangan, tim koordinator kami siaga 24 jam nonstop.
                     </p>
 
                     <div
                         class="flex flex-col sm:flex-row sm:items-center justify-between gap-1 p-2.5 sm:p-3 rounded-xl sm:rounded-2xl bg-surface-forest-card border border-surface-forest-border text-xs font-mono">
                         <span class="text-muted-soft text-[10.5px] sm:text-xs">Emergency Hotline:</span>
-                        <span class="text-rose-300 font-bold tracking-wider text-xs sm:text-sm">+62 811-9988-7766</span>
+                        <span class="text-rose-300 font-bold tracking-wider text-xs sm:text-sm">+62 857-2578-0424</span>
                     </div>
                 </div>
 
@@ -168,7 +176,8 @@
                 <div class="bg-surface-card border border-hairline rounded-2xl sm:rounded-3xl p-4 sm:p-8 shadow-sm">
 
                     <!-- Header Form -->
-                    <div class="flex items-center gap-2.5 sm:gap-3 mb-5 sm:mb-6 pb-4 sm:pb-5 border-b border-hairline/80">
+                    <div
+                        class="flex items-center gap-2.5 sm:gap-3 mb-5 sm:mb-6 pb-4 sm:pb-5 border-b border-hairline/80">
                         <div
                             class="w-9 h-9 sm:w-11 sm:h-11 rounded-xl sm:rounded-2xl bg-primary-subtle text-primary flex items-center justify-center shrink-0 border border-primary/20">
                             <svg class="w-4 h-4 sm:w-5 sm:h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor"
@@ -178,7 +187,8 @@
                         </div>
                         <div>
                             <h2 class="text-base sm:text-xl font-bold text-ink-heading">Formulir Kirim Pesan</h2>
-                            <p class="text-muted text-[11px] sm:text-xs">Pesan Anda akan otomatis terformat rapi dan terhubung ke WhatsApp CS kami.</p>
+                            <p class="text-muted text-[11px] sm:text-xs">Pesan Anda akan otomatis terformat rapi dan
+                                terhubung ke WhatsApp CS kami.</p>
                         </div>
                     </div>
 
@@ -191,7 +201,7 @@
                                 Nama Lengkap <span class="text-rose-500">*</span>
                             </label>
                             <input type="text" id="contact-name" name="name" required
-                                placeholder="Contoh: Pratama Wijaya"
+                                placeholder="Pratama Wijaya"
                                 class="w-full bg-canvas/60 border border-hairline hover:border-gray-300 focus:border-primary focus:ring-1 focus:ring-primary rounded-xl px-3 sm:px-3.5 py-2.5 sm:py-3 text-xs sm:text-sm text-ink-heading placeholder:text-muted-soft focus:outline-none transition shadow-2xs font-medium" />
                         </div>
 
@@ -209,7 +219,8 @@
                                     placeholder="81234567890"
                                     class="w-full bg-canvas/60 border border-hairline hover:border-gray-300 focus:border-primary focus:ring-1 focus:ring-primary rounded-xl pl-11 sm:pl-12 pr-3 sm:pr-3.5 py-2.5 sm:py-3 text-xs sm:text-sm text-ink-heading placeholder:text-muted-soft focus:outline-none transition shadow-2xs font-medium" />
                             </div>
-                            <p class="text-[10px] sm:text-[10.5px] text-muted-soft">Nomor Anda digunakan untuk follow up konfirmasi.</p>
+                            <p class="text-[10px] sm:text-[10.5px] text-muted-soft">Nomor Anda digunakan untuk follow
+                                up konfirmasi.</p>
                         </div>
 
                         <!-- 3. Topik Pertanyaan (UI Kit Varian 2: Standard Single-Select Dropdown) -->
@@ -222,8 +233,8 @@
                                 <div id="topic-select-trigger" onclick="toggleTopicDropdown()"
                                     class="flex items-center justify-between gap-3 w-full bg-canvas/60 border border-hairline hover:border-gray-300 rounded-xl px-3 sm:px-3.5 py-2.5 sm:py-3 cursor-pointer transition select-none shadow-2xs">
                                     <div class="flex items-center gap-2.5 min-w-0">
-                                        <svg class="w-4 h-4 text-muted-soft shrink-0" fill="none" viewBox="0 0 24 24"
-                                            stroke="currentColor" stroke-width="2">
+                                        <svg class="w-4 h-4 text-muted-soft shrink-0" fill="none"
+                                            viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                             <path stroke-linecap="round" stroke-linejoin="round"
                                                 d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z" />
                                         </svg>
@@ -235,8 +246,8 @@
                                     <input type="hidden" name="topic" id="contact-topic"
                                         value="Konsultasi Custom Private Trip (Rombongan)" />
                                     <svg id="topic-chevron"
-                                        class="w-4 h-4 text-muted transition-transform duration-200 shrink-0" fill="none"
-                                        stroke="currentColor" viewBox="0 0 24 24">
+                                        class="w-4 h-4 text-muted transition-transform duration-200 shrink-0"
+                                        fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                             d="M19 9l-7 7-7-7" />
                                     </svg>
@@ -280,7 +291,7 @@
                                 Pesan / Detail Pertanyaan <span class="text-rose-500">*</span>
                             </label>
                             <textarea id="contact-message" name="message" rows="4" required
-                                placeholder="Ceritakan detail pertanyaan atau rencana ekspedisi Anda (misal: rencana mendaki Mt. Merbabu bersama 5 orang pada akhir bulan, butuh shuttle Solo)..."
+                                placeholder="Ceritakan detail pertanyaan atau rencana ekspedisi Anda!"
                                 class="w-full bg-canvas/60 border border-hairline hover:border-gray-300 focus:border-primary focus:ring-1 focus:ring-primary rounded-xl sm:rounded-2xl p-3 sm:p-3.5 text-xs sm:text-sm text-ink-heading placeholder:text-muted-soft focus:outline-none transition shadow-2xs leading-relaxed font-medium"></textarea>
                         </div>
 
@@ -298,13 +309,15 @@
                         </div>
 
                         <!-- Footer Trust Assurance -->
-                        <div class="flex items-center justify-center gap-1.5 text-[10px] sm:text-[11px] text-muted text-center pt-1.5 sm:pt-2">
+                        <div
+                            class="flex items-center justify-center gap-1.5 text-[10px] sm:text-[11px] text-muted text-center pt-1.5 sm:pt-2">
                             <svg class="w-3.5 h-3.5 text-emerald-600 shrink-0" fill="none" viewBox="0 0 24 24"
                                 stroke="currentColor" stroke-width="2">
                                 <path stroke-linecap="round" stroke-linejoin="round"
                                     d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
                             </svg>
-                            <span>Pesan langsung terkirim ke WhatsApp resmi operasional MiddleTrip tanpa perantara.</span>
+                            <span>Pesan langsung terkirim ke WhatsApp resmi operasional MiddleTrip tanpa
+                                perantara.</span>
                         </div>
 
                     </form>
@@ -392,8 +405,8 @@
             }
 
             // Format Pesan WhatsApp yang Rapi & Sopan
-            const waText = 
-`Halo MiddleTrip Expedition! 👋
+            const waText =
+                `Halo MiddleTrip Expedition! 👋
 Saya ingin berkonsultasi seputar ekspedisi:
 
 👤 *Nama:* ${name}

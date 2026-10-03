@@ -1,5 +1,5 @@
 <!-- Floating WhatsApp Contact Button (FAB) -->
-<a href="https://wa.me/" target="_blank" rel="noopener noreferrer" title="Hubungi Kami via WhatsApp"
+<a href="https://wa.me/+62 857-2578-0424" target="_blank" rel="noopener noreferrer" title="Hubungi Kami via WhatsApp"
     class="fixed bottom-6 right-6 w-12 h-12 rounded-full bg-primary hover:bg-primary-hover active:bg-primary-active text-white flex items-center justify-center shadow-xl hover:scale-105 transition duration-200 z-50">
     <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
         <path

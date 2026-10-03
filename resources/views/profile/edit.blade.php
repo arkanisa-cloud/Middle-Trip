@@ -49,9 +49,15 @@
             <div class="flex flex-col md:flex-row md:items-center justify-between gap-5 sm:gap-6 relative z-10">
                 <!-- User Ident Card -->
                 <div class="flex items-center gap-3.5 sm:gap-5">
-                    <div class="w-14 h-14 sm:w-20 sm:h-20 rounded-2xl bg-gradient-to-br from-primary via-primary-hover to-primary-active text-white flex items-center justify-center font-extrabold text-xl sm:text-3xl shadow-sm tracking-tight shrink-0 border-2 border-white ring-4 ring-primary-subtle">
-                        {{ strtoupper(substr($user->name, 0, 2)) }}
-                    </div>
+                    @if ($user->avatar)
+                        <img src="{{ str_starts_with($user->avatar, 'http') ? $user->avatar : asset('storage/' . $user->avatar) }}"
+                            alt="{{ $user->name }}"
+                            class="w-14 h-14 sm:w-20 sm:h-20 rounded-2xl object-cover shrink-0 border-2 border-white ring-4 ring-primary-subtle shadow-sm">
+                    @else
+                        <div class="w-14 h-14 sm:w-20 sm:h-20 rounded-2xl bg-gradient-to-br from-primary via-primary-hover to-primary-active text-white flex items-center justify-center font-extrabold text-xl sm:text-3xl shadow-sm tracking-tight shrink-0 border-2 border-white ring-4 ring-primary-subtle">
+                            {{ strtoupper(substr($user->name, 0, 2)) }}
+                        </div>
+                    @endif
                     <div class="min-w-0">
                         <div class="flex items-center gap-2 flex-wrap">
                             <h1 class="text-lg sm:text-2xl font-extrabold text-ink-heading tracking-tight truncate">
@@ -491,9 +497,109 @@
                     </div>
                 @endif
 
-                <form method="POST" action="{{ route('profile.update') }}" class="space-y-5">
+                <form method="POST" action="{{ route('profile.update') }}" enctype="multipart/form-data" class="space-y-5">
                     @csrf
                     @method('patch')
+
+                    <!-- Foto Profil -->
+                    <div x-data="{
+                        photoPreview: null,
+                        removePhoto: false,
+                        updatePreview() {
+                            const file = $refs.photo.files[0];
+                            if (!file) return;
+                            const reader = new FileReader();
+                            reader.onload = (e) => { this.photoPreview = e.target.result; this.removePhoto = false; };
+                            reader.readAsDataURL(file);
+                        },
+                        clearPhoto() {
+                            this.photoPreview = null;
+                            this.removePhoto = true;
+                            $refs.photo.value = '';
+                        }
+                    }" class="pb-2">
+                        <label class="block text-xs font-bold text-ink-heading uppercase tracking-wider mb-3">
+                            Foto Profil
+                        </label>
+
+                        <input type="hidden" name="remove_avatar" :value="removePhoto ? 1 : 0">
+
+                        <div class="flex items-center gap-4 sm:gap-6">
+                            <!-- Avatar Preview Box -->
+                            <div class="relative shrink-0">
+                                <!-- Selected New Photo Preview -->
+                                <template x-if="photoPreview">
+                                    <img :src="photoPreview" alt="Preview Foto Profil"
+                                        class="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl object-cover border-2 border-primary ring-4 ring-primary-subtle shadow-xs">
+                                </template>
+
+                                <!-- Current Photo / Initials Fallback (when not previewing) -->
+                                <template x-if="!photoPreview">
+                                    <div>
+                                        @if ($user->avatar)
+                                            <div x-show="!removePhoto">
+                                                <img src="{{ str_starts_with($user->avatar, 'http') ? $user->avatar : asset('storage/' . $user->avatar) }}"
+                                                    alt="{{ $user->name }}"
+                                                    class="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl object-cover border border-hairline ring-4 ring-slate-100 shadow-xs">
+                                            </div>
+                                            <div x-show="removePhoto"
+                                                class="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-gradient-to-br from-primary via-primary-hover to-primary-active text-white flex items-center justify-center font-extrabold text-xl sm:text-2xl shadow-xs border border-hairline ring-4 ring-slate-100">
+                                                {{ strtoupper(substr($user->name, 0, 2)) }}
+                                            </div>
+                                        @else
+                                            <div
+                                                class="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-gradient-to-br from-primary via-primary-hover to-primary-active text-white flex items-center justify-center font-extrabold text-xl sm:text-2xl shadow-xs border border-hairline ring-4 ring-slate-100">
+                                                {{ strtoupper(substr($user->name, 0, 2)) }}
+                                            </div>
+                                        @endif
+                                    </div>
+                                </template>
+                            </div>
+
+                            <!-- Upload Controls -->
+                            <div class="space-y-2">
+                                <input type="file" x-ref="photo" name="avatar" id="avatar" accept="image/png,image/jpeg,image/jpg,image/webp"
+                                    class="hidden" @change="updatePreview()">
+
+                                <div class="flex items-center gap-2 flex-wrap">
+                                    <button type="button" @click="$refs.photo.click()"
+                                        class="px-4 py-2 rounded-xl border border-hairline bg-white hover:bg-canvas text-ink-heading text-xs font-bold transition shadow-2xs hover:shadow-xs cursor-pointer inline-flex items-center gap-1.5">
+                                        <svg class="w-4 h-4 text-muted-soft" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M6.827 6.175A2.31 2.31 0 0 1 5.186 7.23c-.38.054-.757.112-1.134.175C2.999 7.58 2.25 8.507 2.25 9.574V18a2.25 2.25 0 0 0 2.25 2.25h15A2.25 2.25 0 0 0 21.75 18V9.574c0-1.067-.75-1.994-1.802-2.169a47.865 47.865 0 0 0-1.134-.175 2.31 2.31 0 0 1-1.64-1.055l-.822-1.316a2.192 2.192 0 0 0-1.736-1.039 48.774 48.774 0 0 0-5.232 0 2.192 2.192 0 0 0-1.736 1.039l-.821 1.316Z" />
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 12.75a4.5 4.5 0 1 1-9 0 4.5 4.5 0 0 1 9 0ZM18.75 10.5h.008v.008h-.008V10.5Z" />
+                                        </svg>
+                                        <span>Pilih Foto Baru</span>
+                                    </button>
+
+                                    @if ($user->avatar)
+                                        <button type="button" x-show="!removePhoto || photoPreview" @click="clearPhoto()"
+                                            class="px-3.5 py-2 rounded-xl border border-rose-200 bg-rose-50/50 hover:bg-rose-50 text-rose-700 text-xs font-semibold transition cursor-pointer inline-flex items-center gap-1.5">
+                                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                                                <path stroke-linecap="round" stroke-linejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" />
+                                            </svg>
+                                            <span>Hapus Foto</span>
+                                        </button>
+                                    @else
+                                        <button type="button" x-show="photoPreview" @click="clearPhoto()"
+                                            class="px-3.5 py-2 rounded-xl border border-rose-200 bg-rose-50/50 hover:bg-rose-50 text-rose-700 text-xs font-semibold transition cursor-pointer inline-flex items-center gap-1.5">
+                                            <span>Batal</span>
+                                        </button>
+                                    @endif
+                                </div>
+
+                                <p class="text-[11px] text-muted leading-relaxed">
+                                    Format: JPG, PNG, atau WebP (Maksimal 2MB).
+                                </p>
+                            </div>
+                        </div>
+
+                        @error('avatar')
+                            <p class="text-xs text-rose-600 mt-2 font-medium flex items-center gap-1">
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>
+                                <span>{{ $message }}</span>
+                            </p>
+                        @enderror
+                    </div>
 
                     <!-- Nama Lengkap -->
                     <div>

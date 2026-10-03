@@ -5,6 +5,8 @@ use App\Models\Expedition;
 use App\Models\Mountain;
 use App\Models\Route;
 use App\Models\User;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Storage;
 
 test('profile page is displayed', function () {
     $user = User::factory()->create();
@@ -28,13 +30,60 @@ test('profile information can be updated', function () {
 
     $response
         ->assertSessionHasNoErrors()
-        ->assertRedirect('/profile');
+        ->assertRedirect('/profile?tab=settings');
 
     $user->refresh();
 
     $this->assertSame('Test User', $user->name);
     $this->assertSame('test@example.com', $user->email);
     $this->assertNull($user->email_verified_at);
+});
+
+test('profile photo can be uploaded and updated', function () {
+    Storage::fake('public');
+    $user = User::factory()->create();
+
+    $file = UploadedFile::fake()->image('avatar.jpg');
+
+    $response = $this
+        ->actingAs($user)
+        ->patch('/profile', [
+            'name' => 'User Photo',
+            'email' => $user->email,
+            'avatar' => $file,
+        ]);
+
+    $response
+        ->assertSessionHasNoErrors()
+        ->assertRedirect('/profile?tab=settings');
+
+    $user->refresh();
+
+    $this->assertNotNull($user->avatar);
+    Storage::disk('public')->assertExists($user->avatar);
+});
+
+test('profile photo can be removed', function () {
+    Storage::fake('public');
+    $user = User::factory()->create(['avatar' => 'avatars/dummy.jpg']);
+    Storage::disk('public')->put('avatars/dummy.jpg', 'content');
+
+    $response = $this
+        ->actingAs($user)
+        ->patch('/profile', [
+            'name' => 'User Photo',
+            'email' => $user->email,
+            'remove_avatar' => 1,
+        ]);
+
+    $response
+        ->assertSessionHasNoErrors()
+        ->assertRedirect('/profile?tab=settings');
+
+    $user->refresh();
+
+    $this->assertNull($user->avatar);
+    Storage::disk('public')->assertMissing('avatars/dummy.jpg');
 });
 
 test('email verification status is unchanged when the email address is unchanged', function () {
@@ -49,7 +98,7 @@ test('email verification status is unchanged when the email address is unchanged
 
     $response
         ->assertSessionHasNoErrors()
-        ->assertRedirect('/profile');
+        ->assertRedirect('/profile?tab=settings');
 
     $this->assertNotNull($user->refresh()->email_verified_at);
 });
