@@ -195,7 +195,7 @@
                                 <div x-show="preview"
                                     class="relative w-24 h-20 rounded-2xl overflow-hidden border border-hairline shadow-xs shrink-0 bg-canvas">
                                     <img :src="preview || ''" alt="Preview Foto Sampul" class="w-full h-full object-cover"
-                                        onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=200&fit=crop';">
+                                        onerror="this.style.display='none'">
                                 </div>
                                 <div class="flex-1">
                                     <input type="file" name="cover_image_file" @change="handleFileSelect"

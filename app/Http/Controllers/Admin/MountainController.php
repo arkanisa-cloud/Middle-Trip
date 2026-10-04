@@ -57,7 +57,7 @@ class MountainController extends Controller
             'elevation' => 'required|integer|min:0',
             'province' => 'required|string|max:100',
             'grade' => 'required|string|in:Grade A,Grade B,Grade C',
-            'cover_image_file' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:5120',
+            'cover_image_file' => 'required_without:cover_image|nullable|image|mimes:jpeg,png,jpg,webp|max:5120',
             'cover_image' => 'nullable|string|max:255',
             'description' => 'nullable|string',
             'overview' => 'nullable|string',
@@ -117,6 +117,8 @@ class MountainController extends Controller
             'gallery_files.*' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:5120',
             'gallery_file_captions' => 'nullable|array',
             'gallery_file_captions.*' => 'nullable|string|max:150',
+        ], [
+            'cover_image_file.required_without' => 'Foto sampul (Cover Image) wajib diunggah saat menambahkan gunung baru.',
         ]);
 
         $mountain = DB::transaction(function () use ($validated, $request): Mountain {
@@ -129,8 +131,8 @@ class MountainController extends Controller
                 $count++;
             }
 
-            // Handle cover image
-            $coverImagePath = 'https://images.unsplash.com/photo-1544735716-392fe2489ffa?q=80&w=1200&auto=format&fit=crop';
+            // Handle cover image (store directly into storage/mountains)
+            $coverImagePath = null;
             if ($request->hasFile('cover_image_file')) {
                 $path = $request->file('cover_image_file')->store('mountains', 'public');
                 $coverImagePath = Storage::url($path);
@@ -927,7 +929,7 @@ class MountainController extends Controller
 
             foreach ($files as $idx => $file) {
                 if ($file && $file->isValid()) {
-                    $path = $file->store('mountains/gallery', 'public');
+                    $path = $file->store('mountains', 'public');
                     $caption = ! empty($captions[$idx]) ? trim((string) $captions[$idx]) : "{$mountainName} Foto ".($idx + 1);
                     $gallery[] = [
                         'url' => Storage::url($path),
@@ -967,7 +969,7 @@ class MountainController extends Controller
 
             foreach ($files as $idx => $file) {
                 if ($file && $file->isValid()) {
-                    $path = $file->store('mountains/gallery', 'public');
+                    $path = $file->store('mountains', 'public');
                     $caption = ! empty($captions[$idx]) ? trim((string) $captions[$idx]) : "{$mountainName} Foto ".(count($finalGallery) + 1);
                     $finalGallery[] = [
                         'url' => Storage::url($path),
@@ -980,7 +982,7 @@ class MountainController extends Controller
         // Hapus file fisik lama di storage jika dihapus dari galeri
         $oldStoredUrls = collect($mountain->gallery ?? [])
             ->pluck('url')
-            ->filter(fn ($url) => is_string($url) && Str::startsWith($url, '/storage/mountains/gallery/'));
+            ->filter(fn ($url) => is_string($url) && Str::startsWith($url, ['/storage/mountains/', '/storage/mountains/gallery/']));
         $newUrls = collect($finalGallery)->pluck('url');
 
         foreach ($oldStoredUrls as $oldUrl) {
