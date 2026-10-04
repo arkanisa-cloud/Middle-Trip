@@ -480,6 +480,17 @@
                     <p class="text-[10px] text-muted mt-1">Minimal {{ $expedition->quota_booked }} kursi (sudah dipesan).</p>
                 </div>
 
+                <!-- 8. Batas Price Lock (H-X Hari) -->
+                <div>
+                    <label class="block text-xs font-bold text-ink-heading uppercase tracking-wider mb-2">
+                        Batas Price Lock (H-X Hari) <span class="text-rose-500">*</span>
+                    </label>
+                    <input type="number" name="price_lock_days_before_departure" value="{{ old('price_lock_days_before_departure', $expedition->price_lock_days_before_departure ?? 3) }}" min="1" max="30" required 
+                           placeholder="3"
+                           class="w-full text-xs rounded-xl border border-hairline bg-canvas p-3 text-ink focus:border-primary shadow-xs font-bold">
+                    <span class="text-[10.5px] text-muted mt-1 block">Harga batch akan dikunci otomatis pada H-X sebelum berangkat</span>
+                </div>
+
                 <!-- 8. Status Batch (UI Kit Dropdown Varian 3 / Status Dot) -->
                 <div @click.outside="statusDropdownOpen = false" class="relative">
                     <label class="block text-xs font-bold text-ink-heading uppercase tracking-wider mb-2">

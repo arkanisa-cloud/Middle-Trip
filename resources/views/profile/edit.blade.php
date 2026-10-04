@@ -505,12 +505,19 @@
                     <div x-data="{
                         photoPreview: null,
                         removePhoto: false,
-                        updatePreview() {
-                            const file = $refs.photo.files[0];
+                        async updatePreview() {
+                            let file = $refs.photo.files[0];
                             if (!file) return;
-                            const reader = new FileReader();
-                            reader.onload = (e) => { this.photoPreview = e.target.result; this.removePhoto = false; };
-                            reader.readAsDataURL(file);
+                            if (window.convertToWebP) {
+                                file = await window.convertToWebP(file, 0.85, 512);
+                                if (window.DataTransfer) {
+                                    const dt = new DataTransfer();
+                                    dt.items.add(file);
+                                    $refs.photo.files = dt.files;
+                                }
+                            }
+                            this.photoPreview = URL.createObjectURL(file);
+                            this.removePhoto = false;
                         },
                         clearPhoto() {
                             this.photoPreview = null;

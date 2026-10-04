@@ -24,8 +24,52 @@ class Route extends Model
             'is_primary' => 'boolean',
             'distance_km' => 'float',
             'elevation_checkpoints' => 'array',
-            'itinerary' => 'array',
+            'price_camping_open' => 'integer',
+            'price_tektok_open' => 'integer',
+            'price_camping_private' => 'integer',
+            'price_tektok_private' => 'integer',
+            'booking_fee_per_pax' => 'integer',
         ];
+    }
+
+    /**
+     * Besaran DP / Booking Fee per pax untuk jalur ini.
+     */
+    public function getEffectiveBookingFeePerPaxAttribute(): int
+    {
+        return $this->booking_fee_per_pax ?? $this->mountain?->booking_fee_per_pax ?? (int) round(($this->effective_price_camping_open * 0.3));
+    }
+
+    /**
+     * Harga efektif camping open trip pada jalur ini.
+     */
+    public function getEffectivePriceCampingOpenAttribute(): int
+    {
+        return $this->price_camping_open ?? $this->mountain?->base_price ?? 0;
+    }
+
+    /**
+     * Harga efektif tektok open trip pada jalur ini.
+     */
+    public function getEffectivePriceTektokOpenAttribute(): int
+    {
+        return $this->price_tektok_open ?? (int) round($this->effective_price_camping_open * 0.8);
+    }
+
+    /**
+     * Harga efektif camping private trip pada jalur ini.
+     */
+    public function getEffectivePriceCampingPrivateAttribute(): int
+    {
+        return $this->price_camping_private ?? $this->mountain?->price_private ?? (int) round($this->effective_price_camping_open * 1.5);
+    }
+
+    /**
+     * Harga efektif tektok private trip pada jalur ini.
+     */
+    public function getEffectivePriceTektokPrivateAttribute(): int
+    {
+        return $this->price_tektok_private ?? (int) round($this->effective_price_camping_private * 0.85);
     }
 
     /**

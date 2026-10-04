@@ -25,7 +25,16 @@ class Expedition extends Model
             'quota_max' => 'integer',
             'quota_booked' => 'integer',
             'current_locked_price' => 'integer',
+            'price_lock_days_before_departure' => 'integer',
         ];
+    }
+
+    /**
+     * Batas hari price lock efektif (H-X hari sebelum keberangkatan).
+     */
+    public function getEffectivePriceLockDaysAttribute(): int
+    {
+        return $this->price_lock_days_before_departure ?? $this->mountain?->price_lock_days_before_departure ?? 3;
     }
 
     /**

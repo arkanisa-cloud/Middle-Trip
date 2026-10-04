@@ -1432,15 +1432,25 @@
             return 'Rp ' + amount.toLocaleString('id-ID');
         }
 
+        function getActiveRoute() {
+            if (!expeditionData.routes || expeditionData.routes.length === 0) return null;
+            return expeditionData.routes.find(r =>
+                String(r.id) === String(selectedRouteId) ||
+                (r.name && r.name.toLowerCase().trim() === String(selectedRouteId).toLowerCase().trim()) ||
+                (r.slug && (r.slug === selectedRouteId || r.slug === 'via-' + selectedRouteId))
+            ) || expeditionData.routes[0];
+        }
+
         function calculateCurrentPrice() {
+            const currentRoute = getActiveRoute();
             if (selectedHikeType === 'camping' && selectedPackage === 'open') {
-                return expeditionData.price_camping_open;
+                return (currentRoute && currentRoute.price_camping_open) ? currentRoute.price_camping_open : expeditionData.price_camping_open;
             } else if (selectedHikeType === 'tektok' && selectedPackage === 'open') {
-                return expeditionData.price_tektok_open;
+                return (currentRoute && currentRoute.price_tektok_open) ? currentRoute.price_tektok_open : expeditionData.price_tektok_open;
             } else if (selectedHikeType === 'camping' && selectedPackage === 'private') {
-                return expeditionData.price_camping_private;
+                return (currentRoute && currentRoute.price_camping_private) ? currentRoute.price_camping_private : expeditionData.price_camping_private;
             } else {
-                return expeditionData.price_tektok_private;
+                return (currentRoute && currentRoute.price_tektok_private) ? currentRoute.price_tektok_private : expeditionData.price_tektok_private;
             }
         }
 
@@ -1601,6 +1611,7 @@
                 updateLeftContentForRoute(route);
                 updateHeaderBadges(route);
             }
+            updatePriceDisplay();
         }
 
         function updateHeaderBadges(route) {
@@ -2139,19 +2150,39 @@
                 },
 
                 currentPricePerPax() {
+                    const currentRoute = (this.routes && this.routes.length > 0)
+                        ? (this.routes.find(r => String(r.id) === String(this.routeId) || r.name === this.routeId) || this.routes[0])
+                        : null;
+
                     if (this.tripType === 'private') {
-                        if (this.hikingType === 'tektok' && this.pricePrivateTektok > 0) {
-                            return this.pricePrivateTektok;
+                        if (this.hikingType === 'tektok') {
+                            if (currentRoute && currentRoute.price_tektok_private) {
+                                return parseInt(currentRoute.price_tektok_private, 10);
+                            }
+                            return this.pricePrivateTektok || (this.pricePrivate ? Math.round(this.pricePrivate * 0.85) : 650000);
+                        }
+                        if (currentRoute && currentRoute.price_camping_private) {
+                            return parseInt(currentRoute.price_camping_private, 10);
                         }
                         return this.pricePrivate || 750000;
                     }
+
                     if (this.hikingType === 'tektok') {
-                        const campingPrice = this.getTierPrice(this.paxCount);
+                        if (currentRoute && currentRoute.price_tektok_open) {
+                            return parseInt(currentRoute.price_tektok_open, 10);
+                        }
+                        const campingPrice = (currentRoute && currentRoute.price_camping_open)
+                            ? parseInt(currentRoute.price_camping_open, 10)
+                            : this.getTierPrice(this.paxCount);
                         if (this.basePrice > 0 && this.priceTektok > 0) {
                             const ratio = this.priceTektok / this.basePrice;
                             return Math.round(campingPrice * ratio);
                         }
                         return this.priceTektok || campingPrice;
+                    }
+
+                    if (currentRoute && currentRoute.price_camping_open) {
+                        return parseInt(currentRoute.price_camping_open, 10);
                     }
                     return this.getTierPrice(this.paxCount);
                 },

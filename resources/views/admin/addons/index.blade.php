@@ -121,7 +121,7 @@
                      @csrf
                      <div>
                          <label class="block text-[11px] font-bold text-muted uppercase mb-1">Nama Alat <span class="text-rose-500">*</span></label>
-                         <input type="text" name="name" required placeholder="Contoh: Trekking Pole Carbon"
+                         <input type="text" name="name" required placeholder="Trekking Pole Carbon"
                              class="w-full text-xs rounded-xl border border-hairline bg-canvas p-3 text-ink focus:border-primary shadow-2xs font-semibold">
                      </div>
 

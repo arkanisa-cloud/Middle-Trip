@@ -46,7 +46,7 @@ class ProcessPriceLocksCommand extends Command
                 continue;
             }
 
-            $priceLockDays = (int) ($mountain->price_lock_days_before_departure ?? 3);
+            $priceLockDays = (int) ($expedition->effective_price_lock_days);
             $lockThresholdDate = Carbon::parse($expedition->departure_date)->subDays($priceLockDays);
 
             // Jika hari ini sudah mencapai atau melewati tanggal threshold price lock

@@ -63,7 +63,13 @@ class ProfileController extends Controller
             if ($user->avatar && ! str_starts_with($user->avatar, 'http')) {
                 Storage::disk('public')->delete($user->avatar);
             }
-            $path = $request->file('avatar')->store('avatars', 'public');
+            $path = app(\App\Services\ImageService::class)->storeAsWebp(
+                $request->file('avatar'),
+                'avatars',
+                'public',
+                85,
+                512
+            );
             $user->avatar = $path;
         }
 

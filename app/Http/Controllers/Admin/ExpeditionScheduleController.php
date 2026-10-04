@@ -58,6 +58,7 @@ class ExpeditionScheduleController extends Controller
             'departure_date' => 'required|date',
             'return_date' => 'required|date|after_or_equal:departure_date',
             'quota_max' => 'required|integer|min:1',
+            'price_lock_days_before_departure' => 'nullable|integer|min:1|max:30',
             'status' => 'required|in:open,price_locked,completed,cancelled',
         ]);
 
@@ -70,6 +71,7 @@ class ExpeditionScheduleController extends Controller
             'return_date' => $validated['return_date'],
             'quota_max' => $validated['quota_max'],
             'quota_booked' => 0,
+            'price_lock_days_before_departure' => $validated['price_lock_days_before_departure'] ?? 3,
             'status' => $validated['status'],
         ]);
 
@@ -99,10 +101,12 @@ class ExpeditionScheduleController extends Controller
             'departure_date' => 'required|date',
             'return_date' => 'required|date|after_or_equal:departure_date',
             'quota_max' => 'required|integer|min:1',
+            'price_lock_days_before_departure' => 'nullable|integer|min:1|max:30',
             'status' => 'required|in:open,price_locked,completed,cancelled',
         ]);
 
         $validated['type'] = $validated['type'] ?? 'open';
+        $validated['price_lock_days_before_departure'] = $validated['price_lock_days_before_departure'] ?? ($expedition->price_lock_days_before_departure ?? 3);
         $expedition->update($validated);
 
         return redirect()->route('admin.expeditions.index')->with('success', 'Batch jadwal ekspedisi berhasil diperbarui.');

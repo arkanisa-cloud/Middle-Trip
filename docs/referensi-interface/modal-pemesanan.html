@@ -1,0 +1,950 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mt. Merbabu Expedition - MiddleTrip</title>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Fonts: Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <!-- Lucide Icons CDN -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'Inter', 'sans-serif'],
+          },
+          colors: {
+            brand: {
+              brown: '#993f1d',
+              'brown-hover': '#843416',
+              dark: '#111827',
+              gray: '#64748b',
+              light: '#f8fafc',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      color: #1e293b;
+      background-color: #ffffff;
+      -webkit-font-smoothing: antialiased;
+    }
+    .custom-scrollbar::-webkit-scrollbar {
+      width: 6px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 4px;
+    }
+  </style>
+</head>
+<body class="bg-white text-slate-800 antialiased selection:bg-orange-100 selection:text-brand-brown">
+
+  <!-- Header / Navigation Bar -->
+  <header class="w-full border-b border-gray-100 bg-white sticky top-0 z-40">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+      <!-- Logo -->
+      <a href="#" class="flex items-center gap-2">
+        <div class="flex items-center gap-2 text-slate-900 font-extrabold text-xl tracking-tight">
+          <svg class="w-6 h-6 text-slate-900" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round">
+            <path d="m8 3 4 8 5-5 5 15H2L8 3z"/>
+          </svg>
+          <span>Middle<span class="text-slate-900">Trip</span></span>
+        </div>
+      </a>
+
+      <!-- Center Navigation Links -->
+      <nav class="hidden md:flex items-center gap-10 text-sm font-medium text-slate-600">
+        <a href="#overview" class="hover:text-slate-900 transition-colors">Home</a>
+        <a href="#rute" class="text-slate-900 font-semibold relative after:content-[''] after:absolute after:-bottom-1.5 after:left-1/2 after:-translate-x-1/2 after:w-4 after:h-0.5 after:bg-slate-900 after:rounded-full">Ekspedisi</a>
+        <a href="#itinerary" class="hover:text-slate-900 transition-colors">Contact</a>
+      </nav>
+
+      <!-- Auth Buttons -->
+      <div class="flex items-center gap-4 text-sm font-medium">
+        <button class="text-slate-700 hover:text-slate-900 font-medium px-2 py-1 transition-colors">Login</button>
+        <button class="bg-slate-900 hover:bg-slate-800 text-white px-5 py-2 rounded-full font-medium transition-all shadow-sm">Daftar</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Container -->
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 pb-24">
+    
+    <!-- Breadcrumb -->
+    <nav class="flex items-center gap-2 text-xs font-medium text-slate-400 mb-3">
+      <a href="#" class="hover:text-slate-600">Home</a>
+      <span>&gt;</span>
+      <a href="#" class="hover:text-slate-600">Destinasi</a>
+      <span>&gt;</span>
+      <span class="text-slate-700 font-semibold">Mt. Merbabu Expedition</span>
+    </nav>
+
+    <!-- Page Title & Badges -->
+    <div class="mb-6">
+      <h1 class="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight mb-3.5">Mt. Merbabu Expedition</h1>
+      
+      <!-- Key Meta Badges -->
+      <div class="flex flex-wrap items-center gap-2 text-xs font-semibold text-slate-600">
+        <div class="flex items-center gap-1.5 bg-slate-100/90 text-slate-700 px-3 py-1.5 rounded-full border border-slate-200/60">
+          <i data-lucide="mountain" class="w-3.5 h-3.5 text-slate-500"></i>
+          <span>3.142 mdpl</span>
+        </div>
+        <div class="flex items-center gap-1.5 bg-slate-100/90 text-slate-700 px-3 py-1.5 rounded-full border border-slate-200/60">
+          <i data-lucide="shield-check" class="w-3.5 h-3.5 text-slate-500"></i>
+          <span>Cocok utk Pemula</span>
+        </div>
+        <div class="flex items-center gap-1.5 bg-slate-100/90 text-slate-700 px-3 py-1.5 rounded-full border border-slate-200/60">
+          <i data-lucide="map-pin" class="w-3.5 h-3.5 text-slate-500"></i>
+          <span>Jawa Tengah</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Photo Gallery Grid -->
+    <section class="grid grid-cols-1 md:grid-cols-12 gap-3 mb-10">
+      <!-- Big Hero Image Left -->
+      <div class="md:col-span-6 relative rounded-2xl overflow-hidden group h-[340px] sm:h-[450px]">
+        <img 
+          src="https://images.unsplash.com/photo-1579618218290-24a26f63a708?q=80&w=1200&auto=format&fit=crop" 
+          alt="Mt Merbabu Savanna Ridge" 
+          class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+          onerror="this.src='https://placehold.co/900x900/203a43/ffffff?text=Sabana+Merbabu'"
+        />
+        <div class="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent"></div>
+      </div>
+
+      <!-- Right 4-Grid -->
+      <div class="md:col-span-6 grid grid-cols-2 gap-3 h-[340px] sm:h-[450px]">
+        <!-- Top Left -->
+        <div class="relative rounded-2xl overflow-hidden group h-full">
+          <img 
+            src="https://images.unsplash.com/photo-1589182373726-e4f658ab50f0?q=80&w=600&auto=format&fit=crop" 
+            alt="View of Mt Merapi" 
+            class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+            onerror="this.src='https://placehold.co/600x400/294861/ffffff?text=View+Merapi'"
+          />
+        </div>
+        <!-- Top Right -->
+        <div class="relative rounded-2xl overflow-hidden group h-full">
+          <img 
+            src="https://images.unsplash.com/photo-1551632811-561732d1e306?q=80&w=600&auto=format&fit=crop" 
+            alt="Hiker in meadow" 
+            class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+            onerror="this.src='https://placehold.co/600x400/39566e/ffffff?text=Pendaki+Merbabu'"
+          />
+        </div>
+        <!-- Bottom Left -->
+        <div class="relative rounded-2xl overflow-hidden group h-full">
+          <img 
+            src="https://images.unsplash.com/photo-1544717305-2782549b5136?q=80&w=600&auto=format&fit=crop" 
+            alt="Hiker in warm jacket" 
+            class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+            onerror="this.src='https://placehold.co/600x400/536976/ffffff?text=Sabana+Camp'"
+          />
+        </div>
+        <!-- Bottom Right with "Lihat 12+ Foto Asli" -->
+        <div class="relative rounded-2xl overflow-hidden group h-full cursor-pointer">
+          <img 
+            src="https://images.unsplash.com/photo-1506744038136-46273834b3fb?q=80&w=600&auto=format&fit=crop" 
+            alt="Puncak Kenteng Songo Ridge" 
+            class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 brightness-90"
+            onerror="this.src='https://placehold.co/600x400/232526/ffffff?text=Puncak+Merbabu'"
+          />
+          <div class="absolute inset-0 bg-black/35 flex items-center justify-center p-3">
+            <button class="bg-black/55 backdrop-blur-md border border-white/20 text-white text-xs font-semibold px-4 py-2.5 rounded-full flex items-center gap-2 hover:bg-black/75 transition-all shadow-lg">
+              <i data-lucide="image" class="w-3.5 h-3.5"></i>
+              <span>Lihat 12+ Foto Asli</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Two Columns Layout: Main Content (Left) & Booking Sticky Sidebar (Right) -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
+      
+      <!-- LEFT CONTENT COLUMN (7 cols or ~65%) -->
+      <div class="lg:col-span-8 space-y-10">
+        
+        <!-- Segmented Navigation Pills -->
+        <div class="inline-flex bg-slate-100/90 p-1.5 rounded-full border border-slate-200/60 max-w-full overflow-x-auto text-xs sm:text-sm font-semibold text-slate-600">
+          <a href="#overview" class="bg-white text-slate-900 px-5 py-2 rounded-full shadow-sm">Ringkasan</a>
+          <a href="#elevasi" class="px-5 py-2 hover:text-slate-900 transition-colors whitespace-nowrap">Elevasi & Rute</a>
+          <a href="#itinerary" class="px-5 py-2 hover:text-slate-900 transition-colors whitespace-nowrap">Itinerary</a>
+          <a href="#fasilitas" class="px-5 py-2 hover:text-slate-900 transition-colors whitespace-nowrap">Fasilitas</a>
+        </div>
+
+        <!-- SECTION 1: OVERVIEW -->
+        <section id="overview" class="space-y-6">
+          <h2 class="text-xl font-bold text-slate-900">Overview</h2>
+          <p class="text-slate-600 text-sm leading-relaxed text-justify">
+            Gunung Merbabu adalah gunung api tipe strato dengan ketinggian 3.142 mdpl. Secara administratif gunung ini berada di wilayah Kabupaten Magelang di lereng sebelah barat, Kabupaten Boyolali di lereng sebelah timur dan selatan, serta Kabupaten Semarang di lereng sebelah utara. Pendakian ini menawarkan panorama sabana yang luas dan pemandangan Gunung Merapi yang megah.
+          </p>
+
+          <!-- 4 Stat Summary Cards -->
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-2">
+            <!-- Jarak Total -->
+            <div class="border border-slate-200 rounded-2xl p-4 text-center bg-white shadow-xs hover:border-slate-300 transition-all">
+              <div class="w-8 h-8 mx-auto mb-2 text-slate-700 flex items-center justify-center">
+                <i data-lucide="milestone" class="w-5 h-5"></i>
+              </div>
+              <p class="text-[11px] font-medium text-slate-400 mb-0.5">Jarak Total</p>
+              <p class="text-sm font-bold text-slate-900">13.8 km</p>
+            </div>
+
+            <!-- Durasi Waktu -->
+            <div class="border border-slate-200 rounded-2xl p-4 text-center bg-white shadow-xs hover:border-slate-300 transition-all">
+              <div class="w-8 h-8 mx-auto mb-2 text-slate-700 flex items-center justify-center">
+                <i data-lucide="clock" class="w-5 h-5"></i>
+              </div>
+              <p class="text-[11px] font-medium text-slate-400 mb-0.5">Durasi Waktu</p>
+              <p class="text-sm font-bold text-slate-900">6–7 Jam</p>
+            </div>
+
+            <!-- Suhu Rata-rata -->
+            <div class="border border-slate-200 rounded-2xl p-4 text-center bg-white shadow-xs hover:border-slate-300 transition-all">
+              <div class="w-8 h-8 mx-auto mb-2 text-slate-700 flex items-center justify-center">
+                <i data-lucide="thermometer" class="w-5 h-5"></i>
+              </div>
+              <p class="text-[11px] font-medium text-slate-400 mb-0.5">Suhu Rata-rata</p>
+              <p class="text-sm font-bold text-slate-900">8–15°C</p>
+            </div>
+
+            <!-- Sumber Air -->
+            <div class="border border-slate-200 rounded-2xl p-4 text-center bg-white shadow-xs hover:border-slate-300 transition-all">
+              <div class="w-8 h-8 mx-auto mb-2 text-slate-700 flex items-center justify-center">
+                <i data-lucide="droplet" class="w-5 h-5"></i>
+              </div>
+              <p class="text-[11px] font-medium text-slate-400 mb-0.5">Sumber Air</p>
+              <p class="text-sm font-bold text-slate-900">Pos 3</p>
+            </div>
+          </div>
+        </section>
+
+        <!-- SECTION 2: ELEVASI & RUTE PENDAKIAN -->
+        <section id="elevasi" class="space-y-4">
+          <h2 class="text-xl font-bold text-slate-900">Elevasi & Rute Pendakian (Via Selo)</h2>
+          
+          <div class="border border-slate-200 rounded-2xl p-6 bg-white shadow-xs">
+            <!-- Elevation Graph Illustration (Responsive SVG) -->
+            <div class="w-full h-56 sm:h-64 py-2 relative flex items-center justify-center">
+              <svg viewBox="0 0 700 240" class="w-full h-full overflow-visible" preserveAspectRatio="none">
+                <defs>
+                  <linearGradient id="elevationLine" x1="0" y1="0" x2="1" y2="0">
+                    <stop offset="0%" stop-color="#b45309" />
+                    <stop offset="100%" stop-color="#993f1d" />
+                  </linearGradient>
+                  <linearGradient id="areaGradient" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stop-color="#fed7aa" stop-opacity="0.35" />
+                    <stop offset="100%" stop-color="#ffffff" stop-opacity="0.0" />
+                  </linearGradient>
+                </defs>
+
+                <!-- Soft Mountain Silhouette Area -->
+                <path d="M 40 185 L 140 160 L 250 145 L 360 130 L 470 95 L 560 80 L 650 45 L 650 210 L 40 210 Z" fill="url(#areaGradient)" />
+
+                <!-- Elevation Line -->
+                <path d="M 40 185 L 140 160 L 250 145 L 360 130 L 470 95 L 560 80 L 650 45" fill="none" stroke="url(#elevationLine)" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" />
+
+                <!-- Points & Labels -->
+                <!-- Basecamp -->
+                <circle cx="40" cy="185" r="4.5" fill="#fff" stroke="#993f1d" stroke-width="2.5" />
+                <text x="40" y="172" text-anchor="middle" class="text-[10px] font-bold fill-slate-400">1.800m</text>
+                <text x="40" y="202" text-anchor="middle" class="text-[11px] font-semibold fill-slate-700">Basecamp</text>
+
+                <!-- Pos 1 -->
+                <circle cx="140" cy="160" r="4.5" fill="#fff" stroke="#993f1d" stroke-width="2.5" />
+                <text x="140" y="147" text-anchor="middle" class="text-[10px] font-bold fill-slate-400">2.100m</text>
+                <text x="140" y="178" text-anchor="middle" class="text-[11px] font-semibold fill-slate-700">Pos 1</text>
+
+                <!-- Pos 2 -->
+                <circle cx="250" cy="145" r="4.5" fill="#fff" stroke="#993f1d" stroke-width="2.5" />
+                <text x="250" y="132" text-anchor="middle" class="text-[10px] font-bold fill-slate-400">2.400m</text>
+                <text x="250" y="163" text-anchor="middle" class="text-[11px] font-semibold fill-slate-700">Pos 2</text>
+
+                <!-- Pos 3 -->
+                <circle cx="360" cy="130" r="4.5" fill="#fff" stroke="#993f1d" stroke-width="2.5" />
+                <text x="360" y="117" text-anchor="middle" class="text-[10px] font-bold fill-slate-400">2.600m</text>
+                <text x="360" y="148" text-anchor="middle" class="text-[11px] font-semibold fill-slate-700">Pos 3</text>
+
+                <!-- Sabana 1 -->
+                <circle cx="470" cy="95" r="4.5" fill="#fff" stroke="#993f1d" stroke-width="2.5" />
+                <text x="470" y="82" text-anchor="middle" class="text-[10px] font-bold fill-slate-400">2.800m</text>
+                <text x="470" y="113" text-anchor="middle" class="text-[11px] font-semibold fill-slate-700">Sabana 1</text>
+
+                <!-- Sabana 2 -->
+                <circle cx="560" cy="80" r="4.5" fill="#fff" stroke="#993f1d" stroke-width="2.5" />
+                <text x="560" y="67" text-anchor="middle" class="text-[10px] font-bold fill-slate-400">2.950m</text>
+                <text x="560" y="98" text-anchor="middle" class="text-[11px] font-semibold fill-slate-700">Sabana 2</text>
+
+                <!-- Puncak Kenteng Songo -->
+                <circle cx="650" cy="45" r="5" fill="#993f1d" stroke="#fff" stroke-width="2" />
+                <text x="650" y="32" text-anchor="middle" class="text-[11px] font-bold fill-brand-brown">3.142m</text>
+                <text x="650" y="63" text-anchor="middle" class="text-[11px] font-bold fill-slate-900">Puncak</text>
+              </svg>
+            </div>
+
+            <!-- Route Notes & Warning Badges -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-2.5 pt-4 border-t border-slate-100 text-xs">
+              <!-- Water Source -->
+              <div class="flex items-center gap-2.5 bg-slate-50/80 border border-slate-200/70 px-3.5 py-2.5 rounded-xl text-slate-700">
+                <div class="w-6 h-6 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center shrink-0">
+                  <i data-lucide="droplets" class="w-3.5 h-3.5"></i>
+                </div>
+                <div class="text-[11px] leading-tight">
+                  <span class="font-bold text-slate-800">Titik Air Terakhir:</span> Pos 3 <br>
+                  <span class="text-slate-400">(Pastikan isi)</span>
+                </div>
+              </div>
+
+              <!-- High Wind Warning -->
+              <div class="flex items-center gap-2.5 bg-red-50/50 border border-red-100 px-3.5 py-2.5 rounded-xl text-slate-700">
+                <div class="w-6 h-6 rounded-full bg-red-100 text-red-600 flex items-center justify-center shrink-0">
+                  <i data-lucide="alert-triangle" class="w-3.5 h-3.5"></i>
+                </div>
+                <div class="text-[11px] leading-tight">
+                  <span class="font-bold text-red-900">Zona Terpaan Angin:</span> <br>
+                  <span class="text-slate-600">Kencang Sabana 2</span>
+                </div>
+              </div>
+
+              <!-- Cellular Signal -->
+              <div class="flex items-center gap-2.5 bg-emerald-50/40 border border-emerald-100 px-3.5 py-2.5 rounded-xl text-slate-700">
+                <div class="w-6 h-6 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center shrink-0">
+                  <i data-lucide="signal" class="w-3.5 h-3.5"></i>
+                </div>
+                <div class="text-[11px] leading-tight">
+                  <span class="font-bold text-emerald-950">Sinyal Seluler:</span> 4G di BC & Pos 1-2
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- SECTION 3: ITINERARY 2D1N -->
+        <section id="itinerary" class="space-y-4">
+          <h2 class="text-xl font-bold text-slate-900">Itinerary 2D1N (Via Selo)</h2>
+          
+          <div class="relative pl-6 space-y-6 before:content-[''] before:absolute before:top-3 before:bottom-3 before:left-[11px] before:w-[2px] before:bg-slate-200">
+            
+            <!-- Day 1 -->
+            <div class="relative group">
+              <!-- Dot -->
+              <div class="absolute -left-6 top-1 w-[22px] h-[22px] rounded-full bg-slate-900 border-4 border-white shadow-sm flex items-center justify-center"></div>
+              
+              <!-- Card -->
+              <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-xs">
+                <h3 class="text-sm font-bold text-slate-900 mb-1">Day 1: Basecamp ke Sabana (Camp)</h3>
+                <p class="text-xs text-slate-500 mb-4 leading-relaxed">
+                  Memulai pendakian dari Basecamp Selo melewati hutan pinus dan lamtoro. Istirahat dan makan siang di Pos 2 sebelum melanjutkan ke Sabana untuk mendirikan tenda.
+                </p>
+
+                <!-- Schedule timeline items -->
+                <div class="space-y-2 text-xs text-slate-600">
+                  <div class="flex items-center gap-2">
+                    <i data-lucide="clock-3" class="w-3.5 h-3.5 text-slate-400"></i>
+                    <span class="font-semibold text-slate-800 w-12">08:00</span>
+                    <span>Registrasi & Persiapan</span>
+                  </div>
+                  <div class="flex items-center gap-2">
+                    <i data-lucide="clock-3" class="w-3.5 h-3.5 text-slate-400"></i>
+                    <span class="font-semibold text-slate-800 w-12">09:00</span>
+                    <span>Mulai Trekking</span>
+                  </div>
+                  <div class="flex items-center gap-2">
+                    <i data-lucide="clock-3" class="w-3.5 h-3.5 text-slate-400"></i>
+                    <span class="font-semibold text-slate-800 w-12">12:30</span>
+                    <span>Makan Siang di Pos 2</span>
+                  </div>
+                  <div class="flex items-center gap-2">
+                    <i data-lucide="clock-3" class="w-3.5 h-3.5 text-slate-400"></i>
+                    <span class="font-semibold text-slate-800 w-12">16:00</span>
+                    <span>Tiba di Sabana 1, Dirikan Tenda</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Day 2 -->
+            <div class="relative group">
+              <!-- Dot (Inactive / Outline) -->
+              <div class="absolute -left-6 top-1 w-[22px] h-[22px] rounded-full bg-slate-300 border-4 border-white shadow-sm"></div>
+              
+              <!-- Card -->
+              <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-xs">
+                <h3 class="text-sm font-bold text-slate-900 mb-1">Day 2: Summit Push & Descent</h3>
+                <p class="text-xs text-slate-500 leading-relaxed">
+                  Bangun dini hari untuk muncak dan menikmati sunrise di Puncak Kenteng Songo. Setelah sarapan, turun kembali ke basecamp.
+                </p>
+              </div>
+            </div>
+
+          </div>
+        </section>
+
+        <!-- SECTION 4: FASILITAS TERMASUK -->
+        <section id="fasilitas" class="space-y-4">
+          <h2 class="text-xl font-bold text-slate-900">Fasilitas Termasuk</h2>
+
+          <!-- Termasuk (Included) Card -->
+          <div class="border border-slate-200 rounded-2xl p-6 bg-white shadow-xs">
+            <!-- Header Tag -->
+            <div class="flex items-center justify-center gap-1.5 text-xs font-bold text-emerald-700 bg-emerald-50 border border-emerald-200/60 rounded-full py-1.5 px-4 w-fit mx-auto mb-6">
+              <i data-lucide="check-circle" class="w-3.5 h-3.5 text-emerald-600"></i>
+              <span>Termasuk (Included)</span>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-y-6 gap-x-8 text-xs text-slate-600">
+              <!-- Left Column: Akomodasi Camp & Perizinan -->
+              <div class="space-y-5">
+                <!-- Akomodasi Camp -->
+                <div>
+                  <h4 class="font-bold text-slate-900 mb-2 flex items-center gap-1.5 text-[13px]">
+                    <i data-lucide="tent" class="w-4 h-4 text-slate-700"></i>
+                    Akomodasi Camp
+                  </h4>
+                  <ul class="space-y-1.5 pl-5 list-disc text-slate-600 marker:text-slate-400">
+                    <li>Tenda Kapasitas Fleksibel</li>
+                    <li>Common Area (Flysheet & Camp Lamp)</li>
+                    <li>Peralatan Masak & Gas (Kompor / Nesting)</li>
+                    <li>Set Alat Makan & Minum</li>
+                  </ul>
+                </div>
+
+                <!-- Perizinan & Keamanan -->
+                <div>
+                  <h4 class="font-bold text-slate-900 mb-2 flex items-center gap-1.5 text-[13px]">
+                    <i data-lucide="file-check" class="w-4 h-4 text-slate-700"></i>
+                    Perizinan & Keamanan
+                  </h4>
+                  <ul class="space-y-1.5 pl-5 list-disc text-slate-600 marker:text-slate-400">
+                    <li>Tiket Masuk & SIMAKSI Resmi</li>
+                    <li>Asuransi Pendakian</li>
+                  </ul>
+                </div>
+              </div>
+
+              <!-- Right Column: Perlengkapan Personal -->
+              <div>
+                <h4 class="font-bold text-slate-900 mb-2 flex items-center gap-1.5 text-[13px]">
+                  <i data-lucide="backpack" class="w-4 h-4 text-slate-700"></i>
+                  Perlengkapan Personal
+                </h4>
+                <ul class="space-y-1.5 pl-5 list-disc text-slate-600 marker:text-slate-400">
+                  <li>Sleeping Bag/Warm Polar</li>
+                  <li>Matras Busa</li>
+                  <li>Jas Hujan & Emergency Blanket</li>
+                  <li>Tas Carrier / Daily Pack</li>
+                  <li>P3K Standar Pendakian</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          <!-- Tidak Termasuk (Exclude) Card -->
+          <div class="border border-slate-200 rounded-2xl p-6 bg-white shadow-xs">
+            <!-- Header Tag -->
+            <div class="flex items-center justify-center gap-1.5 text-xs font-bold text-red-600 bg-red-50 border border-red-200/60 rounded-full py-1.5 px-4 w-fit mx-auto mb-6">
+              <i data-lucide="x-circle" class="w-3.5 h-3.5 text-red-500"></i>
+              <span>Tidak Termasuk (Exclude)</span>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-y-4 gap-x-8 text-xs text-slate-600">
+              <!-- Kebutuhan & Perlengkapan Pribadi -->
+              <div>
+                <h4 class="font-bold text-slate-900 mb-2 flex items-center gap-1.5 text-[13px]">
+                  <i data-lucide="shopping-bag" class="w-4 h-4 text-slate-700"></i>
+                  Kebutuhan & Perlengkapan Pribadi
+                </h4>
+                <ul class="space-y-1.5 pl-5 list-disc text-slate-600 marker:text-slate-400">
+                  <li>Pakaian & Sepatu Pendakian Pribadi</li>
+                  <li>Obat-obatan Pribadi Khusus</li>
+                </ul>
+              </div>
+
+              <!-- Transportasi & Akses Awal -->
+              <div>
+                <h4 class="font-bold text-slate-900 mb-2 flex items-center gap-1.5 text-[13px]">
+                  <i data-lucide="car" class="w-4 h-4 text-slate-700"></i>
+                  Transportasi & Akses Awal
+                </h4>
+                <ul class="space-y-1.5 pl-5 list-disc text-slate-600 marker:text-slate-400">
+                  <li>Transportasi Kota Asal ke Meeting Point</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+        </section>
+
+      </div>
+
+      <!-- RIGHT SIDEBAR: BOOKING CARD (Sticky) -->
+      <div class="lg:col-span-4 w-full">
+        <div class="sticky top-24 bg-white border border-slate-200 rounded-3xl p-6 shadow-sm space-y-6">
+          
+          <!-- Card Title -->
+          <div class="flex items-center gap-2 text-slate-900 font-bold text-sm">
+            <i data-lucide="hiking" class="w-4 h-4 text-slate-700"></i>
+            <span>Atur Perjalananmu!</span>
+          </div>
+
+          <!-- 1. Tipe Pendakian -->
+          <div class="space-y-2">
+            <label class="block text-xs font-bold text-slate-800">1. Tipe Pendakian</label>
+            <div class="grid grid-cols-2 gap-2.5">
+              <!-- Camping (Selected) -->
+              <button type="button" class="border-2 border-slate-900 bg-slate-50/50 rounded-2xl p-3 text-left transition-all">
+                <span class="block text-xs font-bold text-slate-900">Camping</span>
+                <span class="block text-[11px] text-slate-500 font-medium">2D1N</span>
+                <span class="block text-[10px] text-slate-400">1 Malam</span>
+              </button>
+              <!-- Tek-tok (Unselected) -->
+              <button type="button" class="border border-slate-200 hover:border-slate-300 rounded-2xl p-3 text-left transition-all">
+                <span class="block text-xs font-bold text-slate-800">Tek-tok</span>
+                <span class="block text-[11px] text-slate-400 font-medium">One Day Hike</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- 2. Pilih Jalur (Via) -->
+          <div class="space-y-2">
+            <label class="block text-xs font-bold text-slate-800">2. Pilih Jalur (Via)</label>
+            <div class="relative">
+              <select class="w-full bg-white border border-slate-200 rounded-2xl py-2.5 px-3.5 text-xs text-slate-800 font-medium appearance-none focus:outline-none focus:border-slate-400">
+                <option selected>Via Selo (Rekomendasi)</option>
+                <option>Via Suwanting</option>
+                <option>Via Thekelan</option>
+                <option>Via Wekas</option>
+              </select>
+              <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-slate-400">
+                <i data-lucide="chevron-down" class="w-4 h-4"></i>
+              </div>
+            </div>
+          </div>
+
+          <!-- 3. Jenis Paket -->
+          <div class="space-y-2">
+            <label class="block text-xs font-bold text-slate-800">3. Jenis Paket</label>
+            <div class="bg-slate-100 p-1 rounded-2xl grid grid-cols-2 text-xs font-semibold text-center">
+              <button class="bg-white text-slate-900 py-1.5 rounded-xl shadow-xs">Open Trip</button>
+              <button class="text-slate-500 hover:text-slate-800 py-1.5 transition-colors">Private Trip</button>
+            </div>
+          </div>
+
+          <!-- 4. Tanggal Terdekat -->
+          <div class="space-y-2">
+            <label class="block text-xs font-bold text-slate-800">4. Tanggal Terdekat</label>
+            <div class="relative">
+              <input 
+                type="text" 
+                value="15/06/2026" 
+                readonly
+                class="w-full bg-white border border-slate-200 rounded-2xl py-2.5 px-3.5 text-xs text-slate-800 font-medium focus:outline-none"
+              />
+              <div class="absolute inset-y-0 right-0 flex items-center pr-3.5 pointer-events-none text-slate-400">
+                <i data-lucide="calendar" class="w-4 h-4"></i>
+              </div>
+            </div>
+          </div>
+
+          <!-- Target Kuota Peserta -->
+          <div class="space-y-1.5 pt-1">
+            <div class="flex justify-between text-[11px] font-bold">
+              <span class="text-slate-800">Peserta saat ini</span>
+              <span class="text-brand-brown">5 dari 10 peserta</span>
+            </div>
+            <!-- Progress Bar -->
+            <div class="w-full bg-slate-100 rounded-full h-2 overflow-hidden">
+              <div class="bg-brand-brown h-2 rounded-full w-1/2"></div>
+            </div>
+            <p class="text-[10px] text-right text-slate-400">Tersisa 5 slot lagi untuk keberangkatan</p>
+          </div>
+
+          <!-- Pricing -->
+          <div class="flex items-baseline justify-between pt-2 border-t border-slate-100">
+            <span class="text-xs font-medium text-slate-500">Current Price</span>
+            <div class="text-right">
+              <span class="text-lg font-black text-slate-900">Rp 500.000</span>
+              <span class="text-[10px] text-slate-400 block -mt-1 font-normal">/ pax</span>
+            </div>
+          </div>
+
+          <!-- Booking Button -->
+          <button 
+            id="btn-booking"
+            onclick="handleBooking()"
+            class="w-full bg-brand-brown hover:bg-brand-brown-hover active:scale-[0.99] transition-all text-white py-3.5 px-4 rounded-2xl font-bold text-sm shadow-md hover:shadow-lg flex items-center justify-center gap-2"
+          >
+            <span>Booking Sekarang</span>
+          </button>
+
+          <!-- 100% Refund Guarantee note -->
+          <div class="flex items-center justify-center gap-1.5 text-[10px] text-slate-400 text-center">
+            <i data-lucide="shield" class="w-3.5 h-3.5 text-slate-400 shrink-0"></i>
+            <span>100% Refund jika trip batal akibat cuaca ekstrem</span>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="border-t border-slate-100 bg-slate-50/50 py-12 text-center text-xs text-slate-500">
+    <div class="max-w-7xl mx-auto px-4 space-y-4">
+      <!-- Footer Logo -->
+      <div class="flex items-center justify-center gap-2 text-slate-900 font-extrabold text-base tracking-tight">
+        <svg class="w-5 h-5 text-slate-900" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round">
+          <path d="m8 3 4 8 5-5 5 15H2L8 3z"/>
+        </svg>
+        <span>MiddleTrip</span>
+      </div>
+
+      <!-- Links -->
+      <div class="flex justify-center items-center gap-6 font-medium text-slate-600">
+        <a href="#" class="hover:text-slate-900 transition-colors">Instagram</a>
+        <a href="#" class="hover:text-slate-900 transition-colors">WhatsApp</a>
+        <a href="#" class="hover:text-slate-900 transition-colors">Email</a>
+        <a href="#" class="hover:text-slate-900 transition-colors">Privacy Policy</a>
+      </div>
+
+      <!-- Copyright -->
+      <p class="text-[11px] text-slate-400">
+        &copy; 2026 MiddleTrip Expedition Co. All rights reserved.
+      </p>
+    </div>
+  </footer>
+
+  <!-- Booking Modal: Pesan Tiket (Matches Image Exactly) -->
+  <div id="bookingModal" class="fixed inset-0 bg-black/45 backdrop-blur-[2px] flex items-center justify-center z-50 transition-opacity duration-300 px-4 py-6 overflow-y-auto">
+    <div class="bg-white rounded-[28px] p-6 sm:p-7 max-w-3xl w-full shadow-2xl transform transition-all duration-300 my-auto border border-slate-100">
+      
+      <!-- Modal Header -->
+      <div class="flex items-start justify-between pb-4 border-b border-slate-100/80 mb-5">
+        <div>
+          <h2 class="text-xl font-extrabold text-slate-900 tracking-tight">Pesan Tiket</h2>
+          <p class="text-xs text-slate-400 font-medium mt-0.5">Mt. Merbabu Expedition</p>
+        </div>
+        <button 
+          onclick="closeBookingModal()" 
+          class="w-7 h-7 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-500 hover:text-slate-800 flex items-center justify-center transition-colors text-sm font-bold"
+          aria-label="Tutup Modal"
+        >
+          ✕
+        </button>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-12 gap-6 items-start">
+        
+        <!-- LEFT COLUMN: Tiket Details, Meeting Point, Tambahan (7 Cols) -->
+        <div class="md:col-span-7 space-y-5 text-xs">
+          
+          <!-- Section: Details & Participant Counter -->
+          <div class="space-y-2">
+            <h4 class="font-bold text-slate-900 text-xs">Details</h4>
+            <div class="flex items-center justify-between flex-wrap gap-2">
+              <span class="text-slate-800 font-semibold text-xs">Harga Saat Ini : <span class="text-slate-900 font-bold">Rp 500.000/orang</span></span>
+              
+              <!-- Stepper Counter -->
+              <div class="inline-flex items-center gap-2 bg-slate-50 border border-slate-200 px-2 py-1 rounded-full">
+                <button 
+                  type="button" 
+                  onclick="changePax(-1)" 
+                  class="w-5 h-5 rounded-full bg-brand-brown text-white flex items-center justify-center hover:bg-brand-brown-hover transition-colors font-bold text-xs"
+                >
+                  −
+                </button>
+                <span id="paxCountDisplay" class="font-bold text-slate-800 text-xs min-w-12 text-center">1 Orang</span>
+                <button 
+                  type="button" 
+                  onclick="changePax(1)" 
+                  class="w-5 h-5 rounded-full bg-brand-brown text-white flex items-center justify-center hover:bg-brand-brown-hover transition-colors font-bold text-xs"
+                >
+                  +
+                </button>
+              </div>
+            </div>
+            <p class="text-[11px] text-slate-400">Semakin banyak peserta kuota semakin murah</p>
+          </div>
+
+          <!-- Section: Meeting Point (Penjemputan) -->
+          <div class="space-y-2">
+            <h4 class="font-bold text-slate-900 text-xs">Meeting Point (Penjemputan)</h4>
+            <div class="space-y-2" id="meetingPointContainer">
+              
+              <!-- Option 1: Basecamp Selo (Gratis) -->
+              <label class="flex items-center justify-between p-3 rounded-2xl border border-slate-200 hover:border-slate-300 cursor-pointer transition-colors bg-white group">
+                <div class="flex items-center gap-2.5">
+                  <input type="radio" name="meetingPoint" value="0" data-label="Basecamp Selo (Boyolali)" checked onchange="updateCalculations()" class="accent-brand-brown w-4 h-4 cursor-pointer">
+                  <span class="font-medium text-slate-800 text-xs">Basecamp Selo (Boyolali)</span>
+                </div>
+                <span class="text-[11px] font-semibold text-slate-500 bg-slate-100 px-2.5 py-0.5 rounded-full">Gratis</span>
+              </label>
+
+              <!-- Option 2: Shuttle Solo Balapan -->
+              <label class="flex items-center justify-between p-3 rounded-2xl border border-slate-200 hover:border-slate-300 cursor-pointer transition-colors bg-white group">
+                <div class="flex items-center gap-2.5">
+                  <input type="radio" name="meetingPoint" value="75000" data-label="Shuttle Stasiun Solo Balapan" onchange="updateCalculations()" class="accent-brand-brown w-4 h-4 cursor-pointer">
+                  <span class="font-medium text-slate-800 text-xs">Shuttle Stasiun Solo Balapan</span>
+                </div>
+                <span class="text-[11px] font-semibold text-slate-600 bg-slate-100 px-2 py-0.5 rounded-full">+Rp 75k</span>
+              </label>
+
+              <!-- Option 3: Shuttle Tugu Jogja -->
+              <label class="flex items-center justify-between p-3 rounded-2xl border border-slate-200 hover:border-slate-300 cursor-pointer transition-colors bg-white group">
+                <div class="flex items-center gap-2.5">
+                  <input type="radio" name="meetingPoint" value="100000" data-label="Shuttle Stasiun Tugu Jogja" onchange="updateCalculations()" class="accent-brand-brown w-4 h-4 cursor-pointer">
+                  <span class="font-medium text-slate-800 text-xs">Shuttle Stasiun Tugu Jogja</span>
+                </div>
+                <span class="text-[11px] font-semibold text-slate-600 bg-slate-100 px-2 py-0.5 rounded-full">+Rp 100k</span>
+              </label>
+            </div>
+          </div>
+
+          <!-- Section: Tambahan (Add-ons) -->
+          <div class="space-y-2">
+            <h4 class="font-bold text-slate-900 text-xs">Tambahan</h4>
+            <div class="space-y-2" id="addonContainer">
+              
+              <!-- Hydropack -->
+              <label class="flex items-center justify-between p-3 rounded-2xl border border-slate-200 hover:border-slate-300 cursor-pointer transition-colors bg-white">
+                <div class="flex items-center gap-2.5">
+                  <input type="checkbox" id="addon-hydropack" checked data-name="Hydropack" value="15000" onchange="updateCalculations()" class="accent-brand-brown w-4 h-4 rounded cursor-pointer">
+                  <span class="font-medium text-slate-800 text-xs">Hydropack</span>
+                </div>
+                <span class="text-[11px] font-semibold text-slate-600 bg-slate-100 px-2 py-0.5 rounded-full">+Rp 15k</span>
+              </label>
+
+              <!-- Trekking Pole -->
+              <label class="flex items-center justify-between p-3 rounded-2xl border border-slate-200 hover:border-slate-300 cursor-pointer transition-colors bg-white">
+                <div class="flex items-center gap-2.5">
+                  <input type="checkbox" id="addon-trekkingpole" data-name="Trekking Pole" value="10000" onchange="updateCalculations()" class="accent-brand-brown w-4 h-4 rounded cursor-pointer">
+                  <span class="font-medium text-slate-800 text-xs">Trekking Pole</span>
+                </div>
+                <span class="text-[11px] font-semibold text-slate-600 bg-slate-100 px-2 py-0.5 rounded-full">+Rp 10k</span>
+              </label>
+
+              <!-- Matras Gulung Tambahan -->
+              <label class="flex items-center justify-between p-3 rounded-2xl border border-slate-200 hover:border-slate-300 cursor-pointer transition-colors bg-white">
+                <div class="flex items-center gap-2.5">
+                  <input type="checkbox" id="addon-matras" data-name="Matras Gulung Tambahan" value="12000" onchange="updateCalculations()" class="accent-brand-brown w-4 h-4 rounded cursor-pointer">
+                  <span class="font-medium text-slate-800 text-xs">Matras Gulung Tambahan</span>
+                </div>
+                <span class="text-[11px] font-semibold text-slate-600 bg-slate-100 px-2 py-0.5 rounded-full">+Rp 12k</span>
+              </label>
+
+              <!-- Headlamp -->
+              <label class="flex items-center justify-between p-3 rounded-2xl border border-slate-200 hover:border-slate-300 cursor-pointer transition-colors bg-white">
+                <div class="flex items-center gap-2.5">
+                  <input type="checkbox" id="addon-headlamp" data-name="Headlamp" value="10000" onchange="updateCalculations()" class="accent-brand-brown w-4 h-4 rounded cursor-pointer">
+                  <span class="font-medium text-slate-800 text-xs">Headlamp</span>
+                </div>
+                <span class="text-[11px] font-semibold text-slate-600 bg-slate-100 px-2 py-0.5 rounded-full">+Rp 10k</span>
+              </label>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- RIGHT COLUMN: Keberangkatan & Rincian Pesanan (5 Cols) -->
+        <div class="md:col-span-5 bg-slate-50/70 border border-slate-200/80 rounded-2xl p-4 sm:p-5 space-y-4">
+          
+          <!-- Keberangkatan Box -->
+          <div class="space-y-2">
+            <h4 class="font-bold text-slate-900 text-xs">Keberangkatan</h4>
+            <div class="space-y-1.5">
+              <div class="bg-white border border-slate-200 rounded-xl px-3 py-2 text-xs font-medium text-slate-700 shadow-2xs flex items-center justify-between">
+                <span>15/08/2026</span>
+                <i data-lucide="calendar" class="w-3.5 h-3.5 text-slate-400"></i>
+              </div>
+              <div class="bg-white border border-slate-200 rounded-xl px-3 py-2 text-xs font-medium text-slate-700 shadow-2xs flex items-center justify-between">
+                <span id="summaryRoute">Via Selo (Boyolali)</span>
+                <i data-lucide="map-pin" class="w-3.5 h-3.5 text-slate-400"></i>
+              </div>
+            </div>
+          </div>
+
+          <!-- Rincian Pesanan -->
+          <div class="space-y-2 pt-1 border-t border-slate-200/60">
+            <h4 class="font-bold text-slate-900 text-xs">Rincian Pesanan</h4>
+            
+            <div class="space-y-1.5 text-xs">
+              <div class="flex justify-between text-slate-500 text-[11px]">
+                <span>Trip Dimulai</span>
+                <span class="font-medium text-slate-700">15 Agustus 2026</span>
+              </div>
+              <div class="flex justify-between text-slate-500 text-[11px]">
+                <span>Trip Selesai</span>
+                <span class="font-medium text-slate-700">16 Agustus 2026</span>
+              </div>
+              <div class="flex justify-between text-slate-500 text-[11px]">
+                <span>Durasi</span>
+                <span class="font-medium text-slate-700">2 Hari 1 Malam</span>
+              </div>
+              
+              <!-- Dynamic Price Items -->
+              <div class="flex justify-between text-slate-600 text-[11px] pt-1">
+                <span id="summaryTripLabel">Open Trip (1x)</span>
+                <span id="summaryTripPrice" class="font-semibold text-slate-800">Rp 500.000</span>
+              </div>
+
+              <!-- Shuttle fee (if any) -->
+              <div id="summaryShuttleRow" class="hidden justify-between text-slate-600 text-[11px]">
+                <span id="summaryShuttleLabel">Shuttle Fee</span>
+                <span id="summaryShuttlePrice" class="font-semibold text-slate-800">Rp 0</span>
+              </div>
+
+              <!-- Addon Items Container -->
+              <div id="summaryAddonsContainer" class="space-y-1.5 pt-0.5">
+                <div class="flex justify-between text-slate-600 text-[11px]">
+                  <span>Hydropack</span>
+                  <span class="font-semibold text-slate-800">Rp 15.000</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Total Section -->
+          <div class="pt-3 border-t border-slate-200/80">
+            <div class="flex items-center justify-between">
+              <span class="text-xs text-slate-500 font-medium">Current Total</span>
+              <span id="modalCurrentTotal" class="text-base font-extrabold text-slate-900">Rp 515.000</span>
+            </div>
+          </div>
+
+          <!-- Action Buttons -->
+          <div class="space-y-2 pt-2">
+            <!-- Bayar Sekarang -->
+            <button 
+              type="button" 
+              onclick="handlePayment()" 
+              class="w-full bg-brand-brown hover:bg-brand-brown-hover active:scale-[0.99] text-white py-2.5 px-4 rounded-xl font-bold text-xs shadow-sm transition-all text-center block"
+            >
+              Bayar Sekarang
+            </button>
+
+            <!-- Tanya Via Whatsapp -->
+            <a 
+              href="https://wa.me/?text=Halo%20MiddleTrip,%20saya%20ingin%20tanya%20tentang%20Mt.%20Merbabu%20Expedition" 
+              target="_blank" 
+              class="w-full bg-white hover:bg-emerald-50 border border-emerald-500 text-emerald-600 py-2.5 px-4 rounded-xl font-semibold text-xs transition-all flex items-center justify-center gap-1.5 shadow-2xs"
+            >
+              <i data-lucide="message-circle" class="w-3.5 h-3.5 text-emerald-500"></i>
+              <span>Tanya Via Whatsapp</span>
+            </a>
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    // Initialize Lucide Icons
+    lucide.createIcons();
+
+    // Booking State Variables
+    let paxCount = 1;
+    const basePricePerPerson = 500000;
+
+    function handleBooking() {
+      const modal = document.getElementById('bookingModal');
+      modal.classList.remove('opacity-0', 'pointer-events-none');
+    }
+
+    function closeBookingModal() {
+      const modal = document.getElementById('bookingModal');
+      modal.classList.add('opacity-0', 'pointer-events-none');
+    }
+
+    // Stepper function
+    function changePax(delta) {
+      const newPax = paxCount + delta;
+      if (newPax >= 1 && newPax <= 10) {
+        paxCount = newPax;
+        document.getElementById('paxCountDisplay').innerText = `${paxCount} Orang`;
+        updateCalculations();
+      }
+    }
+
+    // Format currency IDR
+    function formatIDR(amount) {
+      return 'Rp ' + amount.toLocaleString('id-ID');
+    }
+
+    // Real-time calculation updater
+    function updateCalculations() {
+      const tripTotal = basePricePerPerson * paxCount;
+      document.getElementById('summaryTripLabel').innerText = `Open Trip (${paxCount}x)`;
+      document.getElementById('summaryTripPrice').innerText = formatIDR(tripTotal);
+
+      // Meeting point shuttle fee
+      const selectedRadio = document.querySelector('input[name="meetingPoint"]:checked');
+      const shuttleFee = selectedRadio ? parseInt(selectedRadio.value, 10) * paxCount : 0;
+      const shuttleRow = document.getElementById('summaryShuttleRow');
+      
+      if (shuttleFee > 0) {
+        shuttleRow.classList.remove('hidden');
+        shuttleRow.classList.add('flex');
+        document.getElementById('summaryShuttleLabel').innerText = `Shuttle (${selectedRadio.getAttribute('data-label')})`;
+        document.getElementById('summaryShuttlePrice').innerText = formatIDR(shuttleFee);
+      } else {
+        shuttleRow.classList.add('hidden');
+        shuttleRow.classList.remove('flex');
+      }
+
+      // Add-ons
+      const addons = document.querySelectorAll('#addonContainer input[type="checkbox"]:checked');
+      const addonsContainer = document.getElementById('summaryAddonsContainer');
+      addonsContainer.innerHTML = '';
+
+      let totalAddons = 0;
+      addons.forEach(addon => {
+        const cost = parseInt(addon.value, 10);
+        totalAddons += cost;
+        const div = document.createElement('div');
+        div.className = 'flex justify-between text-slate-600 text-[11px]';
+        div.innerHTML = `
+          <span>${addon.getAttribute('data-name')}</span>
+          <span class="font-semibold text-slate-800">${formatIDR(cost)}</span>
+        `;
+        addonsContainer.appendChild(div);
+      });
+
+      // Total Calculation
+      const grandTotal = tripTotal + shuttleFee + totalAddons;
+      document.getElementById('modalCurrentTotal').innerText = formatIDR(grandTotal);
+    }
+
+    // Handle payment trigger
+    function handlePayment() {
+      const selectedRadio = document.querySelector('input[name="meetingPoint"]:checked');
+      const meetingPoint = selectedRadio ? selectedRadio.getAttribute('data-label') : 'Basecamp Selo';
+      const grandTotal = document.getElementById('modalCurrentTotal').innerText;
+      
+      const message = `Halo MiddleTrip, saya ingin konfirmasi booking tiket:\n- Ekspedisi: Mt. Merbabu\n- Peserta: ${paxCount} Orang\n- Meeting Point: ${meetingPoint}\n- Total: ${grandTotal}`;
+      window.open(`https://wa.me/?text=${encodeURIComponent(message)}`, '_blank');
+    }
+
+    // Run calculations on load to align initial values
+    window.addEventListener('DOMContentLoaded', () => {
+      updateCalculations();
+    });
+  </script>
+</body>
+</html>

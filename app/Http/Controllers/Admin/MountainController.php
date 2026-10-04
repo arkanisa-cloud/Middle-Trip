@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Models\ExpeditionPriceTier;
 use App\Models\Mountain;
 use App\Models\Route;
+use App\Services\ImageService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -16,6 +17,10 @@ use Illuminate\View\View;
 
 class MountainController extends Controller
 {
+    public function __construct(
+        protected ImageService $imageService
+    ) {}
+
     /**
      * Display a listing of the mountains.
      */
@@ -61,23 +66,12 @@ class MountainController extends Controller
             'cover_image' => 'nullable|string|max:255',
             'description' => 'nullable|string',
             'overview' => 'nullable|string',
-            'base_price' => 'required|integer|min:0',
+            'base_price' => 'nullable|integer|min:0',
             'price_private' => 'nullable|integer|min:0',
             'price_tektok' => 'nullable|integer|min:0',
             'price_private_tektok' => 'nullable|integer|min:0',
-            'booking_fee_per_pax' => [
-                'required',
-                'integer',
-                'min:0',
-                function ($attribute, $value, $fail) use ($request) {
-                    $basePrice = (int) $request->input('base_price', 0);
-                    $maxAllowedDp = floor($basePrice / 2);
-                    if ($value > $maxAllowedDp) {
-                        $fail("Besaran DP / Booking Fee per pax tidak boleh lebih dari 50% (setengah) dari harga trip (Maksimal Rp " . number_format($maxAllowedDp, 0, ',', '.') . ").");
-                    }
-                },
-            ],
-            'price_lock_days_before_departure' => 'required|integer|min:1|max:30',
+            'booking_fee_per_pax' => 'nullable|integer|min:0',
+            'price_lock_days_before_departure' => 'nullable|integer|min:1|max:30',
             'has_open_trip' => 'nullable|boolean',
             'has_private_trip' => 'nullable|boolean',
             'is_featured' => 'nullable|boolean',
@@ -89,6 +83,27 @@ class MountainController extends Controller
             'routes.*.distance_km' => 'nullable|numeric|min:0',
             'routes.*.duration_hours' => 'nullable|string|max:50',
             'routes.*.is_primary' => 'nullable|boolean',
+            'routes.*.price_camping_open' => 'nullable|integer|min:0',
+            'routes.*.price_tektok_open' => 'nullable|integer|min:0',
+            'routes.*.price_camping_private' => 'nullable|integer|min:0',
+            'routes.*.price_tektok_private' => 'nullable|integer|min:0',
+            'routes.*.booking_fee_per_pax' => [
+                'nullable',
+                'integer',
+                'min:0',
+                function ($attribute, $value, $fail) use ($request) {
+                    if (preg_match('/routes\.(\d+)\.booking_fee_per_pax/', $attribute, $matches)) {
+                        $idx = $matches[1];
+                        $openPrice = (int) $request->input("routes.{$idx}.price_camping_open", 0);
+                        if ($openPrice > 0) {
+                            $maxAllowed = floor($openPrice / 2);
+                            if ($value > $maxAllowed) {
+                                $fail("Booking Fee DP per pax pada jalur ini tidak boleh lebih dari 50% harga Open Camping (Maksimal Rp " . number_format($maxAllowed, 0, ',', '.') . ").");
+                            }
+                        }
+                    }
+                },
+            ],
             'routes.*.checkpoints' => 'nullable|array',
             'routes.*.checkpoints.*.name' => 'nullable|string|max:100',
             'routes.*.checkpoints.*.elevation' => 'nullable|integer|min:0',
@@ -134,7 +149,7 @@ class MountainController extends Controller
             // Handle cover image (store directly into storage/mountains)
             $coverImagePath = null;
             if ($request->hasFile('cover_image_file')) {
-                $path = $request->file('cover_image_file')->store('mountains', 'public');
+                $path = $this->imageService->storeAsWebp($request->file('cover_image_file'), 'mountains');
                 $coverImagePath = Storage::url($path);
             } elseif (! empty($validated['cover_image'])) {
                 $coverImagePath = $validated['cover_image'];
@@ -156,6 +171,16 @@ class MountainController extends Controller
                 ]);
             }
 
+            $primaryRouteInput = ! empty($validated['routes'])
+                ? (collect($validated['routes'])->firstWhere('is_primary', true) ?? ($validated['routes'][0] ?? null))
+                : null;
+            $basePrice = ! empty($validated['base_price']) ? (int) $validated['base_price'] : (! empty($primaryRouteInput['price_camping_open']) ? (int) $primaryRouteInput['price_camping_open'] : 500000);
+            $pricePrivate = ! empty($validated['price_private']) ? (int) $validated['price_private'] : (! empty($primaryRouteInput['price_camping_private']) ? (int) $primaryRouteInput['price_camping_private'] : (int) round($basePrice * 1.5));
+            $priceTektok = ! empty($validated['price_tektok']) ? (int) $validated['price_tektok'] : (! empty($primaryRouteInput['price_tektok_open']) ? (int) $primaryRouteInput['price_tektok_open'] : (int) round($basePrice * 0.8));
+            $pricePrivateTektok = ! empty($validated['price_private_tektok']) ? (int) $validated['price_private_tektok'] : (! empty($primaryRouteInput['price_tektok_private']) ? (int) $primaryRouteInput['price_tektok_private'] : (int) round($pricePrivate * 0.85));
+            $bookingFee = ! empty($validated['booking_fee_per_pax']) ? (int) $validated['booking_fee_per_pax'] : (! empty($primaryRouteInput['booking_fee_per_pax']) ? (int) $primaryRouteInput['booking_fee_per_pax'] : min(150000, (int) floor($basePrice / 2)));
+            $priceLockDays = ! empty($validated['price_lock_days_before_departure']) ? (int) $validated['price_lock_days_before_departure'] : 3;
+
             $mountain = Mountain::create([
                 'name' => $validated['name'],
                 'slug' => $slug,
@@ -167,12 +192,12 @@ class MountainController extends Controller
                 'elevation_checkpoints' => $mountainCheckpoints,
                 'facilities_included' => $this->formatFacilities($request->input('facilities_included')),
                 'facilities_excluded' => $this->formatFacilities($request->input('facilities_excluded')),
-                'base_price' => $validated['base_price'],
-                'price_private' => $validated['price_private'] ?? null,
-                'price_tektok' => $validated['price_tektok'] ?? null,
-                'price_private_tektok' => $validated['price_private_tektok'] ?? null,
-                'booking_fee_per_pax' => $validated['booking_fee_per_pax'],
-                'price_lock_days_before_departure' => $validated['price_lock_days_before_departure'],
+                'base_price' => $basePrice,
+                'price_private' => $pricePrivate,
+                'price_tektok' => $priceTektok,
+                'price_private_tektok' => $pricePrivateTektok,
+                'booking_fee_per_pax' => $bookingFee,
+                'price_lock_days_before_departure' => $priceLockDays,
                 'has_open_trip' => $request->boolean('has_open_trip', true),
                 'has_private_trip' => $request->boolean('has_private_trip', false),
                 'is_featured' => $isFeatured,
@@ -203,6 +228,11 @@ class MountainController extends Controller
                         'is_primary' => $isPrimary,
                         'distance_km' => $routeData['distance_km'] ?? null,
                         'duration_hours' => $routeData['duration_hours'] ?? null,
+                        'price_camping_open' => ! empty($routeData['price_camping_open']) ? (int) $routeData['price_camping_open'] : null,
+                        'price_tektok_open' => ! empty($routeData['price_tektok_open']) ? (int) $routeData['price_tektok_open'] : null,
+                        'price_camping_private' => ! empty($routeData['price_camping_private']) ? (int) $routeData['price_camping_private'] : null,
+                        'price_tektok_private' => ! empty($routeData['price_tektok_private']) ? (int) $routeData['price_tektok_private'] : null,
+                        'booking_fee_per_pax' => ! empty($routeData['booking_fee_per_pax']) ? (int) $routeData['booking_fee_per_pax'] : null,
                         'elevation_checkpoints' => $routeCheckpoints,
                         'itinerary' => $routeItinerary,
                     ]);
@@ -340,6 +370,11 @@ class MountainController extends Controller
                 'duration_hours' => $r->duration_hours,
                 'grade' => $r->grade?->value ?? (string) $r->grade,
                 'is_primary' => (bool) $r->is_primary,
+                'price_camping_open' => $r->price_camping_open,
+                'price_tektok_open' => $r->price_tektok_open,
+                'price_camping_private' => $r->price_camping_private,
+                'price_tektok_private' => $r->price_tektok_private,
+                'booking_fee_per_pax' => $r->booking_fee_per_pax,
                 'isOpen' => $r->is_primary || $index === 0,
                 'activeSubTab' => 'elevation',
                 'bookings_count' => $bookingsCount,
@@ -418,23 +453,12 @@ class MountainController extends Controller
             'cover_image' => 'nullable|string|max:255',
             'description' => 'nullable|string',
             'overview' => 'nullable|string',
-            'base_price' => 'required|integer|min:0',
+            'base_price' => 'nullable|integer|min:0',
             'price_private' => 'nullable|integer|min:0',
             'price_tektok' => 'nullable|integer|min:0',
             'price_private_tektok' => 'nullable|integer|min:0',
-            'booking_fee_per_pax' => [
-                'required',
-                'integer',
-                'min:0',
-                function ($attribute, $value, $fail) use ($request) {
-                    $basePrice = (int) $request->input('base_price', 0);
-                    $maxAllowedDp = floor($basePrice / 2);
-                    if ($value > $maxAllowedDp) {
-                        $fail("Besaran DP / Booking Fee per pax tidak boleh lebih dari 50% (setengah) dari harga trip (Maksimal Rp " . number_format($maxAllowedDp, 0, ',', '.') . ").");
-                    }
-                },
-            ],
-            'price_lock_days_before_departure' => 'required|integer|min:1|max:30',
+            'booking_fee_per_pax' => 'nullable|integer|min:0',
+            'price_lock_days_before_departure' => 'nullable|integer|min:1|max:30',
             'has_open_trip' => 'nullable|boolean',
             'has_private_trip' => 'nullable|boolean',
             'is_featured' => 'nullable|boolean',
@@ -447,6 +471,27 @@ class MountainController extends Controller
             'routes.*.distance_km' => 'nullable|numeric|min:0',
             'routes.*.duration_hours' => 'nullable|string|max:50',
             'routes.*.is_primary' => 'nullable|boolean',
+            'routes.*.price_camping_open' => 'nullable|integer|min:0',
+            'routes.*.price_tektok_open' => 'nullable|integer|min:0',
+            'routes.*.price_camping_private' => 'nullable|integer|min:0',
+            'routes.*.price_tektok_private' => 'nullable|integer|min:0',
+            'routes.*.booking_fee_per_pax' => [
+                'nullable',
+                'integer',
+                'min:0',
+                function ($attribute, $value, $fail) use ($request) {
+                    if (preg_match('/routes\.(\d+)\.booking_fee_per_pax/', $attribute, $matches)) {
+                        $idx = $matches[1];
+                        $openPrice = (int) $request->input("routes.{$idx}.price_camping_open", 0);
+                        if ($openPrice > 0) {
+                            $maxAllowed = floor($openPrice / 2);
+                            if ($value > $maxAllowed) {
+                                $fail("Booking Fee DP per pax pada jalur ini tidak boleh lebih dari 50% harga Open Camping (Maksimal Rp " . number_format($maxAllowed, 0, ',', '.') . ").");
+                            }
+                        }
+                    }
+                },
+            ],
             'routes.*.checkpoints' => 'nullable|array',
             'routes.*.checkpoints.*.name' => 'nullable|string|max:100',
             'routes.*.checkpoints.*.elevation' => 'nullable|integer|min:0',
@@ -510,7 +555,7 @@ class MountainController extends Controller
         DB::transaction(function () use ($validated, $request, $mountain) {
             $coverImagePath = $mountain->cover_image;
             if ($request->hasFile('cover_image_file')) {
-                $path = $request->file('cover_image_file')->store('mountains', 'public');
+                $path = $this->imageService->storeAsWebp($request->file('cover_image_file'), 'mountains');
                 $coverImagePath = Storage::url($path);
                 if ($mountain->cover_image && Str::startsWith($mountain->cover_image, '/storage/mountains/')) {
                     Storage::disk('public')->delete(str_replace('/storage/', '', $mountain->cover_image));
@@ -552,6 +597,16 @@ class MountainController extends Controller
                     ]);
             }
 
+            $primaryRouteInput = ! empty($validated['routes'])
+                ? (collect($validated['routes'])->firstWhere('is_primary', true) ?? ($validated['routes'][0] ?? null))
+                : null;
+            $basePrice = ! empty($validated['base_price']) ? (int) $validated['base_price'] : (! empty($primaryRouteInput['price_camping_open']) ? (int) $primaryRouteInput['price_camping_open'] : $mountain->base_price);
+            $pricePrivate = ! empty($validated['price_private']) ? (int) $validated['price_private'] : (! empty($primaryRouteInput['price_camping_private']) ? (int) $primaryRouteInput['price_camping_private'] : $mountain->price_private);
+            $priceTektok = ! empty($validated['price_tektok']) ? (int) $validated['price_tektok'] : (! empty($primaryRouteInput['price_tektok_open']) ? (int) $primaryRouteInput['price_tektok_open'] : $mountain->price_tektok);
+            $pricePrivateTektok = ! empty($validated['price_private_tektok']) ? (int) $validated['price_private_tektok'] : (! empty($primaryRouteInput['price_tektok_private']) ? (int) $primaryRouteInput['price_tektok_private'] : $mountain->price_private_tektok);
+            $bookingFee = ! empty($validated['booking_fee_per_pax']) ? (int) $validated['booking_fee_per_pax'] : (! empty($primaryRouteInput['booking_fee_per_pax']) ? (int) $primaryRouteInput['booking_fee_per_pax'] : $mountain->booking_fee_per_pax);
+            $priceLockDays = ! empty($validated['price_lock_days_before_departure']) ? (int) $validated['price_lock_days_before_departure'] : ($mountain->price_lock_days_before_departure ?? 3);
+
             $mountain->update([
                 'name' => $validated['name'],
                 'elevation' => $validated['elevation'],
@@ -562,12 +617,12 @@ class MountainController extends Controller
                 'elevation_checkpoints' => $mountainCheckpoints ?? $mountain->elevation_checkpoints,
                 'facilities_included' => $this->formatFacilities($request->input('facilities_included')),
                 'facilities_excluded' => $this->formatFacilities($request->input('facilities_excluded')),
-                'base_price' => $validated['base_price'],
-                'price_private' => $validated['price_private'] ?? null,
-                'price_tektok' => $validated['price_tektok'] ?? null,
-                'price_private_tektok' => $validated['price_private_tektok'] ?? null,
-                'booking_fee_per_pax' => $validated['booking_fee_per_pax'],
-                'price_lock_days_before_departure' => $validated['price_lock_days_before_departure'],
+                'base_price' => $basePrice,
+                'price_private' => $pricePrivate,
+                'price_tektok' => $priceTektok,
+                'price_private_tektok' => $pricePrivateTektok,
+                'booking_fee_per_pax' => $bookingFee,
+                'price_lock_days_before_departure' => $priceLockDays,
                 'has_open_trip' => $request->boolean('has_open_trip'),
                 'has_private_trip' => $request->boolean('has_private_trip'),
                 'is_featured' => $isFeatured,
@@ -598,6 +653,11 @@ class MountainController extends Controller
                                 'is_primary' => $isPrimary,
                                 'distance_km' => $routeData['distance_km'] ?? null,
                                 'duration_hours' => $routeData['duration_hours'] ?? null,
+                                'price_camping_open' => ! empty($routeData['price_camping_open']) ? (int) $routeData['price_camping_open'] : null,
+                                'price_tektok_open' => ! empty($routeData['price_tektok_open']) ? (int) $routeData['price_tektok_open'] : null,
+                                'price_camping_private' => ! empty($routeData['price_camping_private']) ? (int) $routeData['price_camping_private'] : null,
+                                'price_tektok_private' => ! empty($routeData['price_tektok_private']) ? (int) $routeData['price_tektok_private'] : null,
+                                'booking_fee_per_pax' => ! empty($routeData['booking_fee_per_pax']) ? (int) $routeData['booking_fee_per_pax'] : null,
                                 'elevation_checkpoints' => $routeCheckpoints,
                                 'itinerary' => $routeItinerary,
                             ]);
@@ -612,6 +672,11 @@ class MountainController extends Controller
                             'is_primary' => $isPrimary,
                             'distance_km' => $routeData['distance_km'] ?? null,
                             'duration_hours' => $routeData['duration_hours'] ?? null,
+                            'price_camping_open' => ! empty($routeData['price_camping_open']) ? (int) $routeData['price_camping_open'] : null,
+                            'price_tektok_open' => ! empty($routeData['price_tektok_open']) ? (int) $routeData['price_tektok_open'] : null,
+                            'price_camping_private' => ! empty($routeData['price_camping_private']) ? (int) $routeData['price_camping_private'] : null,
+                            'price_tektok_private' => ! empty($routeData['price_tektok_private']) ? (int) $routeData['price_tektok_private'] : null,
+                            'booking_fee_per_pax' => ! empty($routeData['booking_fee_per_pax']) ? (int) $routeData['booking_fee_per_pax'] : null,
                             'elevation_checkpoints' => $routeCheckpoints,
                             'itinerary' => $routeItinerary,
                         ]);
@@ -929,7 +994,7 @@ class MountainController extends Controller
 
             foreach ($files as $idx => $file) {
                 if ($file && $file->isValid()) {
-                    $path = $file->store('mountains', 'public');
+                    $path = $this->imageService->storeAsWebp($file, 'mountains');
                     $caption = ! empty($captions[$idx]) ? trim((string) $captions[$idx]) : "{$mountainName} Foto ".($idx + 1);
                     $gallery[] = [
                         'url' => Storage::url($path),
@@ -969,7 +1034,7 @@ class MountainController extends Controller
 
             foreach ($files as $idx => $file) {
                 if ($file && $file->isValid()) {
-                    $path = $file->store('mountains', 'public');
+                    $path = $this->imageService->storeAsWebp($file, 'mountains');
                     $caption = ! empty($captions[$idx]) ? trim((string) $captions[$idx]) : "{$mountainName} Foto ".(count($finalGallery) + 1);
                     $finalGallery[] = [
                         'url' => Storage::url($path),

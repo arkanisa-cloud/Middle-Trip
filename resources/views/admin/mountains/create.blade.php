@@ -158,25 +158,40 @@
                         </label>
                         <div x-data="{
                             preview: {{ Js::from(old('cover_image', '')) }},
-                            handleFileSelect(event) {
-                                const file = event.target.files[0];
+                            async handleFileSelect(event) {
+                                let file = event.target.files[0];
                                 if (file) {
+                                    if (window.convertToWebP) {
+                                        file = await window.convertToWebP(file);
+                                        if (window.DataTransfer) {
+                                            const dt = new DataTransfer();
+                                            dt.items.add(file);
+                                            event.target.files = dt.files;
+                                        }
+                                    }
                                     this.preview = URL.createObjectURL(file);
                                 }
                             }
                         }" class="space-y-3">
                             <div class="flex items-center gap-4">
-                                <div x-show="preview"
-                                    class="relative w-24 h-20 rounded-2xl overflow-hidden border border-hairline shadow-xs shrink-0 bg-canvas">
-                                    <img :src="preview || ''" alt="Preview Foto Sampul" class="w-full h-full object-cover"
-                                        onerror="this.style.display='none'">
+                                <div class="relative w-24 h-20 rounded-2xl overflow-hidden border border-hairline shadow-xs shrink-0 bg-canvas flex items-center justify-center">
+                                    <template x-if="preview">
+                                        <img :src="preview" alt="Preview Foto Sampul" class="w-full h-full object-cover">
+                                    </template>
+                                    <template x-if="!preview">
+                                        <div class="flex flex-col items-center justify-center text-muted p-2 text-center select-none">
+                                            <svg class="w-6 h-6 text-muted-soft" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                            </svg>
+                                            <span class="text-[9.5px] font-medium text-muted mt-1 leading-tight">Pratinjau</span>
+                                        </div>
+                                    </template>
                                 </div>
                                 <div class="flex-1">
                                     <input type="file" name="cover_image_file" @change="handleFileSelect"
                                         accept="image/*" required
                                         class="w-full text-xs text-muted file:mr-3 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-primary-subtle file:text-primary hover:file:bg-primary hover:file:text-white file:transition-colors file:cursor-pointer border border-hairline rounded-xl bg-canvas p-1.5 focus:border-primary shadow-xs">
-                                    <p class="text-[11px] text-muted mt-1.5">Format file yang didukung: JPG, PNG, WEBP
-                                        (Ukuran file maksimal 5MB)</p>
+                                    <p class="text-[11px] text-muted mt-1.5">Format file: JPG, PNG, WEBP (Otomatis dikonversi ke WebP untuk performa maksimal)</p>
                                 </div>
                             </div>
                             <input type="hidden" name="cover_image" :value="preview">
@@ -186,18 +201,21 @@
                     <!-- Gallery Photos Upload -->
                     <div class="md:col-span-2 border-t border-hairline pt-4" x-data="{
                         files: [],
-                        handleFiles(e) {
+                        async handleFiles(e) {
                             const selectedFiles = Array.from(e.target.files);
                             if (!selectedFiles.length) return;
                     
-                            selectedFiles.forEach((f) => {
+                            for (let f of selectedFiles) {
+                                if (window.convertToWebP) {
+                                    f = await window.convertToWebP(f);
+                                }
                                 this.files.push({
                                     id: Date.now() + Math.random(),
                                     file: f,
                                     preview: URL.createObjectURL(f),
                                     caption: ''
                                 });
-                            });
+                            }
                     
                             if (window.DataTransfer && this.$refs.fileInput) {
                                 const dt = new DataTransfer();
@@ -284,143 +302,61 @@
                             </template>
                         </div>
                     </div>
-                </div>
-            </div>
 
-            <!-- Section 2: Konfigurasi Tarif & Aturan Price Lock -->
-            <div class="bg-surface-card border border-hairline rounded-3xl p-6 md:p-8 shadow-xs space-y-6">
-                <div class="border-b border-hairline pb-4">
-                    <h3 class="text-base font-extrabold text-ink-heading">2. Konfigurasi Booking Fee & Price Lock</h3>
-                    <p class="text-xs text-muted">Pengaturan batas DP awal dan hari penguncian harga sebelum keberangkatan
-                    </p>
-                </div>
-
-                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-                    <!-- Base Price (Camping Open) -->
-                    <div>
-                        <label class="block text-xs font-bold text-ink-heading uppercase tracking-wider mb-2">
-                            Harga Camping Open (Rp) <span class="text-rose-500">*</span>
-                        </label>
-                        <input type="number" name="base_price" x-model.number="basePrice" @input="validateBookingFee" required
-                            class="w-full text-xs rounded-xl border border-hairline bg-canvas p-3 text-ink focus:border-primary focus:ring-1 focus:ring-primary shadow-xs font-semibold">
-                        <span class="text-[10.5px] text-muted mt-1 block">Harga dasar open trip paket camping</span>
-                    </div>
-
-                    <!-- Private Price (Camping Private) -->
-                    <div>
-                        <label class="block text-xs font-bold text-ink-heading uppercase tracking-wider mb-2">
-                            Harga Camping Private (Rp)
-                        </label>
-                        <input type="number" name="price_private" value="{{ old('price_private', 1200000) }}"
-                            class="w-full text-xs rounded-xl border border-hairline bg-canvas p-3 text-ink focus:border-primary focus:ring-1 focus:ring-primary shadow-xs font-semibold">
-                        <span class="text-[10.5px] text-muted mt-1 block">Harga dasar private trip paket camping</span>
-                    </div>
-
-                    <!-- Price Tektok (Open Trip) -->
-                    <div>
-                        <label class="block text-xs font-bold text-ink-heading uppercase tracking-wider mb-2">
-                            Harga Tek-tok Open (Rp)
-                        </label>
-                        <input type="number" name="price_tektok" value="{{ old('price_tektok', 400000) }}"
-                            placeholder="400000"
-                            class="w-full text-xs rounded-xl border border-hairline bg-canvas p-3 text-ink focus:border-primary focus:ring-1 focus:ring-primary shadow-xs font-semibold">
-                        <span class="text-[10.5px] text-muted mt-1 block">Harga dasar open trip paket 1 hari</span>
-                    </div>
-
-                    <!-- Price Tektok Private -->
-                    <div>
-                        <label class="block text-xs font-bold text-ink-heading uppercase tracking-wider mb-2">
-                            Harga Tek-tok Private (Rp)
-                        </label>
-                        <input type="number" name="price_private_tektok"
-                            value="{{ old('price_private_tektok', 850000) }}" placeholder="850000"
-                            class="w-full text-xs rounded-xl border border-hairline bg-canvas p-3 text-ink focus:border-primary focus:ring-1 focus:ring-primary shadow-xs font-semibold">
-                        <span class="text-[10.5px] text-muted mt-1 block">Harga dasar private trip paket 1 hari</span>
-                    </div>
-
-                    <!-- Booking Fee per Pax -->
-                    <div>
-                        <label class="block text-xs font-bold text-ink-heading uppercase tracking-wider mb-2">
-                            Booking Fee DP / Pax (Rp) <span class="text-rose-500">*</span>
-                        </label>
-                        <input type="number" name="booking_fee_per_pax"
-                            x-model.number="bookingFee"
-                            @input="validateBookingFee"
-                            :max="Math.floor((basePrice || 0) / 2)"
-                            min="0"
-                            required
-                            class="w-full text-xs rounded-xl border border-hairline bg-canvas p-3 text-ink focus:border-primary focus:ring-1 focus:ring-primary shadow-xs font-semibold">
-                        <span class="text-[10.5px] text-amber-600 font-medium mt-1 block">
-                            Maksimal 50% dari harga trip: Rp <span x-text="new Intl.NumberFormat('id-ID').format(Math.floor((basePrice || 0) / 2))"></span>
-                        </span>
-                    </div>
-
-                    <!-- Price Lock Days -->
-                    <div>
-                        <label class="block text-xs font-bold text-ink-heading uppercase tracking-wider mb-2">
-                            Price Lock (H-X Hari) <span class="text-rose-500">*</span>
-                        </label>
-                        <input type="number" name="price_lock_days_before_departure"
-                            value="{{ old('price_lock_days_before_departure', 3) }}" min="1" max="30"
-                            required
-                            class="w-full text-xs rounded-xl border border-hairline bg-canvas p-3 text-ink focus:border-primary focus:ring-1 focus:ring-primary shadow-xs">
-                        <span class="text-[10.5px] text-muted mt-1 block">Hari sebelum berangkat harga dikunci</span>
-                    </div>
-                </div>
-
-                <!-- Toggles -->
-                <div class="space-y-3 pt-4 border-t border-hairline" x-data="{ isFeatured: {{ old('is_featured') ? 'true' : 'false' }} }">
-                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
-                        <label class="flex items-center gap-2.5 cursor-pointer text-xs font-semibold text-ink-heading">
-                            <input type="checkbox" name="has_open_trip" value="1" checked
-                                class="rounded border-hairline text-primary focus:ring-primary">
-                            <span>Open Trip</span>
-                        </label>
-                        <label class="flex items-center gap-2.5 cursor-pointer text-xs font-semibold text-ink-heading">
-                            <input type="checkbox" name="has_private_trip" value="1" checked
-                                class="rounded border-hairline text-primary focus:ring-primary">
-                            <span>Private Trip</span>
-                        </label>
-                        <label class="flex items-center gap-2.5 cursor-pointer text-xs font-semibold text-ink-heading">
-                            <input type="checkbox" name="is_featured" value="1" x-model="isFeatured"
-                                class="rounded border-hairline text-primary focus:ring-primary">
-                            <span>Featured di Home</span>
-                        </label>
-                        <label class="flex items-center gap-2.5 cursor-pointer text-xs font-semibold text-ink-heading">
-                            <input type="checkbox" name="is_active" value="1" checked
-                                class="rounded border-hairline text-primary focus:ring-primary">
-                            <span>Aktif Publikasi</span>
-                        </label>
-                    </div>
-
-                    <!-- Dropdown Posisi Slot Featured Bento di Home -->
-                    <div x-show="isFeatured" x-cloak
-                        class="p-3.5 bg-amber-50/70 border border-amber-200/80 rounded-2xl flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
-                        <div>
-                            <span class="font-bold text-amber-950 block">Posisi Slot Bento Grid Home:</span>
-                            <span class="text-[11px] text-amber-800">Tentukan di slot mana kartu gunung ini akan dipajang
-                                pada halaman depan</span>
+                    <!-- Toggles & Status Destinasi -->
+                    <div class="md:col-span-2 space-y-3 pt-4 border-t border-hairline" x-data="{ isFeatured: {{ old('is_featured') ? 'true' : 'false' }} }">
+                        <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                            <label class="flex items-center gap-2.5 cursor-pointer text-xs font-semibold text-ink-heading">
+                                <input type="checkbox" name="has_open_trip" value="1" checked
+                                    class="rounded border-hairline text-primary focus:ring-primary">
+                                <span>Open Trip</span>
+                            </label>
+                            <label class="flex items-center gap-2.5 cursor-pointer text-xs font-semibold text-ink-heading">
+                                <input type="checkbox" name="has_private_trip" value="1" checked
+                                    class="rounded border-hairline text-primary focus:ring-primary">
+                                <span>Private Trip</span>
+                            </label>
+                            <label class="flex items-center gap-2.5 cursor-pointer text-xs font-semibold text-ink-heading">
+                                <input type="checkbox" name="is_featured" value="1" x-model="isFeatured"
+                                    class="rounded border-hairline text-primary focus:ring-primary">
+                                <span>Featured di Home</span>
+                            </label>
+                            <label class="flex items-center gap-2.5 cursor-pointer text-xs font-semibold text-ink-heading">
+                                <input type="checkbox" name="is_active" value="1" checked
+                                    class="rounded border-hairline text-primary focus:ring-primary">
+                                <span>Aktif Publikasi</span>
+                            </label>
                         </div>
-                        <div class="shrink-0">
-                            <select name="featured_order"
-                                class="bg-white border border-amber-300 rounded-xl px-3 py-1.5 text-xs font-bold text-ink-heading focus:outline-none focus:ring-1 focus:ring-primary">
-                                <option value="1" {{ old('featured_order', 1) == 1 ? 'selected' : '' }}>Slot 1: Hero
-                                    Utama (Kiri Lebar - Span 7)</option>
-                                <option value="2" {{ old('featured_order') == 2 ? 'selected' : '' }}>Slot 2: Kartu
-                                    Kanan Atas (Span 5)</option>
-                                <option value="3" {{ old('featured_order') == 3 ? 'selected' : '' }}>Slot 3: Kartu
-                                    Kanan Bawah (Span 5)</option>
-                            </select>
+
+                        <!-- Dropdown Posisi Slot Featured Bento di Home -->
+                        <div x-show="isFeatured" x-cloak
+                            class="p-3.5 bg-amber-50/70 border border-amber-200/80 rounded-2xl flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
+                            <div>
+                                <span class="font-bold text-amber-950 block">Posisi Slot Bento Grid Home:</span>
+                                <span class="text-[11px] text-amber-800">Tentukan di slot mana kartu gunung ini akan dipajang
+                                    pada halaman depan</span>
+                            </div>
+                            <div class="shrink-0">
+                                <select name="featured_order"
+                                    class="bg-white border border-amber-300 rounded-xl px-3 py-1.5 text-xs font-bold text-ink-heading focus:outline-none focus:ring-1 focus:ring-primary">
+                                    <option value="1" {{ old('featured_order', 1) == 1 ? 'selected' : '' }}>Slot 1: Hero
+                                        Utama (Kiri Lebar - Span 7)</option>
+                                    <option value="2" {{ old('featured_order') == 2 ? 'selected' : '' }}>Slot 2: Kartu
+                                        Kanan Atas (Span 5)</option>
+                                    <option value="3" {{ old('featured_order') == 3 ? 'selected' : '' }}>Slot 3: Kartu
+                                        Kanan Bawah (Span 5)</option>
+                                </select>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Section 3: Jalur Pendakian, Profil Elevasi & Itinerary (Per Rute) -->
+            <!-- Section 2: Jalur Pendakian, Profil Elevasi & Itinerary (Per Rute) -->
             <div class="bg-surface-card border border-hairline rounded-3xl p-6 md:p-8 shadow-xs space-y-6">
                 <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-hairline pb-4">
                     <div>
-                        <h3 class="text-base font-extrabold text-ink-heading">3. Jalur Pendakian Resmi, Profil Elevasi &
+                        <h3 class="text-base font-extrabold text-ink-heading">2. Jalur Pendakian Resmi, Profil Elevasi &
                             Itinerary</h3>
                         <p class="text-xs text-muted">Setiap jalur memiliki pos elevasi (MDPL), mitigasi air/angin, dan
                             jadwal timeline 2D1N mandiri</p>
@@ -590,6 +526,60 @@
                                     <input type="text" :name="`routes[${index}][duration_hours]`"
                                         x-model="r.duration_hours" placeholder="6-8 Jam"
                                         class="w-full text-xs rounded-xl border border-hairline bg-surface-card p-2.5 text-ink focus:border-primary">
+                                </div>
+
+                                <!-- Route Pricing Section (Open & Private, Camping & Tektok + Booking Fee DP) -->
+                                <div class="sm:col-span-2 lg:col-span-5 p-4 rounded-2xl bg-surface-card border border-hairline/80 mt-1 space-y-3">
+                                    <div class="flex items-center justify-between border-b border-hairline/60 pb-2">
+                                        <div class="flex items-center gap-2">
+                                            <svg class="w-4 h-4 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                            </svg>
+                                            <span class="text-xs font-bold text-ink-heading">Tarif & Booking Fee Jalur Ini (Per Via)</span>
+                                        </div>
+                                        <span class="text-[10px] text-muted">Pengaturan harga trip dan DP per pax untuk via ini</span>
+                                    </div>
+                                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
+                                        <div>
+                                            <label class="block text-[11px] font-semibold text-muted mb-1">Open Trip - Camping (Rp) <span class="text-rose-500">*</span></label>
+                                            <input type="number" :name="`routes[${index}][price_camping_open]`"
+                                                x-model.number="r.price_camping_open"
+                                                @input="if(Number(r.booking_fee_per_pax) > Math.floor((Number(r.price_camping_open)||0)/2)) { r.booking_fee_per_pax = Math.floor((Number(r.price_camping_open)||0)/2); }"
+                                                placeholder="500000"
+                                                class="w-full text-xs rounded-xl border border-hairline bg-canvas p-2.5 text-ink focus:border-primary font-semibold" required>
+                                        </div>
+                                        <div>
+                                            <label class="block text-[11px] font-semibold text-muted mb-1">Open Trip - Tektok (Rp)</label>
+                                            <input type="number" :name="`routes[${index}][price_tektok_open]`"
+                                                x-model.number="r.price_tektok_open" placeholder="400000"
+                                                class="w-full text-xs rounded-xl border border-hairline bg-canvas p-2.5 text-ink focus:border-primary">
+                                        </div>
+                                        <div>
+                                            <label class="block text-[11px] font-semibold text-muted mb-1">Private Trip - Camping (Rp)</label>
+                                            <input type="number" :name="`routes[${index}][price_camping_private]`"
+                                                x-model.number="r.price_camping_private" placeholder="750000"
+                                                class="w-full text-xs rounded-xl border border-hairline bg-canvas p-2.5 text-ink focus:border-primary">
+                                        </div>
+                                        <div>
+                                            <label class="block text-[11px] font-semibold text-muted mb-1">Private Trip - Tektok (Rp)</label>
+                                            <input type="number" :name="`routes[${index}][price_tektok_private]`"
+                                                x-model.number="r.price_tektok_private" placeholder="650000"
+                                                class="w-full text-xs rounded-xl border border-hairline bg-canvas p-2.5 text-ink focus:border-primary">
+                                        </div>
+                                        <div>
+                                            <label class="block text-[11px] font-semibold text-muted mb-1">Booking Fee DP / Pax (Rp) <span class="text-rose-500">*</span></label>
+                                            <input type="number" :name="`routes[${index}][booking_fee_per_pax]`"
+                                                x-model.number="r.booking_fee_per_pax"
+                                                :max="Math.floor((Number(r.price_camping_open) || 0) / 2)"
+                                                min="0"
+                                                placeholder="150000"
+                                                @input="if(Number(r.booking_fee_per_pax) > Math.floor((Number(r.price_camping_open)||0)/2)) { r.booking_fee_per_pax = Math.floor((Number(r.price_camping_open)||0)/2); }"
+                                                class="w-full text-xs rounded-xl border border-hairline bg-canvas p-2.5 text-ink focus:border-primary font-semibold" required>
+                                            <span class="text-[10px] text-amber-600 font-medium mt-1 block">
+                                                Maks. 50%: Rp <span x-text="new Intl.NumberFormat('id-ID').format(Math.floor((Number(r.price_camping_open) || 0) / 2))"></span>
+                                            </span>
+                                        </div>
+                                    </div>
                                 </div>
 
                                 <!-- Primary Toggle -->
@@ -887,11 +877,11 @@
             </div>
     </div>
 
-    <!-- Section 4: Matriks Harga Bertingkat Kuota -->
+    <!-- Section 3: Matriks Harga Bertingkat Kuota -->
     <div class="bg-surface-card border border-hairline rounded-3xl p-6 md:p-8 shadow-xs space-y-6">
         <div class="flex items-center justify-between border-b border-hairline pb-4">
             <div>
-                <h3 class="text-base font-extrabold text-ink-heading">4. Matriks Harga Bertingkat Kuota (Dynamic Tiering)
+                <h3 class="text-base font-extrabold text-ink-heading">3. Matriks Harga Bertingkat Kuota (Dynamic Tiering)
                 </h3>
                 <p class="text-xs text-muted">Tetapkan harga otomatis berdasarkan batas minimal kuota peserta yang
                     terkumpul</p>
@@ -940,10 +930,10 @@
         </div>
     </div>
 
-    <!-- Section 5: Overview & Cerita Lengkap Ekspedisi -->
+    <!-- Section 4: Overview & Cerita Lengkap Ekspedisi -->
     <div class="bg-surface-card border border-hairline rounded-3xl p-6 md:p-8 shadow-xs space-y-6">
         <div class="border-b border-hairline pb-4">
-            <h3 class="text-base font-extrabold text-ink-heading">5. Ulasan Lengkap & Karakteristik Ekspedisi (Overview)
+            <h3 class="text-base font-extrabold text-ink-heading">4. Ulasan Lengkap & Karakteristik Ekspedisi (Overview)
             </h3>
             <p class="text-xs text-muted">Deskripsi mendalam tentang panorama, bentang alam, dan pengalaman pendakian yang
                 ditampilkan pada tab Overview pelanggan</p>
@@ -959,10 +949,10 @@
         </div>
     </div>
 
-    <!-- Section 6: Fasilitas Ekspedisi (Include & Exclude) -->
+    <!-- Section 5: Fasilitas Ekspedisi (Include & Exclude) -->
     <div class="bg-surface-card border border-hairline rounded-3xl p-6 md:p-8 shadow-xs space-y-6">
         <div class="border-b border-hairline pb-4">
-            <h3 class="text-base font-extrabold text-ink-heading">6. Fasilitas Termasuk (Include) & Tidak Termasuk
+            <h3 class="text-base font-extrabold text-ink-heading">5. Fasilitas Termasuk (Include) & Tidak Termasuk
                 (Exclude)</h3>
             <p class="text-xs text-muted">Daftar item fasilitas dan akomodasi. Tuliskan 1 item per baris pada setiap kotak
                 kategori</p>
@@ -1069,14 +1059,6 @@
     <script>
         function mountainCreateForm() {
             return {
-                basePrice: {{ old('base_price', 500000) }},
-                bookingFee: {{ old('booking_fee_per_pax', 150000) }},
-                validateBookingFee() {
-                    const maxFee = Math.floor((Number(this.basePrice) || 0) / 2);
-                    if (Number(this.bookingFee) > maxFee) {
-                        this.bookingFee = maxFee;
-                    }
-                },
                 routes: @js($defaultRoutes),
                 priceTiers: [{
                         min_pax: 1,
@@ -1121,6 +1103,11 @@
                         duration_hours: '',
                         grade: 'Grade A',
                         is_primary: isFirst,
+                        price_camping_open: '',
+                        price_tektok_open: '',
+                        price_camping_private: '',
+                        price_tektok_private: '',
+                        booking_fee_per_pax: '',
                         isOpen: true,
                         activeSubTab: 'elevation',
                         checkpoints: [{

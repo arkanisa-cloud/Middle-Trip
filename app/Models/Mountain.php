@@ -141,11 +141,23 @@ class Mountain extends Model
     }
 
     /**
+     * Mendapatkan harga awal termurah dari seluruh via/jalur aktif (Opsi A: Mulai dari Rp...).
+     */
+    public function getEffectiveStartingPriceAttribute(): int
+    {
+        $minRoutePrice = $this->routes
+            ->filter(fn ($r) => ($r->price_camping_open ?? 0) > 0)
+            ->min('price_camping_open');
+
+        return $minRoutePrice ?: ($this->base_price ?: 0);
+    }
+
+    /**
      * Format harga dasar dalam Rupiah (contoh: "Rp 500.000").
      */
     public function getFormattedPriceAttribute(): string
     {
-        return 'Rp '.number_format($this->base_price, 0, ',', '.');
+        return 'Rp '.number_format($this->effective_starting_price, 0, ',', '.');
     }
 
     /**
@@ -153,8 +165,9 @@ class Mountain extends Model
      */
     public function getFormattedShortPriceAttribute(): string
     {
-        if ($this->base_price >= 1000) {
-            $thousands = $this->base_price / 1000;
+        $price = $this->effective_starting_price;
+        if ($price >= 1000) {
+            $thousands = $price / 1000;
 
             return 'Rp '.number_format($thousands, 0, ',', '.').'k';
         }

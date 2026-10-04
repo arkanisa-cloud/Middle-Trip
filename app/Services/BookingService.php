@@ -101,18 +101,35 @@ class BookingService
             $hikingType = $data['hiking_type'] ?? $expedition?->hiking_type ?? 'camping';
 
             if ($tripType === 'private') {
-                // Private Trip: Harga tier langsung terkunci sesuai jumlah pax, pembayaran langsung 100% tanpa DP
-                $lockedPricePerPax = $mountain->getTierPriceForPax($paxCount, $hikingType);
+                // Private Trip: Gunakan harga via jika diatur, atau fallback ke tier harga gunung
+                if ($hikingType === 'tektok') {
+                    $lockedPricePerPax = $route->price_tektok_private
+                        ?? ($route->price_camping_private ? (int) round($route->price_camping_private * 0.85) : null)
+                        ?? $mountain->getTierPriceForPax($paxCount, $hikingType);
+                } else {
+                    $lockedPricePerPax = $route->price_camping_private
+                        ?? ($route->price_camping_open ? (int) round($route->price_camping_open * 1.5) : null)
+                        ?? $mountain->getTierPriceForPax($paxCount, $hikingType);
+                }
+
                 $tripCost = $lockedPricePerPax * $paxCount;
                 $grandTotal = $tripCost + $shuttleFeeTotal + $addonsFeeTotal;
                 $bookingFeePerPax = 0;
                 $totalBookingFee = 0;
                 $remainingPaymentTotal = $grandTotal;
             } else {
-                // Open Trip: Wajib bayar booking fee (DP), harga final terkunci menjelang keberangkatan
-                $bookingFeePerPax = $mountain->booking_fee_per_pax;
+                // Open Trip: Wajib bayar booking fee (DP), harga dasar dihitung dari via yang dipilih
+                $bookingFeePerPax = $route->effective_booking_fee_per_pax;
                 $totalBookingFee = $bookingFeePerPax * $paxCount;
-                $baseOpenPrice = $hikingType === 'tektok' ? $mountain->effective_price_tektok : $mountain->base_price;
+
+                if ($hikingType === 'tektok') {
+                    $baseOpenPrice = $route->price_tektok_open
+                        ?? ($route->price_camping_open ? (int) round($route->price_camping_open * 0.8) : null)
+                        ?? $mountain->effective_price_tektok;
+                } else {
+                    $baseOpenPrice = $route->price_camping_open ?? $mountain->base_price;
+                }
+
                 $estimatedTripCost = $baseOpenPrice * $paxCount;
                 $grandTotal = $estimatedTripCost + $shuttleFeeTotal + $addonsFeeTotal;
                 $lockedPricePerPax = null;
