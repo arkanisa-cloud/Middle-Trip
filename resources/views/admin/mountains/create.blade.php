@@ -13,8 +13,43 @@
             :backUrl="route('admin.mountains.index')" backLabel="Kembali ke Daftar Gunung" />
 
         <form method="POST" action="{{ route('admin.mountains.store') }}" enctype="multipart/form-data" novalidate
-            class="space-y-6">
+            class="space-y-6" @submit="handleFormSubmit">
             @csrf
+
+            <!-- Draft Autosave Recovery Banner -->
+            <template x-if="hasDraft">
+                <div class="p-4 sm:p-5 rounded-2xl bg-amber-50/90 border border-amber-200 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4 text-xs text-amber-900 transition-all">
+                    <div class="flex items-start sm:items-center gap-3.5">
+                        <div class="w-9 h-9 rounded-xl bg-amber-100 border border-amber-300/80 text-amber-700 flex items-center justify-center shrink-0">
+                            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                        </div>
+                        <div>
+                            <p class="font-bold text-amber-950 text-sm flex items-center gap-2">
+                                Ditemukan Draf Tersimpan dari Sesi Sebelumnya
+                                <span class="text-[10px] font-mono px-2 py-0.5 rounded-full bg-amber-200/70 text-amber-900 font-semibold" x-text="draftSavedAt"></span>
+                            </p>
+                            <p class="text-amber-800 text-[11.5px] mt-0.5 leading-relaxed">
+                                Form sebelumnya belum sempat disimpan ke database. Ingin memulihkan nama gunung, rute, rincian harga, dan fasilitas yang sudah diisi?
+                            </p>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-2 self-end sm:self-center shrink-0">
+                        <button type="button" @click="restoreDraft()"
+                            class="px-4 py-2 rounded-xl bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs shadow-xs transition cursor-pointer flex items-center gap-1.5">
+                            <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                            </svg>
+                            Pulihkan Data
+                        </button>
+                        <button type="button" @click="clearDraft()"
+                            class="px-3.5 py-2 rounded-xl bg-white hover:bg-amber-100/60 text-amber-900 border border-amber-300 font-semibold text-xs transition cursor-pointer">
+                            Abaikan &amp; Buang
+                        </button>
+                    </div>
+                </div>
+            </template>
 
             @if ($errors->any())
                 <div class="p-4 rounded-2xl bg-rose-50 border border-rose-200 text-rose-800 text-xs shadow-xs space-y-1">
@@ -47,7 +82,7 @@
                         <label class="block text-xs font-bold text-ink-heading uppercase tracking-wider mb-2">
                             Nama Gunung <span class="text-rose-500">*</span>
                         </label>
-                        <input type="text" name="name" value="{{ old('name') }}" required placeholder="Mt. Merbabu"
+                        <input type="text" name="name" x-model="formData.name" required placeholder="Mt. Merbabu"
                             class="w-full text-xs rounded-xl border border-hairline bg-canvas p-3 text-ink focus:border-primary focus:ring-1 focus:ring-primary shadow-xs">
                     </div>
 
@@ -56,7 +91,7 @@
                         <label class="block text-xs font-bold text-ink-heading uppercase tracking-wider mb-2">
                             Ketinggian (MDPL) <span class="text-rose-500">*</span>
                         </label>
-                        <input type="number" name="elevation" value="{{ old('elevation') }}" required placeholder="3142"
+                        <input type="number" name="elevation" x-model="formData.elevation" required placeholder="3142"
                             class="w-full text-xs rounded-xl border border-hairline bg-canvas p-3 text-ink focus:border-primary focus:ring-1 focus:ring-primary shadow-xs">
                     </div>
 
@@ -65,61 +100,31 @@
                         <label class="block text-xs font-bold text-ink-heading uppercase tracking-wider mb-2">
                             Provinsi / Wilayah <span class="text-rose-500">*</span>
                         </label>
-                        <input type="text" name="province" value="{{ old('province') }}" required
+                        <input type="text" name="province" x-model="formData.province" required
                             placeholder="Jawa Tengah"
                             class="w-full text-xs rounded-xl border border-hairline bg-canvas p-3 text-ink focus:border-primary focus:ring-1 focus:ring-primary shadow-xs">
                     </div>
 
                     <!-- Grade Selection (UI Kit Dropdown Varian 3 / Status Dot) -->
-                    @php
-                        $initialGrade = old('grade', 'Grade A');
-                        $gradeLabels = [
-                            'Grade A' => [
-                                'label' => 'Grade A – Pemula',
-                                'dot' => 'bg-emerald-500',
-                                'text' => 'text-emerald-700',
-                            ],
-                            'Grade B' => [
-                                'label' => 'Grade B – Menengah',
-                                'dot' => 'bg-amber-500',
-                                'text' => 'text-amber-700',
-                            ],
-                            'Grade C' => [
-                                'label' => 'Grade C – Ahli',
-                                'dot' => 'bg-rose-500',
-                                'text' => 'text-rose-700',
-                            ],
-                        ];
-                        $initialGradeData = $gradeLabels[$initialGrade] ?? [
-                            'label' => 'Grade A – Pemula',
-                            'dot' => 'bg-emerald-500',
-                            'text' => 'text-emerald-700',
-                        ];
-                    @endphp
-                    <div x-data="{
-                        open: false,
-                        selectedVal: '{{ $initialGrade }}',
-                        selectedLabel: '{{ $initialGradeData['label'] }}',
-                        selectedDot: '{{ $initialGradeData['dot'] }}'
-                    }" @click.outside="open = false" class="relative">
+                    <div @click.outside="gradeDropdownOpen = false" class="relative">
                         <label class="block text-xs font-bold text-ink-heading uppercase tracking-wider mb-2">
                             Tingkat Kesulitan Induk (Grade) <span class="text-rose-500">*</span>
                         </label>
-                        <input type="hidden" name="grade" :value="selectedVal" required>
+                        <input type="hidden" name="grade" :value="formData.grade" required>
 
-                        <button type="button" @click="open = !open"
+                        <button type="button" @click="gradeDropdownOpen = !gradeDropdownOpen"
                             class="w-full text-xs rounded-xl border border-hairline bg-canvas p-3 text-ink flex items-center justify-between cursor-pointer focus:border-primary shadow-xs font-semibold transition select-none">
                             <span class="flex items-center gap-2">
-                                <span class="w-2 h-2 rounded-full" :class="selectedDot"></span>
-                                <span x-text="selectedLabel" class="text-ink-heading"></span>
+                                <span class="w-2 h-2 rounded-full" :class="getGradeDot(formData.grade)"></span>
+                                <span x-text="getGradeLabel(formData.grade)" class="text-ink-heading"></span>
                             </span>
                             <svg class="w-4 h-4 text-muted transition-transform duration-200 shrink-0"
-                                :class="open ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                :class="gradeDropdownOpen ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
                             </svg>
                         </button>
 
-                        <div x-show="open" x-cloak x-transition:enter="transition ease-out duration-100"
+                        <div x-show="gradeDropdownOpen" x-cloak x-transition:enter="transition ease-out duration-100"
                             x-transition:enter-start="transform opacity-0 scale-95"
                             x-transition:enter-end="transform opacity-100 scale-100"
                             class="absolute left-0 right-0 mt-2 bg-white border border-hairline rounded-2xl shadow-xl py-2 z-50 text-xs">
@@ -128,23 +133,23 @@
                                 Tingkat Kesulitan
                             </div>
                             <button type="button"
-                                @click="selectedVal = 'Grade A'; selectedLabel = 'Grade A – Pemula'; selectedDot = 'bg-emerald-500'; open = false;"
+                                @click="formData.grade = 'Grade A'; gradeDropdownOpen = false;"
                                 class="w-full text-left px-4 py-2 hover:bg-gray-50 text-body-strong font-medium flex items-center justify-between cursor-pointer"
-                                :class="selectedVal === 'Grade A' ? 'bg-primary-subtle/50 font-bold' : ''">
+                                :class="formData.grade === 'Grade A' ? 'bg-primary-subtle/50 font-bold' : ''">
                                 <span class="text-emerald-700">Grade A – Pemula</span>
                                 <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
                             </button>
                             <button type="button"
-                                @click="selectedVal = 'Grade B'; selectedLabel = 'Grade B – Menengah'; selectedDot = 'bg-amber-500'; open = false;"
+                                @click="formData.grade = 'Grade B'; gradeDropdownOpen = false;"
                                 class="w-full text-left px-4 py-2 hover:bg-gray-50 text-body-strong font-medium flex items-center justify-between cursor-pointer"
-                                :class="selectedVal === 'Grade B' ? 'bg-primary-subtle/50 font-bold' : ''">
+                                :class="formData.grade === 'Grade B' ? 'bg-primary-subtle/50 font-bold' : ''">
                                 <span class="text-amber-700">Grade B – Menengah</span>
                                 <span class="w-2 h-2 rounded-full bg-amber-500"></span>
                             </button>
                             <button type="button"
-                                @click="selectedVal = 'Grade C'; selectedLabel = 'Grade C – Ahli'; selectedDot = 'bg-rose-500'; open = false;"
+                                @click="formData.grade = 'Grade C'; gradeDropdownOpen = false;"
                                 class="w-full text-left px-4 py-2 hover:bg-gray-50 text-body-strong font-medium flex items-center justify-between cursor-pointer"
-                                :class="selectedVal === 'Grade C' ? 'bg-primary-subtle/50 font-bold' : ''">
+                                :class="formData.grade === 'Grade C' ? 'bg-primary-subtle/50 font-bold' : ''">
                                 <span class="text-rose-700">Grade C – Ahli</span>
                                 <span class="w-2 h-2 rounded-full bg-rose-500"></span>
                             </button>
@@ -310,41 +315,32 @@
                     </div>
 
                     <!-- Toggles & Status Destinasi -->
-                    <div class="md:col-span-2 space-y-3 pt-4 border-t border-hairline" x-data="{
-                        isFeatured: {{ old('is_featured') ? 'true' : 'false' }},
-                        openSlot: false,
-                        slotVal: {{ old('featured_order', 1) }},
-                        slots: {
-                            1: { label: 'Slot 1 (Utama)', desc: 'Kiri • Span 7' },
-                            2: { label: 'Slot 2 (Kanan Atas)', desc: 'Atas • Span 5' },
-                            3: { label: 'Slot 3 (Kanan Bawah)', desc: 'Bawah • Span 5' }
-                        }
-                    }">
+                    <div class="md:col-span-2 space-y-3 pt-4 border-t border-hairline">
                         <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
                             <label class="flex items-center gap-2.5 cursor-pointer text-xs font-semibold text-ink-heading">
-                                <input type="checkbox" name="has_open_trip" value="1" checked
+                                <input type="checkbox" name="has_open_trip" value="1" x-model="formData.has_open_trip"
                                     class="rounded border-hairline text-primary focus:ring-primary">
                                 <span>Open Trip</span>
                             </label>
                             <label class="flex items-center gap-2.5 cursor-pointer text-xs font-semibold text-ink-heading">
-                                <input type="checkbox" name="has_private_trip" value="1" checked
+                                <input type="checkbox" name="has_private_trip" value="1" x-model="formData.has_private_trip"
                                     class="rounded border-hairline text-primary focus:ring-primary">
                                 <span>Private Trip</span>
                             </label>
                             <label class="flex items-center gap-2.5 cursor-pointer text-xs font-semibold text-ink-heading">
-                                <input type="checkbox" name="is_featured" value="1" x-model="isFeatured"
+                                <input type="checkbox" name="is_featured" value="1" x-model="formData.is_featured"
                                     class="rounded border-hairline text-primary focus:ring-primary">
                                 <span>Featured di Home</span>
                             </label>
                             <label class="flex items-center gap-2.5 cursor-pointer text-xs font-semibold text-ink-heading">
-                                <input type="checkbox" name="is_active" value="1" checked
+                                <input type="checkbox" name="is_active" value="1" x-model="formData.is_active"
                                     class="rounded border-hairline text-primary focus:ring-primary">
                                 <span>Aktif Publikasi</span>
                             </label>
                         </div>
 
                         <!-- Dropdown Posisi Slot Featured Bento di Home (UI Kit Dropdown) -->
-                        <div x-show="isFeatured" x-cloak
+                        <div x-show="formData.is_featured" x-cloak
                             class="p-4 bg-primary-subtle/30 border border-primary/20 rounded-2xl flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
                             <div>
                                 <span class="font-bold text-ink-heading block">Posisi Bento Grid</span>
@@ -352,12 +348,12 @@
                                     beranda</span>
                             </div>
                             <div class="relative shrink-0">
-                                <input type="hidden" name="featured_order" :value="slotVal">
+                                <input type="hidden" name="featured_order" :value="formData.featured_order">
                                 <button type="button" @click="openSlot = !openSlot"
                                     class="flex items-center justify-between gap-3 min-w-[210px] px-3.5 py-2 bg-white hover:bg-gray-50 border border-hairline rounded-xl text-xs font-semibold text-ink-heading shadow-2xs cursor-pointer transition select-none">
                                     <div class="flex items-center gap-2 min-w-0">
                                         <span class="w-2 h-2 rounded-full bg-primary shrink-0"></span>
-                                        <span x-text="slots[slotVal]?.label || 'Pilih Slot'" class="truncate"></span>
+                                        <span x-text="slots[formData.featured_order]?.label || 'Pilih Slot'" class="truncate"></span>
                                     </div>
                                     <svg class="w-4 h-4 text-muted transition-transform duration-200 shrink-0"
                                         :class="openSlot ? 'rotate-180' : ''" fill="none" stroke="currentColor"
@@ -381,9 +377,9 @@
                                         Posisi Slot Bento
                                     </div>
                                     <template x-for="(info, key) in slots" :key="key">
-                                        <button type="button" @click="slotVal = Number(key); openSlot = false"
+                                        <button type="button" @click="formData.featured_order = Number(key); openSlot = false"
                                             class="w-full text-left px-3.5 py-2 hover:bg-gray-50 text-body-strong font-medium flex items-center justify-between cursor-pointer transition"
-                                            :class="slotVal == key ? 'bg-primary-subtle/50 font-bold text-primary' : ''">
+                                            :class="formData.featured_order == key ? 'bg-primary-subtle/50 font-bold text-primary' : ''">
                                             <span x-text="info.label"></span>
                                             <span
                                                 class="text-[10px] text-muted font-normal bg-gray-100 px-2 py-0.5 rounded-md"
@@ -1000,11 +996,11 @@
 
         <div>
             <label class="block text-xs font-bold text-ink-heading uppercase tracking-wider mb-2">
-                Ulasan & Cerita Pendakian (Overview Detail)
+                Ulasan &amp; Cerita Pendakian (Overview Detail)
             </label>
-            <textarea name="overview" rows="5"
+            <textarea name="overview" x-model="formData.overview" rows="5"
                 placeholder="Tuliskan ulasan komprehensif tentang keunikan vegetasi, sejarah geologis, pesona pemandangan sabana, dan sensasi summit attack..."
-                class="w-full text-xs rounded-2xl border border-hairline bg-canvas p-4 text-ink focus:border-primary focus:ring-1 focus:ring-primary shadow-xs leading-relaxed">{{ old('overview', 'Gunung ini menawarkan keindahan panorama alam luar biasa dengan padang vegetasi yang asri dan pemandangan lautan awan yang menakjubkan. Pendakian ini sangat ideal bagi pendaki yang menginginkan petualangan aman dengan standar SOP profesional MiddleTrip.') }}</textarea>
+                class="w-full text-xs rounded-2xl border border-hairline bg-canvas p-4 text-ink focus:border-primary focus:ring-1 focus:ring-primary shadow-xs leading-relaxed"></textarea>
         </div>
     </div>
 
@@ -1100,15 +1096,25 @@
     </div>
 
     <!-- Form Submit Bar -->
-    <div class="flex items-center justify-end gap-3 pt-4">
-        <a href="{{ route('admin.mountains.index') }}"
-            class="px-6 py-2.5 rounded-full border border-hairline text-xs font-semibold text-ink hover:bg-canvas transition-colors">
-            Batal
-        </a>
-        <button type="submit"
-            class="px-8 py-2.5 rounded-full bg-primary text-white text-xs font-bold hover:bg-primary-hover transition-colors shadow-sm">
-            Simpan Master Gunung
-        </button>
+    <div class="flex flex-col sm:flex-row items-center justify-between gap-4 pt-4 border-t border-hairline">
+        <div class="flex items-center gap-2 min-h-[24px]">
+            <span x-show="autoSavedMessage" x-cloak class="text-[11.5px] font-mono text-emerald-700 bg-emerald-50 border border-emerald-200 px-3 py-1 rounded-full flex items-center gap-1.5 transition-opacity duration-300">
+                <svg class="w-3.5 h-3.5 text-emerald-600 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                </svg>
+                <span x-text="autoSavedMessage"></span>
+            </span>
+        </div>
+        <div class="flex items-center gap-3">
+            <a href="{{ route('admin.mountains.index') }}"
+                class="px-6 py-2.5 rounded-full border border-hairline text-xs font-semibold text-ink hover:bg-canvas transition-colors">
+                Batal
+            </a>
+            <button type="submit"
+                class="px-8 py-2.5 rounded-full bg-primary text-white text-xs font-bold hover:bg-primary-hover transition-colors shadow-sm cursor-pointer">
+                Simpan Master Gunung
+            </button>
+        </div>
     </div>
     </form>
     </div>
@@ -1116,8 +1122,38 @@
 
 @push('scripts')
     <script>
+        const DRAFT_STORAGE_KEY = 'middletrip_mountain_create_draft';
+
         function mountainCreateForm() {
             return {
+                formData: {
+                    name: {{ Js::from(old('name', '')) }},
+                    elevation: {{ Js::from(old('elevation', '')) }},
+                    province: {{ Js::from(old('province', '')) }},
+                    grade: {{ Js::from(old('grade', 'Grade A')) }},
+                    has_open_trip: {{ old('has_open_trip', '1') ? 'true' : 'false' }},
+                    has_private_trip: {{ old('has_private_trip', '1') ? 'true' : 'false' }},
+                    is_featured: {{ old('is_featured', '0') ? 'true' : 'false' }},
+                    featured_order: {{ (int) old('featured_order', 1) }},
+                    is_active: {{ old('is_active', '1') ? 'true' : 'false' }},
+                    overview: {{ Js::from(old('overview', 'Gunung ini menawarkan keindahan panorama alam luar biasa dengan padang vegetasi yang asri dan pemandangan lautan awan yang menakjubkan. Pendakian ini sangat ideal bagi pendaki yang menginginkan petualangan aman dengan standar SOP profesional MiddleTrip.')) }},
+                },
+
+                gradeDropdownOpen: false,
+                openSlot: false,
+                slots: {
+                    1: { label: 'Slot 1 (Utama)', desc: 'Kiri • Span 7' },
+                    2: { label: 'Slot 2 (Kanan Atas)', desc: 'Atas • Span 5' },
+                    3: { label: 'Slot 3 (Kanan Bawah)', desc: 'Bawah • Span 5' }
+                },
+
+                hasDraft: false,
+                draftSavedAt: '',
+                autoSavedMessage: '',
+                isSubmitting: false,
+                isDirty: false,
+                saveTimeout: null,
+
                 routes: @js($defaultRoutes),
                 priceTiers: [{
                         min_pax: 1,
@@ -1154,6 +1190,141 @@
                         items: 'Transportasi Kota Asal ke Meeting Point'
                     }
                 ],
+
+                init() {
+                    if (this.routes.length === 0) {
+                        this.addRoute();
+                    }
+
+                    @if (!$errors->any())
+                        this.checkExistingDraft();
+                    @endif
+
+                    this.$watch('formData', () => this.onDataChanged(), { deep: true });
+                    this.$watch('routes', () => this.onDataChanged(), { deep: true });
+                    this.$watch('priceTiers', () => this.onDataChanged(), { deep: true });
+                    this.$watch('facilitiesIncluded', () => this.onDataChanged(), { deep: true });
+                    this.$watch('facilitiesExcluded', () => this.onDataChanged(), { deep: true });
+
+                    window.addEventListener('beforeunload', (e) => {
+                        if (this.isDirty && !this.isSubmitting) {
+                            e.preventDefault();
+                            e.returnValue = '';
+                        }
+                    });
+                },
+
+                checkExistingDraft() {
+                    try {
+                        const raw = localStorage.getItem(DRAFT_STORAGE_KEY);
+                        if (!raw) return;
+                        const draft = JSON.parse(raw);
+                        if (draft && (draft.formData?.name || (draft.routes && draft.routes.length > 0 && draft.routes[0].name))) {
+                            this.hasDraft = true;
+                            this.draftSavedAt = draft.savedAtFormatted || 'sebelumnya';
+                        }
+                    } catch (err) {
+                        console.warn('Gagal membaca draf dari localStorage:', err);
+                    }
+                },
+
+                restoreDraft() {
+                    try {
+                        const raw = localStorage.getItem(DRAFT_STORAGE_KEY);
+                        if (!raw) return;
+                        const draft = JSON.parse(raw);
+
+                        if (draft.formData) {
+                            this.formData = Object.assign({}, this.formData, draft.formData);
+                        }
+                        if (Array.isArray(draft.routes) && draft.routes.length) {
+                            this.routes = draft.routes;
+                        }
+                        if (Array.isArray(draft.priceTiers) && draft.priceTiers.length) {
+                            this.priceTiers = draft.priceTiers;
+                        }
+                        if (Array.isArray(draft.facilitiesIncluded) && draft.facilitiesIncluded.length) {
+                            this.facilitiesIncluded = draft.facilitiesIncluded;
+                        }
+                        if (Array.isArray(draft.facilitiesExcluded) && draft.facilitiesExcluded.length) {
+                            this.facilitiesExcluded = draft.facilitiesExcluded;
+                        }
+
+                        this.hasDraft = false;
+                        this.isDirty = true;
+                        this.autoSavedMessage = '✓ Draf berhasil dipulihkan!';
+                        setTimeout(() => {
+                            this.autoSavedMessage = '';
+                        }, 4000);
+                    } catch (err) {
+                        console.error('Gagal memulihkan draf:', err);
+                        alert('Gagal memulihkan data draf.');
+                    }
+                },
+
+                clearDraft() {
+                    localStorage.removeItem(DRAFT_STORAGE_KEY);
+                    this.hasDraft = false;
+                    this.autoSavedMessage = '';
+                },
+
+                onDataChanged() {
+                    this.isDirty = true;
+                    if (this.saveTimeout) {
+                        clearTimeout(this.saveTimeout);
+                    }
+                    this.saveTimeout = setTimeout(() => {
+                        this.performAutoSave();
+                    }, 800);
+                },
+
+                performAutoSave() {
+                    if (this.isSubmitting) return;
+
+                    const hasContent = (this.formData.name && this.formData.name.trim().length > 0) ||
+                        (this.routes.some(r => r.name && r.name.trim().length > 0));
+
+                    if (!hasContent) return;
+
+                    try {
+                        const now = new Date();
+                        const timeStr = now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+                        const dateStr = now.toLocaleDateString('id-ID', { day: 'numeric', month: 'short' });
+
+                        const payload = {
+                            savedAt: now.getTime(),
+                            savedAtFormatted: `${dateStr} pk. ${timeStr}`,
+                            formData: this.formData,
+                            routes: this.routes,
+                            priceTiers: this.priceTiers,
+                            facilitiesIncluded: this.facilitiesIncluded,
+                            facilitiesExcluded: this.facilitiesExcluded
+                        };
+
+                        localStorage.setItem(DRAFT_STORAGE_KEY, JSON.stringify(payload));
+                        this.autoSavedMessage = `✓ Draf otomatis tersimpan pk. ${timeStr}`;
+                    } catch (e) {
+                        console.warn('Gagal menyimpan draf otomatis:', e);
+                    }
+                },
+
+                handleFormSubmit() {
+                    this.isSubmitting = true;
+                    localStorage.removeItem(DRAFT_STORAGE_KEY);
+                },
+
+                getGradeLabel(val) {
+                    if (val === 'Grade B') return 'Grade B – Menengah';
+                    if (val === 'Grade C') return 'Grade C – Ahli';
+                    return 'Grade A – Pemula';
+                },
+
+                getGradeDot(val) {
+                    if (val === 'Grade B') return 'bg-amber-500';
+                    if (val === 'Grade C') return 'bg-rose-500';
+                    return 'bg-emerald-500';
+                },
+
                 addRoute() {
                     const isFirst = this.routes.length === 0;
                     this.routes.push({
