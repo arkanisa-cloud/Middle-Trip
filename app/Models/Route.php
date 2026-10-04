@@ -24,6 +24,7 @@ class Route extends Model
             'is_primary' => 'boolean',
             'distance_km' => 'float',
             'elevation_checkpoints' => 'array',
+            'itinerary' => 'array',
             'price_camping_open' => 'integer',
             'price_tektok_open' => 'integer',
             'price_camping_private' => 'integer',
