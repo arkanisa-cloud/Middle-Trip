@@ -198,27 +198,273 @@
                     </div>
                 </div>
 
-                <!-- 5. Departure Date (UI Kit Styled Date Input) -->
-                <div>
+                <!-- 5. Departure Date (UI Kit Dropdown Calendar) -->
+                @php
+                    $defaultDepDate = old('departure_date', now()->addDays(7)->toDateString());
+                    $depCarbon = \Carbon\Carbon::parse($defaultDepDate);
+                @endphp
+                <div x-data="{
+                    open: false,
+                    dateVal: '{{ $defaultDepDate }}',
+                    viewYear: {{ $depCarbon->year }},
+                    viewMonth: {{ $depCarbon->month - 1 }},
+                    monthNames: ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'],
+                    dayNames: ['Min', 'Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab'],
+                    get formattedLabel() {
+                        if (!this.dateVal) return 'Pilih Tanggal';
+                        const parts = this.dateVal.split('-');
+                        if (parts.length !== 3) return this.dateVal;
+                        const d = parseInt(parts[2], 10);
+                        const m = parseInt(parts[1], 10) - 1;
+                        const y = parseInt(parts[0], 10);
+                        return `${d} ${this.monthNames[m]} ${y}`;
+                    },
+                    get daysInMonth() {
+                        const days = [];
+                        const firstDayIndex = new Date(this.viewYear, this.viewMonth, 1).getDay();
+                        const numDays = new Date(this.viewYear, this.viewMonth + 1, 0).getDate();
+                        for (let i = 0; i < firstDayIndex; i++) {
+                            days.push({ day: '', fullDate: '', empty: true });
+                        }
+                        for (let d = 1; d <= numDays; d++) {
+                            const mStr = String(this.viewMonth + 1).padStart(2, '0');
+                            const dStr = String(d).padStart(2, '0');
+                            const fullDate = `${this.viewYear}-${mStr}-${dStr}`;
+                            days.push({ day: d, fullDate: fullDate, empty: false });
+                        }
+                        return days;
+                    },
+                    prevMonth() {
+                        if (this.viewMonth === 0) {
+                            this.viewMonth = 11;
+                            this.viewYear--;
+                        } else {
+                            this.viewMonth--;
+                        }
+                    },
+                    nextMonth() {
+                        if (this.viewMonth === 11) {
+                            this.viewMonth = 0;
+                            this.viewYear++;
+                        } else {
+                            this.viewMonth++;
+                        }
+                    },
+                    selectDate(fullDate) {
+                        this.dateVal = fullDate;
+                        this.open = false;
+                    }
+                }" @click.outside="open = false" class="relative">
                     <label class="block text-xs font-bold text-ink-heading uppercase tracking-wider mb-2">
                         Tanggal Berangkat <span class="text-rose-500">*</span>
                     </label>
-                    <div class="relative">
-                        <input type="date" name="departure_date" 
-                               value="{{ old('departure_date', now()->addDays(7)->toDateString()) }}" required 
-                               class="w-full text-xs rounded-xl border border-hairline bg-canvas p-3 text-ink focus:border-primary shadow-xs font-semibold">
+                    <input type="hidden" name="departure_date" :value="dateVal" required>
+
+                    <button type="button" @click="open = !open"
+                        class="w-full text-xs rounded-xl border border-hairline bg-canvas p-3 text-ink flex items-center justify-between cursor-pointer focus:border-primary shadow-xs font-semibold transition select-none">
+                        <span class="flex items-center gap-2.5">
+                            <svg class="w-4 h-4 text-muted shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                            </svg>
+                            <span x-text="formattedLabel" class="text-ink-heading font-bold"></span>
+                        </span>
+                        <svg class="w-4 h-4 text-muted transition-transform duration-200 shrink-0"
+                            :class="open ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                        </svg>
+                    </button>
+
+                    <!-- Calendar Dropdown Popover -->
+                    <div x-show="open" x-cloak
+                        x-transition:enter="transition ease-out duration-100"
+                        x-transition:enter-start="transform opacity-0 scale-95"
+                        x-transition:enter-end="transform opacity-100 scale-100"
+                        class="absolute left-0 mt-2 bg-white border border-hairline rounded-2xl shadow-xl p-4 z-50 w-72 select-none text-xs">
+                        
+                        <div class="flex items-center justify-between mb-3 pb-2 border-b border-hairline">
+                            <button type="button" @click="prevMonth"
+                                class="p-1.5 rounded-lg hover:bg-gray-100 text-muted hover:text-ink transition cursor-pointer">
+                                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                                </svg>
+                            </button>
+                            <span class="font-bold text-ink-heading text-xs" x-text="`${monthNames[viewMonth]} ${viewYear}`"></span>
+                            <button type="button" @click="nextMonth"
+                                class="p-1.5 rounded-lg hover:bg-gray-100 text-muted hover:text-ink transition cursor-pointer">
+                                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                                </svg>
+                            </button>
+                        </div>
+
+                        <div class="grid grid-cols-7 gap-1 text-center mb-1">
+                            <template x-for="dayName in dayNames" :key="dayName">
+                                <span class="text-[10px] font-bold text-muted-soft uppercase py-1" x-text="dayName"></span>
+                            </template>
+                        </div>
+
+                        <div class="grid grid-cols-7 gap-1 text-center">
+                            <template x-for="(cell, i) in daysInMonth" :key="i">
+                                <div>
+                                    <template x-if="cell.empty">
+                                        <div class="w-8 h-8"></div>
+                                    </template>
+                                    <template x-if="!cell.empty">
+                                        <button type="button" @click="selectDate(cell.fullDate)"
+                                            class="w-8 h-8 rounded-xl flex items-center justify-center text-xs font-semibold transition cursor-pointer"
+                                            :class="dateVal === cell.fullDate ? 'bg-primary text-white font-bold shadow-xs' : 'text-ink hover:bg-gray-100'">
+                                            <span x-text="cell.day"></span>
+                                        </button>
+                                    </template>
+                                </div>
+                            </template>
+                        </div>
+
+                        <div class="mt-3 pt-2 border-t border-hairline flex items-center justify-between text-[11px]">
+                            <button type="button" 
+                                @click="dateVal = new Date().toISOString().split('T')[0]; viewYear = new Date().getFullYear(); viewMonth = new Date().getMonth(); open = false;"
+                                class="text-primary font-bold hover:underline cursor-pointer">
+                                Hari Ini
+                            </button>
+                            <button type="button" @click="open = false" class="text-muted hover:text-ink cursor-pointer">
+                                Tutup
+                            </button>
+                        </div>
                     </div>
                 </div>
 
-                <!-- 6. Return Date (UI Kit Styled Date Input) -->
-                <div>
+                <!-- 6. Return Date (UI Kit Dropdown Calendar) -->
+                @php
+                    $defaultRetDate = old('return_date', now()->addDays(9)->toDateString());
+                    $retCarbon = \Carbon\Carbon::parse($defaultRetDate);
+                @endphp
+                <div x-data="{
+                    open: false,
+                    dateVal: '{{ $defaultRetDate }}',
+                    viewYear: {{ $retCarbon->year }},
+                    viewMonth: {{ $retCarbon->month - 1 }},
+                    monthNames: ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'],
+                    dayNames: ['Min', 'Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab'],
+                    get formattedLabel() {
+                        if (!this.dateVal) return 'Pilih Tanggal';
+                        const parts = this.dateVal.split('-');
+                        if (parts.length !== 3) return this.dateVal;
+                        const d = parseInt(parts[2], 10);
+                        const m = parseInt(parts[1], 10) - 1;
+                        const y = parseInt(parts[0], 10);
+                        return `${d} ${this.monthNames[m]} ${y}`;
+                    },
+                    get daysInMonth() {
+                        const days = [];
+                        const firstDayIndex = new Date(this.viewYear, this.viewMonth, 1).getDay();
+                        const numDays = new Date(this.viewYear, this.viewMonth + 1, 0).getDate();
+                        for (let i = 0; i < firstDayIndex; i++) {
+                            days.push({ day: '', fullDate: '', empty: true });
+                        }
+                        for (let d = 1; d <= numDays; d++) {
+                            const mStr = String(this.viewMonth + 1).padStart(2, '0');
+                            const dStr = String(d).padStart(2, '0');
+                            const fullDate = `${this.viewYear}-${mStr}-${dStr}`;
+                            days.push({ day: d, fullDate: fullDate, empty: false });
+                        }
+                        return days;
+                    },
+                    prevMonth() {
+                        if (this.viewMonth === 0) {
+                            this.viewMonth = 11;
+                            this.viewYear--;
+                        } else {
+                            this.viewMonth--;
+                        }
+                    },
+                    nextMonth() {
+                        if (this.viewMonth === 11) {
+                            this.viewMonth = 0;
+                            this.viewYear++;
+                        } else {
+                            this.viewMonth++;
+                        }
+                    },
+                    selectDate(fullDate) {
+                        this.dateVal = fullDate;
+                        this.open = false;
+                    }
+                }" @click.outside="open = false" class="relative">
                     <label class="block text-xs font-bold text-ink-heading uppercase tracking-wider mb-2">
                         Tanggal Kembali / Selesai <span class="text-rose-500">*</span>
                     </label>
-                    <div class="relative">
-                        <input type="date" name="return_date" 
-                               value="{{ old('return_date', now()->addDays(9)->toDateString()) }}" required 
-                               class="w-full text-xs rounded-xl border border-hairline bg-canvas p-3 text-ink focus:border-primary shadow-xs font-semibold">
+                    <input type="hidden" name="return_date" :value="dateVal" required>
+
+                    <button type="button" @click="open = !open"
+                        class="w-full text-xs rounded-xl border border-hairline bg-canvas p-3 text-ink flex items-center justify-between cursor-pointer focus:border-primary shadow-xs font-semibold transition select-none">
+                        <span class="flex items-center gap-2.5">
+                            <svg class="w-4 h-4 text-muted shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                            </svg>
+                            <span x-text="formattedLabel" class="text-ink-heading font-bold"></span>
+                        </span>
+                        <svg class="w-4 h-4 text-muted transition-transform duration-200 shrink-0"
+                            :class="open ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                        </svg>
+                    </button>
+
+                    <!-- Calendar Dropdown Popover -->
+                    <div x-show="open" x-cloak
+                        x-transition:enter="transition ease-out duration-100"
+                        x-transition:enter-start="transform opacity-0 scale-95"
+                        x-transition:enter-end="transform opacity-100 scale-100"
+                        class="absolute left-0 mt-2 bg-white border border-hairline rounded-2xl shadow-xl p-4 z-50 w-72 select-none text-xs">
+                        
+                        <div class="flex items-center justify-between mb-3 pb-2 border-b border-hairline">
+                            <button type="button" @click="prevMonth"
+                                class="p-1.5 rounded-lg hover:bg-gray-100 text-muted hover:text-ink transition cursor-pointer">
+                                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                                </svg>
+                            </button>
+                            <span class="font-bold text-ink-heading text-xs" x-text="`${monthNames[viewMonth]} ${viewYear}`"></span>
+                            <button type="button" @click="nextMonth"
+                                class="p-1.5 rounded-lg hover:bg-gray-100 text-muted hover:text-ink transition cursor-pointer">
+                                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                                </svg>
+                            </button>
+                        </div>
+
+                        <div class="grid grid-cols-7 gap-1 text-center mb-1">
+                            <template x-for="dayName in dayNames" :key="dayName">
+                                <span class="text-[10px] font-bold text-muted-soft uppercase py-1" x-text="dayName"></span>
+                            </template>
+                        </div>
+
+                        <div class="grid grid-cols-7 gap-1 text-center">
+                            <template x-for="(cell, i) in daysInMonth" :key="i">
+                                <div>
+                                    <template x-if="cell.empty">
+                                        <div class="w-8 h-8"></div>
+                                    </template>
+                                    <template x-if="!cell.empty">
+                                        <button type="button" @click="selectDate(cell.fullDate)"
+                                            class="w-8 h-8 rounded-xl flex items-center justify-center text-xs font-semibold transition cursor-pointer"
+                                            :class="dateVal === cell.fullDate ? 'bg-primary text-white font-bold shadow-xs' : 'text-ink hover:bg-gray-100'">
+                                            <span x-text="cell.day"></span>
+                                        </button>
+                                    </template>
+                                </div>
+                            </template>
+                        </div>
+
+                        <div class="mt-3 pt-2 border-t border-hairline flex items-center justify-between text-[11px]">
+                            <button type="button" 
+                                @click="dateVal = new Date().toISOString().split('T')[0]; viewYear = new Date().getFullYear(); viewMonth = new Date().getMonth(); open = false;"
+                                class="text-primary font-bold hover:underline cursor-pointer">
+                                Hari Ini
+                            </button>
+                            <button type="button" @click="open = false" class="text-muted hover:text-ink cursor-pointer">
+                                Tutup
+                            </button>
+                        </div>
                     </div>
                 </div>
 

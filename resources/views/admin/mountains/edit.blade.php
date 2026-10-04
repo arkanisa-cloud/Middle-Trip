@@ -163,8 +163,27 @@
                         <label class="block text-xs font-bold text-ink-heading uppercase tracking-wider mb-2">
                             Upload Foto Sampul (Cover Image)
                         </label>
+                        @php
+                            $rawCover = old('cover_image', $mountain->cover_image);
+                            $coverPreviewUrl = '';
+                            if ($rawCover) {
+                                if (
+                                    str_starts_with($rawCover, 'http://') ||
+                                    str_starts_with($rawCover, 'https://') ||
+                                    str_starts_with($rawCover, 'data:')
+                                ) {
+                                    $coverPreviewUrl = $rawCover;
+                                } elseif (str_starts_with($rawCover, '/storage/')) {
+                                    $coverPreviewUrl = asset(substr($rawCover, 1));
+                                } elseif (str_starts_with($rawCover, 'storage/')) {
+                                    $coverPreviewUrl = asset($rawCover);
+                                } else {
+                                    $coverPreviewUrl = asset('storage/' . ltrim($rawCover, '/'));
+                                }
+                            }
+                        @endphp
                         <div x-data="{
-                            preview: '{{ old('cover_image', $mountain->cover_image) }}',
+                            preview: {{ Js::from($coverPreviewUrl) }},
                             handleFileSelect(event) {
                                 const file = event.target.files[0];
                                 if (file) {
@@ -173,13 +192,11 @@
                             }
                         }" class="space-y-3">
                             <div class="flex items-center gap-4">
-                                <template x-if="preview">
-                                    <div
-                                        class="relative w-24 h-20 rounded-2xl overflow-hidden border border-hairline shadow-xs shrink-0">
-                                        <img :src="preview" alt="Preview Foto Sampul"
-                                            class="w-full h-full object-cover">
-                                    </div>
-                                </template>
+                                <div x-show="preview"
+                                    class="relative w-24 h-20 rounded-2xl overflow-hidden border border-hairline shadow-xs shrink-0 bg-canvas">
+                                    <img :src="preview || ''" alt="Preview Foto Sampul" class="w-full h-full object-cover"
+                                        onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=200&fit=crop';">
+                                </div>
                                 <div class="flex-1">
                                     <input type="file" name="cover_image_file" @change="handleFileSelect"
                                         accept="image/*"
@@ -188,7 +205,7 @@
                                         sampul. Format didukung: JPG, PNG, WEBP (Maksimal 5MB)</p>
                                 </div>
                             </div>
-                            <input type="hidden" name="cover_image" :value="preview">
+                            <input type="hidden" name="cover_image" value="{{ $mountain->cover_image }}">
                         </div>
                     </div>
 
@@ -399,9 +416,8 @@
                         <label class="block text-xs font-bold text-ink-heading uppercase tracking-wider mb-2">
                             Harga Camping Open (Rp) <span class="text-rose-500">*</span>
                         </label>
-                        <input type="number" name="base_price" value="{{ old('base_price', $mountain->base_price) }}"
-                            required
-                            class="w-full text-xs rounded-xl border border-hairline bg-canvas p-3 text-ink focus:border-primary focus:ring-1 focus:ring-primary shadow-xs">
+                        <input type="number" name="base_price" x-model.number="basePrice" @input="validateBookingFee" required
+                            class="w-full text-xs rounded-xl border border-hairline bg-canvas p-3 text-ink focus:border-primary focus:ring-1 focus:ring-primary shadow-xs font-semibold">
                         <span class="text-[10.5px] text-muted mt-1 block">Harga dasar open trip paket camping</span>
                     </div>
 
@@ -412,7 +428,7 @@
                         </label>
                         <input type="number" name="price_private"
                             value="{{ old('price_private', $mountain->price_private) }}"
-                            class="w-full text-xs rounded-xl border border-hairline bg-canvas p-3 text-ink focus:border-primary focus:ring-1 focus:ring-primary shadow-xs">
+                            class="w-full text-xs rounded-xl border border-hairline bg-canvas p-3 text-ink focus:border-primary focus:ring-1 focus:ring-primary shadow-xs font-semibold">
                         <span class="text-[10.5px] text-muted mt-1 block">Harga dasar private trip paket camping</span>
                     </div>
 
@@ -423,7 +439,7 @@
                         </label>
                         <input type="number" name="price_tektok"
                             value="{{ old('price_tektok', $mountain->price_tektok) }}" placeholder="400000"
-                            class="w-full text-xs rounded-xl border border-hairline bg-canvas p-3 text-ink focus:border-primary focus:ring-1 focus:ring-primary shadow-xs">
+                            class="w-full text-xs rounded-xl border border-hairline bg-canvas p-3 text-ink focus:border-primary focus:ring-1 focus:ring-primary shadow-xs font-semibold">
                         <span class="text-[10.5px] text-muted mt-1 block">Harga dasar open trip paket 1 hari</span>
                     </div>
 
@@ -435,7 +451,7 @@
                         <input type="number" name="price_private_tektok"
                             value="{{ old('price_private_tektok', $mountain->price_private_tektok) }}"
                             placeholder="850000"
-                            class="w-full text-xs rounded-xl border border-hairline bg-canvas p-3 text-ink focus:border-primary focus:ring-1 focus:ring-primary shadow-xs">
+                            class="w-full text-xs rounded-xl border border-hairline bg-canvas p-3 text-ink focus:border-primary focus:ring-1 focus:ring-primary shadow-xs font-semibold">
                         <span class="text-[10.5px] text-muted mt-1 block">Harga dasar private trip paket 1 hari</span>
                     </div>
 
@@ -445,10 +461,15 @@
                             Booking Fee DP / Pax (Rp) <span class="text-rose-500">*</span>
                         </label>
                         <input type="number" name="booking_fee_per_pax"
-                            value="{{ old('booking_fee_per_pax', $mountain->booking_fee_per_pax) }}" required
-                            class="w-full text-xs rounded-xl border border-hairline bg-canvas p-3 text-ink focus:border-primary focus:ring-1 focus:ring-primary shadow-xs">
-                        <span class="text-[10.5px] text-amber-600 font-medium mt-1 block">Maksimal 50% (setengah) dari
-                            harga dasar trip</span>
+                            x-model.number="bookingFee"
+                            @input="validateBookingFee"
+                            :max="Math.floor((basePrice || 0) / 2)"
+                            min="0"
+                            required
+                            class="w-full text-xs rounded-xl border border-hairline bg-canvas p-3 text-ink focus:border-primary focus:ring-1 focus:ring-primary shadow-xs font-semibold">
+                        <span class="text-[10.5px] text-amber-600 font-medium mt-1 block">
+                            Maksimal 50% dari harga trip: Rp <span x-text="new Intl.NumberFormat('id-ID').format(Math.floor((basePrice || 0) / 2))"></span>
+                        </span>
                     </div>
 
                     <!-- Price Lock Days -->
@@ -622,15 +643,65 @@
                                         class="w-full text-xs rounded-xl border border-hairline bg-surface-card p-2.5 text-ink focus:border-primary font-semibold">
                                 </div>
 
-                                <!-- Route Grade -->
-                                <div>
+                                <!-- Route Grade (UI Kit Dropdown) -->
+                                <div x-data="{
+                                    open: false,
+                                    getGradeLabel(val) {
+                                        if (val === 'Grade B') return 'Grade B – Menengah';
+                                        if (val === 'Grade C') return 'Grade C – Ahli';
+                                        return 'Grade A – Pemula';
+                                    },
+                                    getGradeDot(val) {
+                                        if (val === 'Grade B') return 'bg-amber-500';
+                                        if (val === 'Grade C') return 'bg-rose-500';
+                                        return 'bg-emerald-500';
+                                    }
+                                }" @click.outside="open = false" class="relative">
                                     <label class="block text-[11px] font-bold text-muted mb-1">Grade Kesulitan</label>
-                                    <select :name="`routes[${index}][grade]`" x-model="r.grade"
-                                        class="w-full text-xs rounded-xl border border-hairline bg-surface-card p-2.5 text-ink focus:border-primary font-semibold">
-                                        <option value="Grade A">Grade A – Pemula</option>
-                                        <option value="Grade B">Grade B – Menengah</option>
-                                        <option value="Grade C">Grade C – Ahli</option>
-                                    </select>
+                                    <input type="hidden" :name="`routes[${index}][grade]`" :value="r.grade || 'Grade A'">
+
+                                    <button type="button" @click="open = !open"
+                                        class="w-full text-xs rounded-xl border border-hairline bg-surface-card p-2.5 text-ink flex items-center justify-between cursor-pointer focus:border-primary shadow-2xs font-semibold transition select-none">
+                                        <span class="flex items-center gap-2">
+                                            <span class="w-2 h-2 rounded-full shrink-0" :class="getGradeDot(r.grade)"></span>
+                                            <span x-text="getGradeLabel(r.grade)" class="text-ink-heading truncate text-[11.5px]"></span>
+                                        </span>
+                                        <svg class="w-3.5 h-3.5 text-muted transition-transform duration-200 shrink-0"
+                                            :class="open ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                                        </svg>
+                                    </button>
+
+                                    <div x-show="open" x-cloak
+                                        x-transition:enter="transition ease-out duration-100"
+                                        x-transition:enter-start="transform opacity-0 scale-95"
+                                        x-transition:enter-end="transform opacity-100 scale-100"
+                                        class="absolute left-0 right-0 mt-1.5 bg-white border border-hairline rounded-2xl shadow-xl py-1.5 z-50 text-xs min-w-[180px]">
+                                        <div class="px-3 py-1 text-[10px] uppercase font-bold text-muted-soft tracking-wider border-b border-hairline/60 mb-1">
+                                            Pilih Grade
+                                        </div>
+                                        <button type="button"
+                                            @click="r.grade = 'Grade A'; open = false;"
+                                            class="w-full text-left px-3.5 py-1.5 hover:bg-gray-50 text-body-strong font-medium flex items-center justify-between cursor-pointer"
+                                            :class="r.grade === 'Grade A' ? 'bg-primary-subtle/50 font-bold' : ''">
+                                            <span class="text-emerald-700 text-xs">Grade A – Pemula</span>
+                                            <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+                                        </button>
+                                        <button type="button"
+                                            @click="r.grade = 'Grade B'; open = false;"
+                                            class="w-full text-left px-3.5 py-1.5 hover:bg-gray-50 text-body-strong font-medium flex items-center justify-between cursor-pointer"
+                                            :class="r.grade === 'Grade B' ? 'bg-primary-subtle/50 font-bold' : ''">
+                                            <span class="text-amber-700 text-xs">Grade B – Menengah</span>
+                                            <span class="w-2 h-2 rounded-full bg-amber-500"></span>
+                                        </button>
+                                        <button type="button"
+                                            @click="r.grade = 'Grade C'; open = false;"
+                                            class="w-full text-left px-3.5 py-1.5 hover:bg-gray-50 text-body-strong font-medium flex items-center justify-between cursor-pointer"
+                                            :class="r.grade === 'Grade C' ? 'bg-primary-subtle/50 font-bold' : ''">
+                                            <span class="text-rose-700 text-xs">Grade C – Ahli</span>
+                                            <span class="w-2 h-2 rounded-full bg-rose-500"></span>
+                                        </button>
+                                    </div>
                                 </div>
 
                                 <!-- Distance KM -->
@@ -793,13 +864,13 @@
                                             :class="(r.itinerary_type || 'camping') === 'camping' ?
                                                 'bg-primary text-white shadow-xs' : 'text-muted hover:text-ink'"
                                             class="px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all">
-                                            ⛺ Itinerary Camping (Multi-Day)
+                                            Itinerary Camping
                                         </button>
                                         <button type="button" @click="r.itinerary_type = 'tektok'"
                                             :class="r.itinerary_type === 'tektok' ? 'bg-primary text-white shadow-xs' :
                                                 'text-muted hover:text-ink'"
                                             class="px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all">
-                                            ⚡ Itinerary Tek-tok (1 Hari)
+                                            Itinerary Tek-tok
                                         </button>
                                     </div>
 
@@ -904,9 +975,6 @@
                                                     <h5
                                                         class="text-xs font-extrabold text-ink-heading uppercase tracking-wider">
                                                         Timeline Rencana Pendakian Tek-tok (1 Hari)</h5>
-                                                    <span
-                                                        class="px-2.5 py-0.5 rounded-full bg-amber-50 text-amber-700 border border-amber-200 font-bold text-[11px]">1D
-                                                        (Tek-tok) • Tanpa Menginap</span>
                                                 </div>
                                                 <p class="text-[11px] text-muted">Jadwal pendakian cepat 1 hari langsung
                                                     turun tanpa tenda. Tuliskan jadwal kegiatan (1 baris per aktivitas:
@@ -1133,6 +1201,14 @@
     <script>
         function mountainEditForm() {
             return {
+                basePrice: {{ old('base_price', $mountain->base_price) }},
+                bookingFee: {{ old('booking_fee_per_pax', $mountain->booking_fee_per_pax) }},
+                validateBookingFee() {
+                    const maxFee = Math.floor((Number(this.basePrice) || 0) / 2);
+                    if (Number(this.bookingFee) > maxFee) {
+                        this.bookingFee = maxFee;
+                    }
+                },
                 routes: @js($routesData),
                 priceTiers: @js(
     $mountain->priceTiers->map(
