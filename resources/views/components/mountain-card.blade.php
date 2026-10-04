@@ -16,6 +16,7 @@
             alt="{{ $mountain->name }}" 
             class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
             loading="lazy"
+            decoding="async"
         />
         <div class="absolute top-3 left-3 flex items-center gap-2">
             <x-grade-badge :grade="$grade" size="md" />

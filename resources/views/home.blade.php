@@ -209,6 +209,7 @@
                 <a href="{{ route('ekspedisi.show', $featuredHero->slug) }}"
                     class="lg:col-span-7 relative min-h-[340px] sm:min-h-[400px] md:min-h-[440px] lg:h-full lg:min-h-0 rounded-2xl overflow-hidden group shadow-sm bg-gray-900 cursor-pointer block">
                     <img src="{{ $featuredHero->cover_image }}" alt="{{ $featuredHero->name }}"
+                        fetchpriority="high" decoding="async"
                         class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition duration-500" />
                     <div class="absolute inset-0 bg-gradient-to-t from-black/85 via-black/30 to-black/30"></div>
 
@@ -255,6 +256,7 @@
                         class="flex-1 bg-surface-card rounded-2xl p-3.5 border border-gray-100 shadow-sm hover:shadow-md transition duration-200 cursor-pointer group flex flex-col justify-between block">
                         <div class="relative h-28 rounded-xl overflow-hidden mb-3 bg-gray-200">
                             <img src="{{ $card->cover_image }}" alt="{{ $card->name }}"
+                                loading="lazy" decoding="async"
                                 class="w-full h-full object-cover group-hover:scale-105 transition duration-500" />
                             <div class="absolute inset-0 bg-black/20"></div>
                             <div class="absolute top-2.5 left-2.5 right-2.5 flex items-center justify-between">
@@ -394,6 +396,7 @@
                         <div
                             class="relative w-full aspect-[4/3] rounded-2xl overflow-hidden shadow-lg border border-white/10">
                             <img id="grade-image" src="/storage/mountains/merbabu.jpeg" alt="Jalur Pemula"
+                                loading="lazy" decoding="async"
                                 class="w-full h-full object-cover" />
                             <div
                                 class="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent">

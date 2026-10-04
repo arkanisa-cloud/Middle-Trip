@@ -22,6 +22,7 @@
     </style>
 
     <!-- Scripts and Styles -->
+    <x-favicon />
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 
     @stack('styles')

@@ -9,6 +9,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap"
         rel="stylesheet">
+    <x-favicon />
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 
@@ -52,6 +53,7 @@
                     @if ($user->avatar)
                         <img src="{{ str_starts_with($user->avatar, 'http') ? $user->avatar : asset('storage/' . $user->avatar) }}"
                             alt="{{ $user->name }}"
+                            decoding="async"
                             class="w-14 h-14 sm:w-20 sm:h-20 rounded-2xl object-cover shrink-0 border-2 border-white ring-4 ring-primary-subtle shadow-sm">
                     @else
                         <div class="w-14 h-14 sm:w-20 sm:h-20 rounded-2xl bg-gradient-to-br from-primary via-primary-hover to-primary-active text-white flex items-center justify-center font-extrabold text-xl sm:text-3xl shadow-sm tracking-tight shrink-0 border-2 border-white ring-4 ring-primary-subtle">
@@ -325,6 +327,7 @@
                         <!-- Mountain Thumbnail Cover -->
                         <div class="relative w-20 h-20 sm:w-28 sm:h-28 md:w-32 md:h-32 rounded-2xl overflow-hidden shrink-0 border border-hairline shadow-2xs group bg-gray-100">
                             <img src="{{ $coverImg }}" alt="{{ $mountainName }}"
+                                loading="lazy" decoding="async"
                                 onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=800&q=80';"
                                 class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
                             <div class="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent pointer-events-none"></div>
@@ -547,6 +550,7 @@
                                             <div x-show="!removePhoto">
                                                 <img src="{{ str_starts_with($user->avatar, 'http') ? $user->avatar : asset('storage/' . $user->avatar) }}"
                                                     alt="{{ $user->name }}"
+                                                    decoding="async"
                                                     class="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl object-cover border border-hairline ring-4 ring-slate-100 shadow-xs">
                                             </div>
                                             <div x-show="removePhoto"

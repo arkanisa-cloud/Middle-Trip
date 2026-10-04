@@ -10,6 +10,7 @@
     <link
         href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
         rel="stylesheet">
+    <x-favicon />
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <script type="text/javascript" src="{{ config('midtrans.snap_url') }}"
         data-client-key="{{ config('midtrans.client_key') }}"></script>
@@ -476,6 +477,7 @@
                                         </div>
                                         <div class="h-6 flex items-center">
                                             <img src="{{ asset('storage/payment/BCA.png') }}" alt="Bank BCA"
+                                                loading="lazy" decoding="async"
                                                 class="h-5 max-h-5 w-auto object-contain">
                                         </div>
                                     </label>
@@ -490,6 +492,7 @@
                                         </div>
                                         <div class="h-6 flex items-center">
                                             <img src="{{ asset('storage/payment/BNI.png') }}" alt="Bank BNI"
+                                                loading="lazy" decoding="async"
                                                 class="h-5 max-h-5 w-auto object-contain">
                                         </div>
                                     </label>
@@ -504,6 +507,7 @@
                                         </div>
                                         <div class="h-6 flex items-center">
                                             <img src="{{ asset('storage/payment/BRI.png') }}" alt="Bank BRI"
+                                                loading="lazy" decoding="async"
                                                 class="h-5 max-h-5 w-auto object-contain">
                                         </div>
                                     </label>
@@ -518,6 +522,7 @@
                                         </div>
                                         <div class="h-6 flex items-center">
                                             <img src="{{ asset('storage/payment/Mandiri.png') }}" alt="Bank Mandiri"
+                                                loading="lazy" decoding="async"
                                                 class="h-5 max-h-5 w-auto object-contain">
                                         </div>
                                     </label>
@@ -585,6 +590,7 @@
                                         </div>
                                         <div class="flex items-center gap-1.5">
                                             <img src="{{ asset('storage/payment/Visa.jpeg') }}" alt="Visa"
+                                                loading="lazy" decoding="async"
                                                 class="h-3.5 max-h-4 w-auto object-contain">
                                             <span
                                                 class="text-[10px] font-bold text-rose-700 bg-rose-50 px-1.5 py-0.5 rounded border border-rose-200">Mastercard</span>

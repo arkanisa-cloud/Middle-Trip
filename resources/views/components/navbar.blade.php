@@ -727,7 +727,7 @@
                     class="group flex items-center justify-between p-2.5 sm:p-3 rounded-xl hover:bg-slate-50 border border-transparent hover:border-slate-200/80 transition cursor-pointer">
                     <div class="flex items-center gap-3 min-w-0">
                         <div class="w-12 h-12 sm:w-14 sm:h-14 rounded-lg overflow-hidden bg-slate-200 shrink-0 relative">
-                            <img src="${item.cover_image}" alt="${item.name}" class="w-full h-full object-cover group-hover:scale-105 transition duration-300" />
+                            <img src="${item.cover_image}" alt="${item.name}" loading="lazy" decoding="async" class="w-full h-full object-cover group-hover:scale-105 transition duration-300" />
                         </div>
                         <div class="min-w-0">
                             <div class="flex items-center gap-1.5 flex-wrap">

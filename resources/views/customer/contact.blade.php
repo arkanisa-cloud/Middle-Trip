@@ -15,6 +15,7 @@
         rel="stylesheet">
 
     <!-- Styles & Scripts -->
+    <x-favicon />
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 

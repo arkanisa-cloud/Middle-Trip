@@ -14,6 +14,7 @@
         rel="stylesheet">
 
     <!-- Styles & Scripts -->
+    <x-favicon />
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
@@ -109,6 +110,7 @@
                     onclick="openPhotoModal(0)">
                     <img src="{{ $expedition['gallery'][0]['url'] ?? $expedition['image'] }}"
                         alt="{{ $expedition['gallery'][0]['caption'] ?? $expedition['title'] }}"
+                        fetchpriority="high" decoding="async"
                         onerror="this.src='{{ $expedition['image'] ?? 'https://placehold.co/1200x800/203a43/ffffff?text=Ekspedisi' }}'"
                         class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                     <div class="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent"></div>
@@ -132,6 +134,7 @@
                         onclick="openPhotoModal(0)">
                         <img src="{{ $expedition['gallery'][0]['url'] ?? $expedition['image'] }}"
                             alt="{{ $expedition['gallery'][0]['caption'] ?? $expedition['title'] }}"
+                            fetchpriority="high" decoding="async"
                             onerror="this.src='{{ $expedition['image'] ?? 'https://placehold.co/900x900/203a43/ffffff?text=Ekspedisi' }}'"
                             class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                         <div class="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent">
@@ -142,6 +145,7 @@
                         onclick="openPhotoModal(1)">
                         <img src="{{ $expedition['gallery'][1]['url'] }}"
                             alt="{{ $expedition['gallery'][1]['caption'] ?? 'Dokumentasi Ekspedisi' }}"
+                            loading="lazy" decoding="async"
                             onerror="this.src='{{ $expedition['image'] ?? 'https://placehold.co/900x900/203a43/ffffff?text=Ekspedisi' }}'"
                             class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 brightness-95" />
                         <div class="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent">
@@ -168,6 +172,7 @@
                         onclick="openPhotoModal(0)">
                         <img src="{{ $expedition['gallery'][0]['url'] ?? $expedition['image'] }}"
                             alt="{{ $expedition['gallery'][0]['caption'] ?? $expedition['title'] }}"
+                            fetchpriority="high" decoding="async"
                             onerror="this.src='{{ $expedition['image'] ?? 'https://placehold.co/900x900/203a43/ffffff?text=Ekspedisi' }}'"
                             class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                         <div class="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent">
@@ -180,6 +185,7 @@
                             onclick="openPhotoModal(1)">
                             <img src="{{ $expedition['gallery'][1]['url'] }}"
                                 alt="{{ $expedition['gallery'][1]['caption'] ?? 'Dokumentasi Ekspedisi' }}"
+                                loading="lazy" decoding="async"
                                 onerror="this.src='{{ $expedition['image'] ?? 'https://placehold.co/600x400/294861/ffffff?text=Ekspedisi' }}'"
                                 class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                             <div
@@ -191,6 +197,7 @@
                             onclick="openPhotoModal(2)">
                             <img src="{{ $expedition['gallery'][2]['url'] }}"
                                 alt="{{ $expedition['gallery'][2]['caption'] ?? 'Dokumentasi Ekspedisi' }}"
+                                loading="lazy" decoding="async"
                                 onerror="this.src='{{ $expedition['image'] ?? 'https://placehold.co/600x400/39566e/ffffff?text=Ekspedisi' }}'"
                                 class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 brightness-95" />
                             <div class="absolute inset-0 bg-black/35 flex items-center justify-center p-2 sm:p-3">
@@ -215,6 +222,7 @@
                         onclick="openPhotoModal(0)">
                         <img src="{{ $expedition['gallery'][0]['url'] ?? $expedition['image'] }}"
                             alt="{{ $expedition['gallery'][0]['caption'] ?? $expedition['title'] }}"
+                            fetchpriority="high" decoding="async"
                             onerror="this.src='{{ $expedition['image'] ?? 'https://placehold.co/900x900/203a43/ffffff?text=Ekspedisi' }}'"
                             class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                         <div class="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent">
@@ -226,6 +234,7 @@
                             onclick="openPhotoModal(1)">
                             <img src="{{ $expedition['gallery'][1]['url'] }}"
                                 alt="{{ $expedition['gallery'][1]['caption'] ?? 'Dokumentasi' }}"
+                                loading="lazy" decoding="async"
                                 onerror="this.src='{{ $expedition['image'] ?? 'https://placehold.co/600x400/294861/ffffff?text=Ekspedisi' }}'"
                                 class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                             <div
@@ -236,6 +245,7 @@
                             onclick="openPhotoModal(2)">
                             <img src="{{ $expedition['gallery'][2]['url'] }}"
                                 alt="{{ $expedition['gallery'][2]['caption'] ?? 'Dokumentasi' }}"
+                                loading="lazy" decoding="async"
                                 onerror="this.src='{{ $expedition['image'] ?? 'https://placehold.co/600x400/39566e/ffffff?text=Ekspedisi' }}'"
                                 class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                             <div
@@ -246,6 +256,7 @@
                             onclick="openPhotoModal(3)">
                             <img src="{{ $expedition['gallery'][3]['url'] }}"
                                 alt="{{ $expedition['gallery'][3]['caption'] ?? 'Dokumentasi' }}"
+                                loading="lazy" decoding="async"
                                 onerror="this.src='{{ $expedition['image'] ?? 'https://placehold.co/600x400/232526/ffffff?text=Ekspedisi' }}'"
                                 class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 brightness-95" />
                             <div class="absolute inset-0 bg-black/35 flex items-center justify-center p-2">
@@ -270,6 +281,7 @@
                         onclick="openPhotoModal(0)">
                         <img src="{{ $expedition['gallery'][0]['url'] ?? $expedition['image'] }}"
                             alt="{{ $expedition['gallery'][0]['caption'] ?? $expedition['title'] }}"
+                            fetchpriority="high" decoding="async"
                             onerror="this.src='{{ $expedition['image'] ?? 'https://placehold.co/900x900/203a43/ffffff?text=MiddleTrip+Ekspedisi' }}'"
                             class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                         <div class="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent">
@@ -285,7 +297,7 @@
                                 alt="{{ $expedition['gallery'][1]['caption'] ?? 'Dokumentasi Ekspedisi' }}"
                                 onerror="this.src='{{ $expedition['image'] ?? 'https://placehold.co/600x400/294861/ffffff?text=Dokumentasi' }}'"
                                 class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                                loading="lazy" />
+                                loading="lazy" decoding="async" />
                         </div>
 
                         <!-- Top Right -->
@@ -295,7 +307,7 @@
                                 alt="{{ $expedition['gallery'][2]['caption'] ?? 'Dokumentasi Ekspedisi' }}"
                                 onerror="this.src='{{ $expedition['image'] ?? 'https://placehold.co/600x400/39566e/ffffff?text=Dokumentasi' }}'"
                                 class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                                loading="lazy" />
+                                loading="lazy" decoding="async" />
                         </div>
 
                         <!-- Bottom Left -->
@@ -305,7 +317,7 @@
                                 alt="{{ $expedition['gallery'][3]['caption'] ?? 'Dokumentasi Ekspedisi' }}"
                                 onerror="this.src='{{ $expedition['image'] ?? 'https://placehold.co/600x400/536976/ffffff?text=Dokumentasi' }}'"
                                 class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                                loading="lazy" />
+                                loading="lazy" decoding="async" />
                         </div>
 
                         <!-- Bottom Right with "Lihat 12+ Foto Asli" -->
@@ -315,7 +327,7 @@
                                 alt="{{ $expedition['gallery'][4]['caption'] ?? 'Dokumentasi Ekspedisi' }}"
                                 onerror="this.src='{{ $expedition['image'] ?? 'https://placehold.co/600x400/232526/ffffff?text=Dokumentasi' }}'"
                                 class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 brightness-90"
-                                loading="lazy" />
+                                loading="lazy" decoding="async" />
                             <div class="absolute inset-0 bg-black/35 flex items-center justify-center p-2 sm:p-3">
                                 <button type="button"
                                     class="bg-black/55 backdrop-blur-md border border-white/20 text-white text-[11px] sm:text-xs font-semibold px-2.5 sm:px-4 py-1.5 sm:py-2.5 rounded-full flex items-center gap-1.5 sm:gap-2 hover:bg-black/75 transition-all shadow-lg">
@@ -1382,7 +1394,7 @@
             </button>
             <!-- Large Image Container -->
             <div class="w-full max-h-[70vh] sm:max-h-[75vh] flex items-center justify-center overflow-hidden rounded-2xl">
-                <img id="lightbox-image" src="" alt="Foto preview"
+                <img id="lightbox-image" src="" alt="Foto preview" decoding="async"
                     class="max-h-[70vh] sm:max-h-[75vh] w-auto object-contain rounded-2xl shadow-2xl">
             </div>
             <!-- Caption -->

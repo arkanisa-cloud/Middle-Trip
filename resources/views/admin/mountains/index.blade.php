@@ -68,6 +68,7 @@
                                     <td class="py-4 px-5">
                                         <div class="flex items-center gap-3">
                                             <img src="{{ $m->cover_image }}" alt="{{ $m->name }}"
+                                                loading="lazy" decoding="async"
                                                 class="w-12 h-12 rounded-xl object-cover border border-hairline shrink-0 bg-canvas"
                                                 onerror="this.src='https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=100&fit=crop'">
                                             <div>

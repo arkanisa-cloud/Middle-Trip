@@ -304,7 +304,16 @@
                     </div>
 
                     <!-- Toggles & Status Destinasi -->
-                    <div class="md:col-span-2 space-y-3 pt-4 border-t border-hairline" x-data="{ isFeatured: {{ old('is_featured') ? 'true' : 'false' }} }">
+                    <div class="md:col-span-2 space-y-3 pt-4 border-t border-hairline" x-data="{ 
+                        isFeatured: {{ old('is_featured') ? 'true' : 'false' }},
+                        openSlot: false,
+                        slotVal: {{ old('featured_order', 1) }},
+                        slots: {
+                            1: { label: 'Slot 1 (Utama)', desc: 'Kiri • Span 7' },
+                            2: { label: 'Slot 2 (Kanan Atas)', desc: 'Atas • Span 5' },
+                            3: { label: 'Slot 3 (Kanan Bawah)', desc: 'Bawah • Span 5' }
+                        }
+                    }">
                         <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
                             <label class="flex items-center gap-2.5 cursor-pointer text-xs font-semibold text-ink-heading">
                                 <input type="checkbox" name="has_open_trip" value="1" checked
@@ -328,24 +337,48 @@
                             </label>
                         </div>
 
-                        <!-- Dropdown Posisi Slot Featured Bento di Home -->
+                        <!-- Dropdown Posisi Slot Featured Bento di Home (UI Kit Dropdown) -->
                         <div x-show="isFeatured" x-cloak
-                            class="p-3.5 bg-amber-50/70 border border-amber-200/80 rounded-2xl flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
+                            class="p-4 bg-primary-subtle/30 border border-primary/20 rounded-2xl flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
                             <div>
-                                <span class="font-bold text-amber-950 block">Posisi Slot Bento Grid Home:</span>
-                                <span class="text-[11px] text-amber-800">Tentukan di slot mana kartu gunung ini akan dipajang
-                                    pada halaman depan</span>
+                                <span class="font-bold text-ink-heading block">Posisi Bento Grid</span>
+                                <span class="text-[11px] text-muted">Pilih slot tampilan kartu di section bento beranda</span>
                             </div>
-                            <div class="shrink-0">
-                                <select name="featured_order"
-                                    class="bg-white border border-amber-300 rounded-xl px-3 py-1.5 text-xs font-bold text-ink-heading focus:outline-none focus:ring-1 focus:ring-primary">
-                                    <option value="1" {{ old('featured_order', 1) == 1 ? 'selected' : '' }}>Slot 1: Hero
-                                        Utama (Kiri Lebar - Span 7)</option>
-                                    <option value="2" {{ old('featured_order') == 2 ? 'selected' : '' }}>Slot 2: Kartu
-                                        Kanan Atas (Span 5)</option>
-                                    <option value="3" {{ old('featured_order') == 3 ? 'selected' : '' }}>Slot 3: Kartu
-                                        Kanan Bawah (Span 5)</option>
-                                </select>
+                            <div class="relative shrink-0">
+                                <input type="hidden" name="featured_order" :value="slotVal">
+                                <button type="button" @click="openSlot = !openSlot"
+                                    class="flex items-center justify-between gap-3 min-w-[210px] px-3.5 py-2 bg-white hover:bg-gray-50 border border-hairline rounded-xl text-xs font-semibold text-ink-heading shadow-2xs cursor-pointer transition select-none">
+                                    <div class="flex items-center gap-2 min-w-0">
+                                        <span class="w-2 h-2 rounded-full bg-primary shrink-0"></span>
+                                        <span x-text="slots[slotVal]?.label || 'Pilih Slot'" class="truncate"></span>
+                                    </div>
+                                    <svg class="w-4 h-4 text-muted transition-transform duration-200 shrink-0" :class="openSlot ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                                    </svg>
+                                </button>
+
+                                <!-- Elevated Menu -->
+                                <div x-show="openSlot" x-cloak @click.outside="openSlot = false"
+                                    x-transition:enter="transition ease-out duration-100"
+                                    x-transition:enter-start="opacity-0 scale-95"
+                                    x-transition:enter-end="opacity-100 scale-100"
+                                    x-transition:leave="transition ease-in duration-75"
+                                    x-transition:leave-start="opacity-100 scale-100"
+                                    x-transition:leave-end="opacity-0 scale-95"
+                                    class="absolute right-0 mt-2 w-64 bg-white border border-hairline rounded-2xl shadow-xl py-2 z-30 text-xs">
+                                    <div class="px-3 py-1.5 text-[10px] uppercase font-bold text-muted-soft tracking-wider">
+                                        Posisi Slot Bento
+                                    </div>
+                                    <template x-for="(info, key) in slots" :key="key">
+                                        <button type="button"
+                                            @click="slotVal = Number(key); openSlot = false"
+                                            class="w-full text-left px-3.5 py-2 hover:bg-gray-50 text-body-strong font-medium flex items-center justify-between cursor-pointer transition"
+                                            :class="slotVal == key ? 'bg-primary-subtle/50 font-bold text-primary' : ''">
+                                            <span x-text="info.label"></span>
+                                            <span class="text-[10px] text-muted font-normal bg-gray-100 px-2 py-0.5 rounded-md" x-text="info.desc"></span>
+                                        </button>
+                                    </template>
+                                </div>
                             </div>
                         </div>
                     </div>
