@@ -8,12 +8,9 @@
     <div x-data="mountainCreateForm()" class="max-w-5xl mx-auto space-y-6">
 
         <!-- Page Header Banner -->
-        <x-admin.page-header 
-            title="Tambah Destinasi Gunung Baru" 
+        <x-admin.page-header title="Tambah Destinasi Gunung Baru"
             subtitle="Lengkapi informasi umum, spesifikasi rute, matriks harga dinamis, profil elevasi, dan fasilitas ekspedisi."
-            :backUrl="route('admin.mountains.index')"
-            backLabel="Kembali ke Daftar Gunung"
-        />
+            :backUrl="route('admin.mountains.index')" backLabel="Kembali ke Daftar Gunung" />
 
         <form method="POST" action="{{ route('admin.mountains.store') }}" enctype="multipart/form-data" novalidate
             class="space-y-6">
@@ -22,7 +19,8 @@
             @if ($errors->any())
                 <div class="p-4 rounded-2xl bg-rose-50 border border-rose-200 text-rose-800 text-xs shadow-xs space-y-1">
                     <div class="flex items-center gap-2 font-bold text-sm text-rose-900">
-                        <svg class="w-4 h-4 text-rose-600 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <svg class="w-4 h-4 text-rose-600 shrink-0" fill="none" viewBox="0 0 24 24"
+                            stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                         </svg>
@@ -49,8 +47,7 @@
                         <label class="block text-xs font-bold text-ink-heading uppercase tracking-wider mb-2">
                             Nama Gunung <span class="text-rose-500">*</span>
                         </label>
-                        <input type="text" name="name" value="{{ old('name') }}" required
-                            placeholder="Contoh: Mt. Merbabu"
+                        <input type="text" name="name" value="{{ old('name') }}" required placeholder="Mt. Merbabu"
                             class="w-full text-xs rounded-xl border border-hairline bg-canvas p-3 text-ink focus:border-primary focus:ring-1 focus:ring-primary shadow-xs">
                     </div>
 
@@ -59,8 +56,7 @@
                         <label class="block text-xs font-bold text-ink-heading uppercase tracking-wider mb-2">
                             Ketinggian (MDPL) <span class="text-rose-500">*</span>
                         </label>
-                        <input type="number" name="elevation" value="{{ old('elevation') }}" required
-                            placeholder="Contoh: 3142"
+                        <input type="number" name="elevation" value="{{ old('elevation') }}" required placeholder="3142"
                             class="w-full text-xs rounded-xl border border-hairline bg-canvas p-3 text-ink focus:border-primary focus:ring-1 focus:ring-primary shadow-xs">
                     </div>
 
@@ -70,7 +66,7 @@
                             Provinsi / Wilayah <span class="text-rose-500">*</span>
                         </label>
                         <input type="text" name="province" value="{{ old('province') }}" required
-                            placeholder="Contoh: Jawa Tengah"
+                            placeholder="Jawa Tengah"
                             class="w-full text-xs rounded-xl border border-hairline bg-canvas p-3 text-ink focus:border-primary focus:ring-1 focus:ring-primary shadow-xs">
                     </div>
 
@@ -78,15 +74,31 @@
                     @php
                         $initialGrade = old('grade', 'Grade A');
                         $gradeLabels = [
-                            'Grade A' => ['label' => 'Grade A – Pemula', 'dot' => 'bg-emerald-500', 'text' => 'text-emerald-700'],
-                            'Grade B' => ['label' => 'Grade B – Menengah', 'dot' => 'bg-amber-500', 'text' => 'text-amber-700'],
-                            'Grade C' => ['label' => 'Grade C – Ahli', 'dot' => 'bg-rose-500', 'text' => 'text-rose-700'],
+                            'Grade A' => [
+                                'label' => 'Grade A – Pemula',
+                                'dot' => 'bg-emerald-500',
+                                'text' => 'text-emerald-700',
+                            ],
+                            'Grade B' => [
+                                'label' => 'Grade B – Menengah',
+                                'dot' => 'bg-amber-500',
+                                'text' => 'text-amber-700',
+                            ],
+                            'Grade C' => [
+                                'label' => 'Grade C – Ahli',
+                                'dot' => 'bg-rose-500',
+                                'text' => 'text-rose-700',
+                            ],
                         ];
-                        $initialGradeData = $gradeLabels[$initialGrade] ?? ['label' => 'Grade A – Pemula', 'dot' => 'bg-emerald-500', 'text' => 'text-emerald-700'];
+                        $initialGradeData = $gradeLabels[$initialGrade] ?? [
+                            'label' => 'Grade A – Pemula',
+                            'dot' => 'bg-emerald-500',
+                            'text' => 'text-emerald-700',
+                        ];
                     @endphp
-                    <div x-data="{ 
-                        open: false, 
-                        selectedVal: '{{ $initialGrade }}', 
+                    <div x-data="{
+                        open: false,
+                        selectedVal: '{{ $initialGrade }}',
                         selectedLabel: '{{ $initialGradeData['label'] }}',
                         selectedDot: '{{ $initialGradeData['dot'] }}'
                     }" @click.outside="open = false" class="relative">
@@ -96,40 +108,43 @@
                         <input type="hidden" name="grade" :value="selectedVal" required>
 
                         <button type="button" @click="open = !open"
-                                class="w-full text-xs rounded-xl border border-hairline bg-canvas p-3 text-ink flex items-center justify-between cursor-pointer focus:border-primary shadow-xs font-semibold transition select-none">
+                            class="w-full text-xs rounded-xl border border-hairline bg-canvas p-3 text-ink flex items-center justify-between cursor-pointer focus:border-primary shadow-xs font-semibold transition select-none">
                             <span class="flex items-center gap-2">
                                 <span class="w-2 h-2 rounded-full" :class="selectedDot"></span>
                                 <span x-text="selectedLabel" class="text-ink-heading"></span>
                             </span>
-                            <svg class="w-4 h-4 text-muted transition-transform duration-200 shrink-0" 
-                                 :class="open ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <svg class="w-4 h-4 text-muted transition-transform duration-200 shrink-0"
+                                :class="open ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
                             </svg>
                         </button>
 
-                        <div x-show="open" x-cloak
-                             x-transition:enter="transition ease-out duration-100"
-                             x-transition:enter-start="transform opacity-0 scale-95"
-                             x-transition:enter-end="transform opacity-100 scale-100"
-                             class="absolute left-0 right-0 mt-2 bg-white border border-hairline rounded-2xl shadow-xl py-2 z-50 text-xs">
-                            <div class="px-3 py-1.5 text-[10px] uppercase font-bold text-muted-soft tracking-wider border-b border-hairline/60 mb-1">
+                        <div x-show="open" x-cloak x-transition:enter="transition ease-out duration-100"
+                            x-transition:enter-start="transform opacity-0 scale-95"
+                            x-transition:enter-end="transform opacity-100 scale-100"
+                            class="absolute left-0 right-0 mt-2 bg-white border border-hairline rounded-2xl shadow-xl py-2 z-50 text-xs">
+                            <div
+                                class="px-3 py-1.5 text-[10px] uppercase font-bold text-muted-soft tracking-wider border-b border-hairline/60 mb-1">
                                 Tingkat Kesulitan
                             </div>
-                            <button type="button" @click="selectedVal = 'Grade A'; selectedLabel = 'Grade A – Pemula'; selectedDot = 'bg-emerald-500'; open = false;"
-                                    class="w-full text-left px-4 py-2 hover:bg-gray-50 text-body-strong font-medium flex items-center justify-between cursor-pointer"
-                                    :class="selectedVal === 'Grade A' ? 'bg-primary-subtle/50 font-bold' : ''">
+                            <button type="button"
+                                @click="selectedVal = 'Grade A'; selectedLabel = 'Grade A – Pemula'; selectedDot = 'bg-emerald-500'; open = false;"
+                                class="w-full text-left px-4 py-2 hover:bg-gray-50 text-body-strong font-medium flex items-center justify-between cursor-pointer"
+                                :class="selectedVal === 'Grade A' ? 'bg-primary-subtle/50 font-bold' : ''">
                                 <span class="text-emerald-700">Grade A – Pemula</span>
                                 <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
                             </button>
-                            <button type="button" @click="selectedVal = 'Grade B'; selectedLabel = 'Grade B – Menengah'; selectedDot = 'bg-amber-500'; open = false;"
-                                    class="w-full text-left px-4 py-2 hover:bg-gray-50 text-body-strong font-medium flex items-center justify-between cursor-pointer"
-                                    :class="selectedVal === 'Grade B' ? 'bg-primary-subtle/50 font-bold' : ''">
+                            <button type="button"
+                                @click="selectedVal = 'Grade B'; selectedLabel = 'Grade B – Menengah'; selectedDot = 'bg-amber-500'; open = false;"
+                                class="w-full text-left px-4 py-2 hover:bg-gray-50 text-body-strong font-medium flex items-center justify-between cursor-pointer"
+                                :class="selectedVal === 'Grade B' ? 'bg-primary-subtle/50 font-bold' : ''">
                                 <span class="text-amber-700">Grade B – Menengah</span>
                                 <span class="w-2 h-2 rounded-full bg-amber-500"></span>
                             </button>
-                            <button type="button" @click="selectedVal = 'Grade C'; selectedLabel = 'Grade C – Ahli'; selectedDot = 'bg-rose-500'; open = false;"
-                                    class="w-full text-left px-4 py-2 hover:bg-gray-50 text-body-strong font-medium flex items-center justify-between cursor-pointer"
-                                    :class="selectedVal === 'Grade C' ? 'bg-primary-subtle/50 font-bold' : ''">
+                            <button type="button"
+                                @click="selectedVal = 'Grade C'; selectedLabel = 'Grade C – Ahli'; selectedDot = 'bg-rose-500'; open = false;"
+                                class="w-full text-left px-4 py-2 hover:bg-gray-50 text-body-strong font-medium flex items-center justify-between cursor-pointer"
+                                :class="selectedVal === 'Grade C' ? 'bg-primary-subtle/50 font-bold' : ''">
                                 <span class="text-rose-700">Grade C – Ahli</span>
                                 <span class="w-2 h-2 rounded-full bg-rose-500"></span>
                             </button>
@@ -212,7 +227,8 @@
                                 <label class="block text-xs font-bold text-ink-heading uppercase tracking-wider">
                                     Galeri Foto Ekspedisi (Opsional, Bento Grid & Lightbox)
                                 </label>
-                                <p class="text-[11px] text-muted">Upload hingga 10 foto pendukung (pos pendakian, camp area,
+                                <p class="text-[11px] text-muted">Upload hingga 10 foto pendukung (pos pendakian, camp
+                                    area,
                                     sabana, sunrise/sunset). Foto-foto ini akan mengisi 4 kartu galeri dan modal lightbox
                                     detail ekspedisi.</p>
                             </div>
@@ -270,16 +286,6 @@
                             </template>
                         </div>
                     </div>
-
-                    <!-- Short Editorial Description -->
-                    <div class="md:col-span-2">
-                        <label class="block text-xs font-bold text-ink-heading uppercase tracking-wider mb-2">
-                            Deskripsi Singkat (Ringkasan Katalog & Kartu Gunung)
-                        </label>
-                        <textarea name="description" rows="2"
-                            placeholder="Tuliskan ulasan ringkas (1-2 kalimat) untuk kartu pencarian..."
-                            class="w-full text-xs rounded-xl border border-hairline bg-canvas p-3 text-ink focus:border-primary focus:ring-1 focus:ring-primary shadow-xs">{{ old('description') }}</textarea>
-                    </div>
                 </div>
             </div>
 
@@ -318,7 +324,7 @@
                             Harga Tek-tok Open (Rp)
                         </label>
                         <input type="number" name="price_tektok" value="{{ old('price_tektok', 400000) }}"
-                            placeholder="Contoh: 400000"
+                            placeholder="ssss400000"
                             class="w-full text-xs rounded-xl border border-hairline bg-canvas p-3 text-ink focus:border-primary focus:ring-1 focus:ring-primary shadow-xs">
                         <span class="text-[10.5px] text-muted mt-1 block">Harga dasar open trip paket 1 hari</span>
                     </div>
@@ -329,7 +335,7 @@
                             Harga Tek-tok Private (Rp)
                         </label>
                         <input type="number" name="price_private_tektok"
-                            value="{{ old('price_private_tektok', 850000) }}" placeholder="Contoh: 850000"
+                            value="{{ old('price_private_tektok', 850000) }}" placeholder="850000"
                             class="w-full text-xs rounded-xl border border-hairline bg-canvas p-3 text-ink focus:border-primary focus:ring-1 focus:ring-primary shadow-xs">
                         <span class="text-[10.5px] text-muted mt-1 block">Harga dasar private trip paket 1 hari</span>
                     </div>
@@ -342,7 +348,8 @@
                         <input type="number" name="booking_fee_per_pax"
                             value="{{ old('booking_fee_per_pax', 150000) }}" required
                             class="w-full text-xs rounded-xl border border-hairline bg-canvas p-3 text-ink focus:border-primary focus:ring-1 focus:ring-primary shadow-xs">
-                        <span class="text-[10.5px] text-amber-600 font-medium mt-1 block">Maksimal 50% (setengah) dari harga dasar trip</span>
+                        <span class="text-[10.5px] text-amber-600 font-medium mt-1 block">Maksimal 50% (setengah) dari
+                            harga dasar trip</span>
                     </div>
 
                     <!-- Price Lock Days -->
@@ -428,11 +435,13 @@
                 <div class="space-y-4">
                     <template x-if="routes.length === 0">
                         <div class="p-8 text-center border-2 border-dashed border-hairline rounded-3xl bg-canvas">
-                            <p class="text-xs text-muted mb-3">Belum ada jalur pendakian yang ditambahkan untuk destinasi ini.</p>
+                            <p class="text-xs text-muted mb-3">Belum ada jalur pendakian yang ditambahkan untuk destinasi
+                                ini.</p>
                             <button type="button" @click="addRoute()"
                                 class="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-primary-subtle text-primary text-xs font-bold hover:bg-primary hover:text-white transition-colors">
                                 <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M12 4v16m8-8H4" />
                                 </svg>
                                 <span>Tambah Jalur Baru</span>
                             </button>
@@ -499,7 +508,7 @@
                                     <label class="block text-[11px] font-bold text-muted mb-1">Nama Jalur (Via) <span
                                             class="text-rose-500">*</span></label>
                                     <input type="text" :name="`routes[${index}][name]`" x-model="r.name" required
-                                        placeholder="Contoh: Via Selo"
+                                        placeholder="Via Selo"
                                         class="w-full text-xs rounded-xl border border-hairline bg-surface-card p-2.5 text-ink focus:border-primary font-semibold">
                                 </div>
 
@@ -599,8 +608,7 @@
                                                         Checkpoint</label>
                                                     <input type="text"
                                                         :name="`routes[${index}][checkpoints][${cpIndex}][name]`"
-                                                        x-model="cp.name"
-                                                        placeholder="Contoh: Basecamp / Pos 1 / Sabana / Puncak"
+                                                        x-model="cp.name" placeholder="Basecamp / Pos 1 / Sabana / Puncak"
                                                         class="w-full text-xs rounded-xl border border-hairline bg-surface-card p-2 text-ink focus:border-primary">
                                                 </div>
                                                 <div class="sm:col-span-4">
@@ -608,7 +616,7 @@
                                                         (MDPL)</label>
                                                     <input type="number"
                                                         :name="`routes[${index}][checkpoints][${cpIndex}][elevation]`"
-                                                        x-model="cp.elevation" placeholder="Contoh: 1800"
+                                                        x-model="cp.elevation" placeholder="1800"
                                                         class="w-full text-xs rounded-xl border border-hairline bg-surface-card p-2 text-ink focus:border-primary font-semibold">
                                                 </div>
                                                 <div class="sm:col-span-1 text-right pt-2 sm:pt-0">
@@ -752,7 +760,7 @@
                                                         <input type="text"
                                                             :name="`routes[${index}][itinerary_days][${dIndex}][title]`"
                                                             x-model="dayItem.title"
-                                                            :placeholder="`Contoh: Day ${dIndex + 1}: Basecamp ke Camp Area`"
+                                                            :placeholder="`Day ${dIndex + 1}: Basecamp ke Camp Area`"
                                                             class="w-full text-xs rounded-xl border border-hairline bg-surface-card p-2 text-ink focus:border-primary font-bold">
                                                     </div>
                                                     <div>
@@ -802,14 +810,14 @@
                                                     Tek-tok</label>
                                                 <input type="text" :name="`routes[${index}][itinerary_tektok_title]`"
                                                     x-model="r.itinerary_tektok_title"
-                                                    placeholder="Contoh: Itinerary 1D Tek-tok (Via Selo)"
+                                                    placeholder="Itinerary 1D Tek-tok (Via Selo)"
                                                     class="w-full text-xs rounded-xl border border-hairline bg-surface-card p-2.5 text-ink focus:border-primary font-bold">
                                             </div>
                                             <div>
                                                 <label class="block text-[11px] font-bold text-muted mb-1">Deskripsi
                                                     Ringkas Tek-tok</label>
                                                 <textarea rows="2" :name="`routes[${index}][itinerary_tektok_desc]`" x-model="r.itinerary_tektok_desc"
-                                                    placeholder="Contoh: Pendakian cepat langsung turun dalam 1 hari tanpa mendirikan tenda..."
+                                                    placeholder="Pendakian cepat langsung turun dalam 1 hari tanpa mendirikan tenda..."
                                                     class="w-full text-xs rounded-xl border border-hairline bg-surface-card p-2.5 text-ink focus:border-primary leading-relaxed"></textarea>
                                             </div>
                                             <div>
@@ -855,7 +863,7 @@
                     <div class="sm:col-span-5">
                         <label class="block text-[11px] font-bold text-muted mb-1">Minimal Peserta (≥ Pax)</label>
                         <input type="number" :name="`price_tiers[${index}][min_pax]`" x-model="t.min_pax"
-                            min="1" required placeholder="Contoh: 1, 4, 7..."
+                            min="1" required placeholder="1, 4, 7..."
                             class="w-full text-xs rounded-xl border border-hairline bg-surface-card p-2 text-ink focus:border-primary">
                     </div>
 
@@ -863,7 +871,7 @@
                     <div class="sm:col-span-6">
                         <label class="block text-[11px] font-bold text-muted mb-1">Harga Final / Pax (Rp)</label>
                         <input type="number" :name="`price_tiers[${index}][price_per_pax]`" x-model="t.price_per_pax"
-                            required placeholder="Contoh: 550000"
+                            required placeholder="550000"
                             class="w-full text-xs rounded-xl border border-hairline bg-surface-card p-2 text-ink focus:border-primary font-bold">
                     </div>
 
@@ -930,7 +938,7 @@
                         <div class="p-4 rounded-2xl bg-canvas border border-hairline space-y-2 relative group">
                             <div class="flex items-center justify-between gap-2">
                                 <input type="text" :name="`facilities_included[${index}][category]`"
-                                    x-model="cat.category" required placeholder="Nama Kategori (contoh: Akomodasi Camp)"
+                                    x-model="cat.category" required placeholder="Nama Kategori (Akomodasi Camp)"
                                     class="w-full text-xs font-bold rounded-xl border border-hairline bg-surface-card p-2 text-ink focus:border-primary">
                                 <button type="button" @click="removeFacilityIncluded(index)"
                                     class="text-muted hover:text-rose-600 p-1 rounded transition-colors"
@@ -969,8 +977,7 @@
                         <div class="p-4 rounded-2xl bg-canvas border border-hairline space-y-2 relative group">
                             <div class="flex items-center justify-between gap-2">
                                 <input type="text" :name="`facilities_excluded[${index}][category]`"
-                                    x-model="cat.category" required
-                                    placeholder="Nama Kategori (contoh: Kebutuhan Pribadi)"
+                                    x-model="cat.category" required placeholder="Nama Kategori (Kebutuhan Pribadi)"
                                     class="w-full text-xs font-bold rounded-xl border border-hairline bg-surface-card p-2 text-ink focus:border-primary">
                                 <button type="button" @click="removeFacilityExcluded(index)"
                                     class="text-muted hover:text-rose-600 p-1 rounded transition-colors"

@@ -6,7 +6,7 @@
     ===================================================================== --}}
     <header
         class="relative w-full min-h-[360px] sm:min-h-[440px] md:h-screen md:min-h-[660px] bg-cover bg-center flex flex-col justify-between"
-        style="background-image: linear-gradient(180deg, rgba(16, 24, 40, 0.45) 0%, rgba(16, 24, 40, 0.15) 40%, rgba(0,0,0,0.35) 100%), url('{{ asset('storage/mountains/hero-section.png') }}');">
+        style="background-image: linear-gradient(180deg, rgba(16, 24, 40, 0.45) 0%, rgba(16, 24, 40, 0.15) 40%, rgba(0,0,0,0.35) 100%), url('{{ asset('storage/mountains/hero.jpg') }}');">
 
         <!-- Hero Title Center -->
         <div
@@ -384,9 +384,6 @@
                                 <span
                                     class="text-xs bg-surface-forest-tag border border-white/10 px-3.5 py-1.5 rounded-full text-gray-200">Mt.
                                     Prau</span>
-                                <span
-                                    class="text-xs bg-surface-forest-tag border border-white/10 px-3.5 py-1.5 rounded-full text-gray-200">Mt.
-                                    Papandayan</span>
                             </div>
                         </div>
 
@@ -500,7 +497,7 @@
                     desc: 'Sangat direkomendasikan bagi Anda yang baru pertama kali ingin mencicipi dinginnya udara puncak gunung.',
                     duration: '2 – 5 Jam / Hari',
                     effort: 'Jogging Ringan',
-                    tags: ['Mt. Merbabu', 'Mt. Prau', 'Mt. Papandayan'],
+                    tags: ['Mt. Merbabu', 'Mt. Prau'],
                     img: '/storage/mountains/merbabu.jpeg'
                 },
                 'B': {
@@ -509,15 +506,15 @@
                     duration: '6 – 8 Jam / Hari',
                     effort: 'Latihan Kardio Rutin',
                     tags: ['Mt. Sumbing', 'Mt. Sindoro', 'Mt. Lawu'],
-                    img: 'https://images.unsplash.com/photo-1519681393784-d120267933ba?q=80&w=800&auto=format&fit=crop'
+                    img: '/storage/mountains/kembang.jpeg'
                 },
                 'C': {
                     title: 'Kelas C - Ahli & Ekstrem',
                     desc: 'Medan teknis, cuaca tak menentu, dan elevasi tinggi. Membutuhkan navigasi mandiri dan fisik prima.',
                     duration: '8 – 12 Jam / Hari',
                     effort: 'Ketahanan Tinggi & Endurance',
-                    tags: ['Mt. Slamet', 'Mt. Raung', 'Mt. Rinjani'],
-                    img: 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?q=80&w=800&auto=format&fit=crop'
+                    tags: ['Mt. Slamet', 'Mt. Rinjani'],
+                    img: '/storage/mountains/rinjani.jpeg'
                 }
             };
 
