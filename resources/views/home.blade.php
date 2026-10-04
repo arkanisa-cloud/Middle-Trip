@@ -6,7 +6,7 @@
     ===================================================================== --}}
     <header
         class="relative w-full min-h-[360px] sm:min-h-[440px] md:h-screen md:min-h-[660px] bg-cover bg-center flex flex-col justify-between"
-        style="background-image: linear-gradient(180deg, rgba(16, 24, 40, 0.45) 0%, rgba(16, 24, 40, 0.15) 40%, rgba(0,0,0,0.35) 100%), url('{{ asset('storage/mountains/hero.jpg') }}');">
+        style="background-image: linear-gradient(180deg, rgba(16, 24, 40, 0.45) 0%, rgba(16, 24, 40, 0.15) 40%, rgba(0,0,0,0.35) 100%), url('{{ asset('storage/mountains/hero.webp') }}');">
 
         <!-- Hero Title Center -->
         <div
@@ -208,8 +208,8 @@
                 <!-- Big Hero Card: Featured Order 1 (Span 7) -->
                 <a href="{{ route('ekspedisi.show', $featuredHero->slug) }}"
                     class="lg:col-span-7 relative min-h-[340px] sm:min-h-[400px] md:min-h-[440px] lg:h-full lg:min-h-0 rounded-2xl overflow-hidden group shadow-sm bg-gray-900 cursor-pointer block">
-                    <img src="{{ $featuredHero->cover_image }}" alt="{{ $featuredHero->name }}"
-                        fetchpriority="high" decoding="async"
+                    <img src="{{ $featuredHero->cover_image }}" alt="{{ $featuredHero->name }}" fetchpriority="high"
+                        decoding="async"
                         class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition duration-500" />
                     <div class="absolute inset-0 bg-gradient-to-t from-black/85 via-black/30 to-black/30"></div>
 
@@ -255,8 +255,8 @@
                     <a href="{{ route('ekspedisi.show', $card->slug) }}"
                         class="flex-1 bg-surface-card rounded-2xl p-3.5 border border-gray-100 shadow-sm hover:shadow-md transition duration-200 cursor-pointer group flex flex-col justify-between block">
                         <div class="relative h-28 rounded-xl overflow-hidden mb-3 bg-gray-200">
-                            <img src="{{ $card->cover_image }}" alt="{{ $card->name }}"
-                                loading="lazy" decoding="async"
+                            <img src="{{ $card->cover_image }}" alt="{{ $card->name }}" loading="lazy"
+                                decoding="async"
                                 class="w-full h-full object-cover group-hover:scale-105 transition duration-500" />
                             <div class="absolute inset-0 bg-black/20"></div>
                             <div class="absolute top-2.5 left-2.5 right-2.5 flex items-center justify-between">
@@ -395,9 +395,8 @@
                     <div class="lg:col-span-5">
                         <div
                             class="relative w-full aspect-[4/3] rounded-2xl overflow-hidden shadow-lg border border-white/10">
-                            <img id="grade-image" src="/storage/mountains/merbabu.jpeg" alt="Jalur Pemula"
-                                loading="lazy" decoding="async"
-                                class="w-full h-full object-cover" />
+                            <img id="grade-image" src="/storage/mountains/merbabu.webp" alt="Jalur Pemula"
+                                loading="lazy" decoding="async" class="w-full h-full object-cover" />
                             <div
                                 class="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent">
                             </div>
@@ -501,7 +500,7 @@
                     duration: '2 – 5 Jam / Hari',
                     effort: 'Jogging Ringan',
                     tags: ['Mt. Merbabu', 'Mt. Prau'],
-                    img: '/storage/mountains/merbabu.jpeg'
+                    img: '/storage/mountains/merbabu.webp'
                 },
                 'B': {
                     title: 'Kelas B - Menengah',
@@ -509,7 +508,7 @@
                     duration: '6 – 8 Jam / Hari',
                     effort: 'Latihan Kardio Rutin',
                     tags: ['Mt. Sumbing', 'Mt. Sindoro', 'Mt. Lawu'],
-                    img: '/storage/mountains/kembang.jpeg'
+                    img: '/storage/mountains/kembang.webp'
                 },
                 'C': {
                     title: 'Kelas C - Ahli & Ekstrem',
@@ -517,7 +516,7 @@
                     duration: '8 – 12 Jam / Hari',
                     effort: 'Ketahanan Tinggi & Endurance',
                     tags: ['Mt. Slamet', 'Mt. Rinjani'],
-                    img: '/storage/mountains/rinjani.jpeg'
+                    img: '/storage/mountains/rinjani.webp'
                 }
             };
 

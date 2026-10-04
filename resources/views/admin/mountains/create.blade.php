@@ -174,16 +174,22 @@
                             }
                         }" class="space-y-3">
                             <div class="flex items-center gap-4">
-                                <div class="relative w-24 h-20 rounded-2xl overflow-hidden border border-hairline shadow-xs shrink-0 bg-canvas flex items-center justify-center">
+                                <div
+                                    class="relative w-24 h-20 rounded-2xl overflow-hidden border border-hairline shadow-xs shrink-0 bg-canvas flex items-center justify-center">
                                     <template x-if="preview">
-                                        <img :src="preview" alt="Preview Foto Sampul" class="w-full h-full object-cover">
+                                        <img :src="preview" alt="Preview Foto Sampul"
+                                            class="w-full h-full object-cover">
                                     </template>
                                     <template x-if="!preview">
-                                        <div class="flex flex-col items-center justify-center text-muted p-2 text-center select-none">
-                                            <svg class="w-6 h-6 text-muted-soft" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                        <div
+                                            class="flex flex-col items-center justify-center text-muted p-2 text-center select-none">
+                                            <svg class="w-6 h-6 text-muted-soft" fill="none" viewBox="0 0 24 24"
+                                                stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                                                    d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                                             </svg>
-                                            <span class="text-[9.5px] font-medium text-muted mt-1 leading-tight">Pratinjau</span>
+                                            <span
+                                                class="text-[9.5px] font-medium text-muted mt-1 leading-tight">Pratinjau</span>
                                         </div>
                                     </template>
                                 </div>
@@ -191,7 +197,7 @@
                                     <input type="file" name="cover_image_file" @change="handleFileSelect"
                                         accept="image/*" required
                                         class="w-full text-xs text-muted file:mr-3 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-primary-subtle file:text-primary hover:file:bg-primary hover:file:text-white file:transition-colors file:cursor-pointer border border-hairline rounded-xl bg-canvas p-1.5 focus:border-primary shadow-xs">
-                                    <p class="text-[11px] text-muted mt-1.5">Format file: JPG, PNG, WEBP (Otomatis dikonversi ke WebP untuk performa maksimal)</p>
+                                    <p class="text-[11px] text-muted mt-1.5">Format file: JPG, PNG, WEBP</p>
                                 </div>
                             </div>
                             <input type="hidden" name="cover_image" :value="preview">
@@ -304,7 +310,7 @@
                     </div>
 
                     <!-- Toggles & Status Destinasi -->
-                    <div class="md:col-span-2 space-y-3 pt-4 border-t border-hairline" x-data="{ 
+                    <div class="md:col-span-2 space-y-3 pt-4 border-t border-hairline" x-data="{
                         isFeatured: {{ old('is_featured') ? 'true' : 'false' }},
                         openSlot: false,
                         slotVal: {{ old('featured_order', 1) }},
@@ -342,7 +348,8 @@
                             class="p-4 bg-primary-subtle/30 border border-primary/20 rounded-2xl flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
                             <div>
                                 <span class="font-bold text-ink-heading block">Posisi Bento Grid</span>
-                                <span class="text-[11px] text-muted">Pilih slot tampilan kartu di section bento beranda</span>
+                                <span class="text-[11px] text-muted">Pilih slot tampilan kartu di section bento
+                                    beranda</span>
                             </div>
                             <div class="relative shrink-0">
                                 <input type="hidden" name="featured_order" :value="slotVal">
@@ -352,8 +359,11 @@
                                         <span class="w-2 h-2 rounded-full bg-primary shrink-0"></span>
                                         <span x-text="slots[slotVal]?.label || 'Pilih Slot'" class="truncate"></span>
                                     </div>
-                                    <svg class="w-4 h-4 text-muted transition-transform duration-200 shrink-0" :class="openSlot ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                                    <svg class="w-4 h-4 text-muted transition-transform duration-200 shrink-0"
+                                        :class="openSlot ? 'rotate-180' : ''" fill="none" stroke="currentColor"
+                                        viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M19 9l-7 7-7-7" />
                                     </svg>
                                 </button>
 
@@ -366,16 +376,18 @@
                                     x-transition:leave-start="opacity-100 scale-100"
                                     x-transition:leave-end="opacity-0 scale-95"
                                     class="absolute right-0 mt-2 w-64 bg-white border border-hairline rounded-2xl shadow-xl py-2 z-30 text-xs">
-                                    <div class="px-3 py-1.5 text-[10px] uppercase font-bold text-muted-soft tracking-wider">
+                                    <div
+                                        class="px-3 py-1.5 text-[10px] uppercase font-bold text-muted-soft tracking-wider">
                                         Posisi Slot Bento
                                     </div>
                                     <template x-for="(info, key) in slots" :key="key">
-                                        <button type="button"
-                                            @click="slotVal = Number(key); openSlot = false"
+                                        <button type="button" @click="slotVal = Number(key); openSlot = false"
                                             class="w-full text-left px-3.5 py-2 hover:bg-gray-50 text-body-strong font-medium flex items-center justify-between cursor-pointer transition"
                                             :class="slotVal == key ? 'bg-primary-subtle/50 font-bold text-primary' : ''">
                                             <span x-text="info.label"></span>
-                                            <span class="text-[10px] text-muted font-normal bg-gray-100 px-2 py-0.5 rounded-md" x-text="info.desc"></span>
+                                            <span
+                                                class="text-[10px] text-muted font-normal bg-gray-100 px-2 py-0.5 rounded-md"
+                                                x-text="info.desc"></span>
                                         </button>
                                     </template>
                                 </div>
@@ -499,44 +511,46 @@
                                     }
                                 }" @click.outside="open = false" class="relative">
                                     <label class="block text-[11px] font-bold text-muted mb-1">Grade Kesulitan</label>
-                                    <input type="hidden" :name="`routes[${index}][grade]`" :value="r.grade || 'Grade A'">
+                                    <input type="hidden" :name="`routes[${index}][grade]`"
+                                        :value="r.grade || 'Grade A'">
 
                                     <button type="button" @click="open = !open"
                                         class="w-full text-xs rounded-xl border border-hairline bg-surface-card p-2.5 text-ink flex items-center justify-between cursor-pointer focus:border-primary shadow-2xs font-semibold transition select-none">
                                         <span class="flex items-center gap-2">
-                                            <span class="w-2 h-2 rounded-full shrink-0" :class="getGradeDot(r.grade)"></span>
-                                            <span x-text="getGradeLabel(r.grade)" class="text-ink-heading truncate text-[11.5px]"></span>
+                                            <span class="w-2 h-2 rounded-full shrink-0"
+                                                :class="getGradeDot(r.grade)"></span>
+                                            <span x-text="getGradeLabel(r.grade)"
+                                                class="text-ink-heading truncate text-[11.5px]"></span>
                                         </span>
                                         <svg class="w-3.5 h-3.5 text-muted transition-transform duration-200 shrink-0"
-                                            :class="open ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                                            :class="open ? 'rotate-180' : ''" fill="none" stroke="currentColor"
+                                            viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M19 9l-7 7-7-7" />
                                         </svg>
                                     </button>
 
-                                    <div x-show="open" x-cloak
-                                        x-transition:enter="transition ease-out duration-100"
+                                    <div x-show="open" x-cloak x-transition:enter="transition ease-out duration-100"
                                         x-transition:enter-start="transform opacity-0 scale-95"
                                         x-transition:enter-end="transform opacity-100 scale-100"
                                         class="absolute left-0 right-0 mt-1.5 bg-white border border-hairline rounded-2xl shadow-xl py-1.5 z-50 text-xs min-w-[180px]">
-                                        <div class="px-3 py-1 text-[10px] uppercase font-bold text-muted-soft tracking-wider border-b border-hairline/60 mb-1">
+                                        <div
+                                            class="px-3 py-1 text-[10px] uppercase font-bold text-muted-soft tracking-wider border-b border-hairline/60 mb-1">
                                             Pilih Grade
                                         </div>
-                                        <button type="button"
-                                            @click="r.grade = 'Grade A'; open = false;"
+                                        <button type="button" @click="r.grade = 'Grade A'; open = false;"
                                             class="w-full text-left px-3.5 py-1.5 hover:bg-gray-50 text-body-strong font-medium flex items-center justify-between cursor-pointer"
                                             :class="r.grade === 'Grade A' ? 'bg-primary-subtle/50 font-bold' : ''">
                                             <span class="text-emerald-700 text-xs">Grade A – Pemula</span>
                                             <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
                                         </button>
-                                        <button type="button"
-                                            @click="r.grade = 'Grade B'; open = false;"
+                                        <button type="button" @click="r.grade = 'Grade B'; open = false;"
                                             class="w-full text-left px-3.5 py-1.5 hover:bg-gray-50 text-body-strong font-medium flex items-center justify-between cursor-pointer"
                                             :class="r.grade === 'Grade B' ? 'bg-primary-subtle/50 font-bold' : ''">
                                             <span class="text-amber-700 text-xs">Grade B – Menengah</span>
                                             <span class="w-2 h-2 rounded-full bg-amber-500"></span>
                                         </button>
-                                        <button type="button"
-                                            @click="r.grade = 'Grade C'; open = false;"
+                                        <button type="button" @click="r.grade = 'Grade C'; open = false;"
                                             class="w-full text-left px-3.5 py-1.5 hover:bg-gray-50 text-body-strong font-medium flex items-center justify-between cursor-pointer"
                                             :class="r.grade === 'Grade C' ? 'bg-primary-subtle/50 font-bold' : ''">
                                             <span class="text-rose-700 text-xs">Grade C – Ahli</span>
@@ -562,54 +576,66 @@
                                 </div>
 
                                 <!-- Route Pricing Section (Open & Private, Camping & Tektok + Booking Fee DP) -->
-                                <div class="sm:col-span-2 lg:col-span-5 p-4 rounded-2xl bg-surface-card border border-hairline/80 mt-1 space-y-3">
+                                <div
+                                    class="sm:col-span-2 lg:col-span-5 p-4 rounded-2xl bg-surface-card border border-hairline/80 mt-1 space-y-3">
                                     <div class="flex items-center justify-between border-b border-hairline/60 pb-2">
                                         <div class="flex items-center gap-2">
-                                            <svg class="w-4 h-4 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                            <svg class="w-4 h-4 text-primary" fill="none" stroke="currentColor"
+                                                viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                                             </svg>
-                                            <span class="text-xs font-bold text-ink-heading">Tarif & Booking Fee Jalur Ini (Per Via)</span>
+                                            <span class="text-xs font-bold text-ink-heading">Tarif & Booking Fee Jalur Ini
+                                                (Per Via)</span>
                                         </div>
-                                        <span class="text-[10px] text-muted">Pengaturan harga trip dan DP per pax untuk via ini</span>
+                                        <span class="text-[10px] text-muted">Pengaturan harga trip dan DP per pax untuk via
+                                            ini</span>
                                     </div>
                                     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
                                         <div>
-                                            <label class="block text-[11px] font-semibold text-muted mb-1">Open Trip - Camping (Rp) <span class="text-rose-500">*</span></label>
+                                            <label class="block text-[11px] font-semibold text-muted mb-1">Open Trip -
+                                                Camping (Rp) <span class="text-rose-500">*</span></label>
                                             <input type="number" :name="`routes[${index}][price_camping_open]`"
                                                 x-model.number="r.price_camping_open"
                                                 @input="if(Number(r.booking_fee_per_pax) > Math.floor((Number(r.price_camping_open)||0)/2)) { r.booking_fee_per_pax = Math.floor((Number(r.price_camping_open)||0)/2); }"
                                                 placeholder="500000"
-                                                class="w-full text-xs rounded-xl border border-hairline bg-canvas p-2.5 text-ink focus:border-primary font-semibold" required>
+                                                class="w-full text-xs rounded-xl border border-hairline bg-canvas p-2.5 text-ink focus:border-primary font-semibold"
+                                                required>
                                         </div>
                                         <div>
-                                            <label class="block text-[11px] font-semibold text-muted mb-1">Open Trip - Tektok (Rp)</label>
+                                            <label class="block text-[11px] font-semibold text-muted mb-1">Open Trip -
+                                                Tektok (Rp)</label>
                                             <input type="number" :name="`routes[${index}][price_tektok_open]`"
                                                 x-model.number="r.price_tektok_open" placeholder="400000"
                                                 class="w-full text-xs rounded-xl border border-hairline bg-canvas p-2.5 text-ink focus:border-primary">
                                         </div>
                                         <div>
-                                            <label class="block text-[11px] font-semibold text-muted mb-1">Private Trip - Camping (Rp)</label>
+                                            <label class="block text-[11px] font-semibold text-muted mb-1">Private Trip -
+                                                Camping (Rp)</label>
                                             <input type="number" :name="`routes[${index}][price_camping_private]`"
                                                 x-model.number="r.price_camping_private" placeholder="750000"
                                                 class="w-full text-xs rounded-xl border border-hairline bg-canvas p-2.5 text-ink focus:border-primary">
                                         </div>
                                         <div>
-                                            <label class="block text-[11px] font-semibold text-muted mb-1">Private Trip - Tektok (Rp)</label>
+                                            <label class="block text-[11px] font-semibold text-muted mb-1">Private Trip -
+                                                Tektok (Rp)</label>
                                             <input type="number" :name="`routes[${index}][price_tektok_private]`"
                                                 x-model.number="r.price_tektok_private" placeholder="650000"
                                                 class="w-full text-xs rounded-xl border border-hairline bg-canvas p-2.5 text-ink focus:border-primary">
                                         </div>
                                         <div>
-                                            <label class="block text-[11px] font-semibold text-muted mb-1">Booking Fee DP / Pax (Rp) <span class="text-rose-500">*</span></label>
+                                            <label class="block text-[11px] font-semibold text-muted mb-1">Booking Fee DP /
+                                                Pax (Rp) <span class="text-rose-500">*</span></label>
                                             <input type="number" :name="`routes[${index}][booking_fee_per_pax]`"
                                                 x-model.number="r.booking_fee_per_pax"
-                                                :max="Math.floor((Number(r.price_camping_open) || 0) / 2)"
-                                                min="0"
+                                                :max="Math.floor((Number(r.price_camping_open) || 0) / 2)" min="0"
                                                 placeholder="150000"
                                                 @input="if(Number(r.booking_fee_per_pax) > Math.floor((Number(r.price_camping_open)||0)/2)) { r.booking_fee_per_pax = Math.floor((Number(r.price_camping_open)||0)/2); }"
-                                                class="w-full text-xs rounded-xl border border-hairline bg-canvas p-2.5 text-ink focus:border-primary font-semibold" required>
+                                                class="w-full text-xs rounded-xl border border-hairline bg-canvas p-2.5 text-ink focus:border-primary font-semibold"
+                                                required>
                                             <span class="text-[10px] text-amber-600 font-medium mt-1 block">
-                                                Maks. 50%: Rp <span x-text="new Intl.NumberFormat('id-ID').format(Math.floor((Number(r.price_camping_open) || 0) / 2))"></span>
+                                                Maks. 50%: Rp <span
+                                                    x-text="new Intl.NumberFormat('id-ID').format(Math.floor((Number(r.price_camping_open) || 0) / 2))"></span>
                                             </span>
                                         </div>
                                     </div>
