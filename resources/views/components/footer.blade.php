@@ -1,5 +1,5 @@
 <!-- Footer Component -->
-<footer id="contact" class="w-full bg-canvas-alt border-t border-hairline/80 text-muted pt-14 pb-10">
+<footer id="contact" class="w-full bg-transparent text-muted pt-14 pb-10">
     <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
 
         <!-- Main Footer Columns -->
