@@ -5,7 +5,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <meta name="google-site-verification" content="google1fb5e48a94fc3895" />
+    <meta name="google-site-verification" content="Pjl8-ksm-CoMZcIQX14nsh6c_e6enyHCW014FiS_DFc" />
 
     <title>{{ config('app.name', 'Laravel') }}</title>
 
