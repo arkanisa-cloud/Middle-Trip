@@ -68,8 +68,8 @@
                     </li>
                     <li><a href="{{ route('home') }}#faq" class="hover:text-primary transition-colors">FAQ &amp;
                             SIMAKSI</a></li>
-                    <li><a href="#" class="hover:text-primary transition-colors">Kebijakan Privasi</a></li>
-                    <li><a href="#" class="hover:text-primary transition-colors">Syarat &amp; Ketentuan</a></li>
+                    <li><a href="{{ route('privacy.policy') }}" class="hover:text-primary transition-colors">Kebijakan Privasi</a></li>
+                    <li><a href="{{ route('terms.service') }}" class="hover:text-primary transition-colors">Syarat &amp; Ketentuan</a></li>
                 </ul>
             </div>
 

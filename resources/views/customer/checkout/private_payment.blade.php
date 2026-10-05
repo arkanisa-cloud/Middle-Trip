@@ -664,9 +664,9 @@
                             <label class="flex items-start gap-2.5 pt-1 cursor-pointer select-none">
                                 <input type="checkbox" required checked
                                     class="w-4 h-4 rounded border-slate-300 text-primary focus:ring-primary focus:ring-offset-0 accent-primary cursor-pointer mt-0.5 transition-colors">
-                                <span class="text-[11px] text-muted leading-tight">Saya menyetujui <a href="#"
+                                <span class="text-[11px] text-muted leading-tight">Saya menyetujui <a href="{{ route('terms.service') }}" target="_blank"
                                         class="text-primary font-medium underline hover:text-primary-hover">Syarat
-                                        &amp; Ketentuan</a> serta kebijakan ekspedisi MiddleTrip.</span>
+                                        &amp; Ketentuan</a> serta <a href="{{ route('privacy.policy') }}" target="_blank" class="text-primary font-medium underline hover:text-primary-hover">Kebijakan Privasi</a> MiddleTrip.</span>
                             </label>
                         </div>
 
@@ -983,8 +983,9 @@
                 &copy; {{ date('Y') }} MiddleTrip Expedition Co. All rights reserved.
             </div>
             <div class="flex items-center gap-4 text-[11px]">
-                <a href="#" class="hover:text-ink transition">Bantuan</a>
-                <a href="#" class="hover:text-ink transition">Privacy</a>
+                <a href="{{ route('contact') }}" class="hover:text-ink transition">Bantuan</a>
+                <a href="{{ route('privacy.policy') }}" class="hover:text-ink transition">Privacy</a>
+                <a href="{{ route('terms.service') }}" class="hover:text-ink transition">Terms</a>
             </div>
         </div>
     </footer>
