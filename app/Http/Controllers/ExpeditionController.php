@@ -39,11 +39,21 @@ class ExpeditionController extends Controller
             });
         }
 
-        // Filter pencarian gunung
-        if ($request->filled('q')) {
-            $query->where('name', 'like', '%'.$request->q.'%');
-        } elseif ($request->filled('gunung')) {
-            $query->where('name', 'like', '%'.$request->gunung.'%');
+        // Filter pencarian gunung (nama, provinsi, atau nama jalur)
+        $searchTerm = $request->input('q') ?? $request->input('gunung') ?? $request->input('search');
+        if (! empty($searchTerm)) {
+            $keyword = trim($searchTerm);
+            $cleanKeyword = preg_replace('/^(mt\.?|gunung)\s*/i', '', $keyword);
+
+            $query->where(function ($q) use ($keyword, $cleanKeyword) {
+                $q->where('name', 'like', '%'.$keyword.'%')
+                    ->orWhere('name', 'like', '%'.$cleanKeyword.'%')
+                    ->orWhere('province', 'like', '%'.$keyword.'%')
+                    ->orWhereHas('routes', function ($rq) use ($keyword, $cleanKeyword) {
+                        $rq->where('name', 'like', '%'.$keyword.'%')
+                            ->orWhere('name', 'like', '%'.$cleanKeyword.'%');
+                    });
+            });
         }
 
         $mountains = $query->orderBy('name')->get();
@@ -61,34 +71,69 @@ class ExpeditionController extends Controller
             ->with(['primaryRoute', 'routes']);
 
         if ($request->filled('q')) {
-            $keyword = $request->q;
-            $query->where(function ($q) use ($keyword) {
+            $keyword = trim($request->q);
+            $cleanKeyword = preg_replace('/^(mt\.?|gunung)\s*/i', '', $keyword);
+            $query->where(function ($q) use ($keyword, $cleanKeyword) {
                 $q->where('name', 'like', '%'.$keyword.'%')
+                    ->orWhere('name', 'like', '%'.$cleanKeyword.'%')
+                    ->orWhere('slug', 'like', '%'.$keyword.'%')
+                    ->orWhere('slug', 'like', '%'.$cleanKeyword.'%')
                     ->orWhere('province', 'like', '%'.$keyword.'%')
-                    ->orWhere('regency', 'like', '%'.$keyword.'%')
-                    ->orWhereHas('routes', function ($rq) use ($keyword) {
-                        $rq->where('name', 'like', '%'.$keyword.'%');
+                    ->orWhereHas('routes', function ($rq) use ($keyword, $cleanKeyword) {
+                        $rq->where('name', 'like', '%'.$keyword.'%')
+                            ->orWhere('name', 'like', '%'.$cleanKeyword.'%');
                     });
             });
         }
 
         if ($request->filled('grade') && $request->grade !== 'all') {
-            $query->whereHas('primaryRoute', function ($q) use ($request) {
-                $q->where('grade', $request->grade);
+            $gradeTerm = $request->grade;
+            $query->where(function ($q) use ($gradeTerm) {
+                $q->whereHas('primaryRoute', function ($rq) use ($gradeTerm) {
+                    $rq->where('grade', $gradeTerm);
+                })->orWhereHas('routes', function ($rq) use ($gradeTerm) {
+                    $rq->where('grade', $gradeTerm);
+                });
             });
         }
 
         $mountains = $query->orderBy('name')->limit(12)->get()->map(function ($mountain) {
+            $rawCover = $mountain->cover_image;
+            if ($rawCover) {
+                if (str_starts_with($rawCover, 'blob:')) {
+                    $coverUrl = 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=800&q=80';
+                } elseif (str_starts_with($rawCover, 'http://') || str_starts_with($rawCover, 'https://') || str_starts_with($rawCover, '/')) {
+                    $coverUrl = $rawCover;
+                } else {
+                    $coverUrl = asset('storage/'.$rawCover);
+                }
+            } else {
+                $coverUrl = 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=800&q=80';
+            }
+
+            $rawGrade = $mountain->default_grade;
+            if ($rawGrade instanceof \App\Enums\TrailGrade) {
+                $gradeLabel = $rawGrade->label();
+                $gradeBadge = $rawGrade->badgeClasses();
+            } elseif (is_string($rawGrade)) {
+                $enum = \App\Enums\TrailGrade::tryFrom($rawGrade);
+                $gradeLabel = $enum ? $enum->label() : $rawGrade;
+                $gradeBadge = $enum ? $enum->badgeClasses() : 'bg-grade-a-bg text-grade-a-text';
+            } else {
+                $gradeLabel = 'Grade A – Pemula';
+                $gradeBadge = 'bg-grade-a-bg text-grade-a-text';
+            }
+
             return [
                 'id' => $mountain->id,
                 'name' => $mountain->name,
                 'slug' => $mountain->slug,
                 'elevation' => $mountain->formatted_elevation,
-                'location' => trim(($mountain->regency ? $mountain->regency . ', ' : '') . ($mountain->province ?? '')),
-                'cover_image' => $mountain->cover_image,
-                'price' => $mountain->formatted_short_price,
-                'grade' => $mountain->default_grade?->label() ?? 'Grade A – Pemula',
-                'grade_badge' => $mountain->default_grade?->badgeClasses() ?? 'bg-grade-a-bg text-grade-a-text',
+                'location' => $mountain->province ?? '',
+                'cover_image' => $coverUrl,
+                'price' => $mountain->formatted_short_price ?: 'Rp 0',
+                'grade' => $gradeLabel,
+                'grade_badge' => $gradeBadge,
                 'url' => route('ekspedisi.show', $mountain->slug),
             ];
         });

@@ -214,6 +214,8 @@
                 if (window.history.replaceState) {
                     const url = new URL(window.location);
                     url.searchParams.delete('gunung');
+                    url.searchParams.delete('q');
+                    url.searchParams.delete('search');
                     window.history.replaceState({}, '', url);
                 }
 
@@ -267,15 +269,15 @@
             // Parse initial URL query params
             (function() {
                 const urlParams = new URLSearchParams(window.location.search);
-                const queryGunung = urlParams.get('gunung');
+                const queryGunung = urlParams.get('q') || urlParams.get('gunung') || urlParams.get('search');
                 const queryGrade = urlParams.get('grade');
 
                 if (queryGunung) {
-                    searchMountainQuery = queryGunung.toLowerCase().replace(/^mt\.\s*/i, '').trim();
+                    searchMountainQuery = queryGunung.toLowerCase().replace(/^(mt\.?|gunung)\s*/i, '').trim();
                     const badge = document.getElementById('active-search-badge');
                     const badgeText = document.getElementById('active-search-text');
                     if (badge && badgeText) {
-                        badgeText.textContent = queryGunung;
+                        badgeText.textContent = `Pencarian: "${queryGunung}"`;
                         badge.classList.remove('hidden');
                         badge.classList.add('flex');
                     }

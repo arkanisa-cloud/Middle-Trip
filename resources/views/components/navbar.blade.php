@@ -621,15 +621,12 @@
         modal.classList.add('flex');
         document.body.classList.add('overflow-hidden');
 
-        // Fetch data awal jika belum ada
-        if (quickSearchData.length === 0) {
-            fetchQuickSearch();
-        } else {
-            renderQuickSearchResults();
-        }
+        // Selalu trigger pencarian saat modal dibuka
+        fetchQuickSearch();
 
         setTimeout(() => {
             input?.focus();
+            input?.select();
         }, 50);
     }
 
@@ -692,7 +689,7 @@
             .then(res => res.json())
             .then(data => {
                 loading?.classList.add('hidden');
-                if (data.status === 'success' && data.data.length > 0) {
+                if (data.status === 'success' && data.data && data.data.length > 0) {
                     quickSearchData = data.data;
                     renderQuickSearchResults();
                 } else {
@@ -722,19 +719,22 @@
         let html = '';
 
         quickSearchData.forEach(item => {
+            const locElevation = item.location ? `${item.location} • ` : '';
             html += `
                 <a href="${item.url}"
                     class="group flex items-center justify-between p-2.5 sm:p-3 rounded-xl hover:bg-slate-50 border border-transparent hover:border-slate-200/80 transition cursor-pointer">
                     <div class="flex items-center gap-3 min-w-0">
                         <div class="w-12 h-12 sm:w-14 sm:h-14 rounded-lg overflow-hidden bg-slate-200 shrink-0 relative">
-                            <img src="${item.cover_image}" alt="${item.name}" loading="lazy" decoding="async" class="w-full h-full object-cover group-hover:scale-105 transition duration-300" />
+                            <img src="${item.cover_image}" alt="${item.name}" loading="lazy" decoding="async"
+                                onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=800&q=80';"
+                                class="w-full h-full object-cover group-hover:scale-105 transition duration-300" />
                         </div>
                         <div class="min-w-0">
                             <div class="flex items-center gap-1.5 flex-wrap">
                                 <h4 class="text-sm font-bold text-slate-800 group-hover:text-primary transition truncate">${item.name}</h4>
                                 <span class="${item.grade_badge} text-[10px] font-bold px-2 py-0.5 rounded-full shrink-0">${item.grade}</span>
                             </div>
-                            <p class="text-[11px] text-slate-500 truncate mt-0.5">${item.location || item.elevation} • <span class="font-liberation text-slate-600 font-semibold">${item.elevation}</span></p>
+                            <p class="text-[11px] text-slate-500 truncate mt-0.5">${locElevation}<span class="font-liberation text-slate-600 font-semibold">${item.elevation}</span></p>
                         </div>
                     </div>
                     <div class="text-right shrink-0 pl-2">
@@ -755,6 +755,17 @@
             input.addEventListener('input', () => {
                 clearTimeout(searchDebounceTimer);
                 searchDebounceTimer = setTimeout(fetchQuickSearch, 250);
+            });
+
+            input.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    if (quickSearchData.length > 0) {
+                        window.location.href = quickSearchData[0].url;
+                    } else if (input.value.trim()) {
+                        window.location.href = `{{ route('ekspedisi.index') }}?q=${encodeURIComponent(input.value.trim())}`;
+                    }
+                }
             });
         }
 

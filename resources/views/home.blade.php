@@ -772,24 +772,54 @@
             }
 
             function handleHeroSearch(e) {
-                e.preventDefault();
-                const mSlug = selectedMountainSlug ? selectedMountainSlug.value.trim() : '';
+                if (e) e.preventDefault();
+                let mSlug = selectedMountainSlug ? selectedMountainSlug.value.trim() : '';
                 const rSlug = selectedRouteSlug ? selectedRouteSlug.value.trim() : '';
+                const typedText = mountainInput ? mountainInput.value.trim() : '';
+                const gradeVal = selectedGradeVal ? selectedGradeVal.value.trim() : '';
 
+                // Jika slug belum diset tapi user mengetikkan nama gunung langsung di input:
+                if (!mSlug && typedText && typedText.toLowerCase() !== 'semua gunung' && typedText.toLowerCase() !== 'pilih gunung') {
+                    const cleanTyped = typedText.toLowerCase().replace(/^(mt\.?|gunung)\s*/i, '').trim();
+                    
+                    // 1. Cari exact match
+                    let matched = mountainsData.find(m => {
+                        const cleanName = m.name.toLowerCase().replace(/^(mt\.?|gunung)\s*/i, '').trim();
+                        return cleanName === cleanTyped || m.slug.toLowerCase() === cleanTyped;
+                    });
+
+                    // 2. Jika tidak ada exact match, cari partial match (mengandung kata kunci)
+                    if (!matched) {
+                        matched = mountainsData.find(m => {
+                            const cleanName = m.name.toLowerCase().replace(/^(mt\.?|gunung)\s*/i, '').trim();
+                            return cleanName.includes(cleanTyped) || cleanTyped.includes(cleanName) || m.slug.toLowerCase().includes(cleanTyped);
+                        });
+                    }
+
+                    if (matched) {
+                        mSlug = matched.slug;
+                    }
+                }
+
+                // Jika berhasil mendapatkan gunung spesifik, arahkan langsung ke halaman detail gunung
                 if (mSlug) {
                     let targetUrl = `{{ url('/ekspedisi') }}/${mSlug}`;
                     if (rSlug) {
                         targetUrl += `?jalur=${encodeURIComponent(rSlug)}`;
                     }
                     window.location.href = targetUrl;
-                } else {
-                    const gradeVal = selectedGradeVal ? selectedGradeVal.value.trim() : '';
-                    let catalogUrl = `{{ route('ekspedisi.index') }}`;
-                    if (gradeVal) {
-                        catalogUrl += `?grade=${encodeURIComponent(gradeVal)}`;
-                    }
-                    window.location.href = catalogUrl;
+                    return;
                 }
+
+                // Jika kata kunci umum atau multi hasil, arahkan ke halaman katalog dengan filter query
+                let catalogUrl = new URL(`{{ route('ekspedisi.index') }}`);
+                if (typedText && typedText.toLowerCase() !== 'semua gunung' && typedText.toLowerCase() !== 'pilih gunung') {
+                    catalogUrl.searchParams.set('q', typedText);
+                }
+                if (gradeVal && gradeVal !== 'all') {
+                    catalogUrl.searchParams.set('grade', gradeVal);
+                }
+                window.location.href = catalogUrl.toString();
             }
 
             // Expose globally
@@ -818,18 +848,39 @@
 
                 mountainInput.addEventListener('input', (e) => {
                     const filter = e.target.value.toLowerCase().trim();
+                    const cleanFilter = filter.replace(/^(mt\.?|gunung)\s*/i, '').trim();
+
                     if (mountainDropdown.classList.contains('hidden')) {
                         openMountainDropdown();
                     }
                     const options = mountainDropdown.querySelectorAll('.mountain-option');
                     options.forEach(opt => {
                         const text = opt.textContent.toLowerCase();
-                        if (text.includes(filter)) {
+                        if (!filter || text.includes(filter) || (cleanFilter && text.includes(cleanFilter))) {
                             opt.classList.remove('hidden');
                         } else {
                             opt.classList.add('hidden');
                         }
                     });
+
+                    // Cek jika yang diketik persis sama dengan salah satu gunung
+                    const exactMatch = mountainsData.find(m => {
+                        const cleanName = m.name.toLowerCase().replace(/^(mt\.?|gunung)\s*/i, '').trim();
+                        return cleanName === cleanFilter || m.slug.toLowerCase() === cleanFilter;
+                    });
+                    if (exactMatch) {
+                        if (selectedMountainSlug) selectedMountainSlug.value = exactMatch.slug;
+                    } else {
+                        if (selectedMountainSlug) selectedMountainSlug.value = '';
+                    }
+                });
+
+                mountainInput.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter') {
+                        e.preventDefault();
+                        closeMountainDropdown();
+                        handleHeroSearch(e);
+                    }
                 });
             }
 

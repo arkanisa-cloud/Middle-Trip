@@ -30,8 +30,12 @@ class MountainController extends Controller
 
         $mountains = Mountain::with(['routes', 'priceTiers'])
             ->when($search, function ($query, $term) {
-                $query->where('name', 'like', "%{$term}%")
-                    ->orWhere('province', 'like', "%{$term}%");
+                $clean = preg_replace('/^(mt\.?|gunung)\s*/i', '', trim($term));
+                $query->where(function ($q) use ($term, $clean) {
+                    $q->where('name', 'like', "%{$term}%")
+                        ->orWhere('name', 'like', "%{$clean}%")
+                        ->orWhere('province', 'like', "%{$term}%");
+                });
             })
             ->latest()
             ->paginate(10)
