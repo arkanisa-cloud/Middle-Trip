@@ -14,6 +14,7 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <script type="text/javascript" src="{{ config('midtrans.snap_url') }}"
         data-client-key="{{ config('midtrans.client_key') }}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 
 <body
@@ -800,10 +801,19 @@
 
                     if (data.snap_token) {
                         if (typeof window.snap === 'undefined') {
-                            alert(
-                                'Gagal memuat modul pembayaran Midtrans. Mengalihkan ke halaman pembayaran...'
-                            );
-                            window.location.href = data.redirect_url;
+                            if (typeof Swal !== 'undefined') {
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Gagal Memuat Midtrans',
+                                    text: 'Gagal memuat modul pembayaran Midtrans. Mengalihkan ke halaman pembayaran...',
+                                    confirmButtonColor: '#ef4444'
+                                }).then(() => {
+                                    window.location.href = data.redirect_url;
+                                });
+                            } else {
+                                alert('Gagal memuat modul pembayaran Midtrans. Mengalihkan ke halaman pembayaran...');
+                                window.location.href = data.redirect_url;
+                            }
                             return;
                         }
 
@@ -813,28 +823,76 @@
                                     "{{ route('checkout.success', $booking->booking_code) }}";
                             },
                             onPending: function(result) {
-                                alert(
-                                    'Tagihan pelunasan telah dibuat. Silakan selesaikan pembayaran sesuai petunjuk yang diberikan.'
-                                );
+                                if (typeof Swal !== 'undefined') {
+                                    Swal.fire({
+                                        icon: 'info',
+                                        title: 'Menunggu Pembayaran',
+                                        text: 'Tagihan pelunasan telah dibuat. Silakan selesaikan pembayaran sesuai petunjuk yang diberikan.',
+                                        confirmButtonColor: '#10b981'
+                                    });
+                                } else {
+                                    alert(
+                                        'Tagihan pelunasan telah dibuat. Silakan selesaikan pembayaran sesuai petunjuk yang diberikan.'
+                                    );
+                                }
                                 resetSettleButton();
                             },
                             onError: function(result) {
-                                alert(
-                                    'Pembayaran gagal atau dibatalkan. Silakan coba kembali.'
-                                );
+                                if (typeof Swal !== 'undefined') {
+                                    Swal.fire({
+                                        icon: 'error',
+                                        title: 'Pembayaran Gagal',
+                                        text: 'Pembayaran gagal atau dibatalkan. Silakan coba kembali.',
+                                        confirmButtonColor: '#ef4444'
+                                    });
+                                } else {
+                                    alert(
+                                        'Pembayaran gagal atau dibatalkan. Silakan coba kembali.'
+                                    );
+                                }
                                 resetSettleButton();
                             },
                             onClose: function() {
+                                if (typeof Swal !== 'undefined') {
+                                    Swal.fire({
+                                        icon: 'warning',
+                                        title: 'Pembayaran Belum Selesai',
+                                        text: 'Anda menutup popup pembayaran sebelum menyelesaikan transaksi. Silakan klik tombol bayar pelunasan kembali untuk melanjutkan.',
+                                        confirmButtonText: 'Mengerti',
+                                        confirmButtonColor: '#10b981',
+                                        customClass: {
+                                            confirmButton: 'rounded-xl font-bold text-xs px-4 py-2.5'
+                                        }
+                                    });
+                                }
                                 resetSettleButton();
                             }
                         });
                     } else {
-                        alert(data.message || 'Gagal memproses tiket pelunasan.');
+                        if (typeof Swal !== 'undefined') {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Gagal',
+                                text: data.message || 'Gagal memproses tiket pelunasan.',
+                                confirmButtonColor: '#ef4444'
+                            });
+                        } else {
+                            alert(data.message || 'Gagal memproses tiket pelunasan.');
+                        }
                         resetSettleButton();
                     }
                 } catch (err) {
                     console.error(err);
-                    alert('Terjadi kesalahan jaringan atau server. Silakan coba kembali.');
+                    if (typeof Swal !== 'undefined') {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: 'Terjadi kesalahan jaringan atau server. Silakan coba kembali.',
+                            confirmButtonColor: '#ef4444'
+                        });
+                    } else {
+                        alert('Terjadi kesalahan jaringan atau server. Silakan coba kembali.');
+                    }
                     resetSettleButton();
                 }
             });

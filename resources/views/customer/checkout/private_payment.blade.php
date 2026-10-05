@@ -784,7 +784,7 @@
             }
         }
 
-        // Handler Midtrans Snap Popup
+        // Handler Midtrans Snap Popup dengan Alert Ketentuan Pembayaran Private Trip
         document.addEventListener('DOMContentLoaded', function() {
             const form = document.getElementById('payment-form');
             const payBtn = document.getElementById('pay-button');
@@ -793,7 +793,7 @@
 
             if (!form || !payBtn) return;
 
-            form.addEventListener('submit', async function(e) {
+            form.addEventListener('submit', function(e) {
                 e.preventDefault();
 
                 if (!form.checkValidity()) {
@@ -801,6 +801,45 @@
                     return;
                 }
 
+                const totalAmount = "Rp {{ number_format($booking->grand_total, 0, ',', '.') }}";
+
+                if (typeof Swal !== 'undefined') {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Ketentuan Pembayaran Private Trip',
+                        html: `<div class="text-left text-xs space-y-2.5 text-slate-600">
+                            <p>Anda akan melakukan pembayaran penuh Private Trip sebesar <b class="text-slate-900">${totalAmount}</b>.</p>
+                            <div class="p-3 bg-amber-50 border border-amber-200 rounded-xl text-amber-900 text-[11px] leading-relaxed">
+                                <b>⚠️ Pemberitahuan Penting:</b><br>
+                                Pembayaran Private Trip yang telah diverifikasi <b>bersifat non-refundable (tidak dapat dikembalikan/hangus)</b> apabila pesanan dibatalkan secara sepihak oleh pendaki.
+                            </div>
+                            <p class="text-[11px] text-slate-500">Apakah data manifes peserta dan jadwal pendakian Anda sudah benar?</p>
+                        </div>`,
+                        showCancelButton: true,
+                        confirmButtonText: 'Ya, Saya Paham & Bayar',
+                        cancelButtonText: 'Periksa Kembali',
+                        confirmButtonColor: '#10b981',
+                        cancelButtonColor: '#64748b',
+                        reverseButtons: true,
+                        customClass: {
+                            confirmButton: 'rounded-xl font-bold text-xs px-4 py-2.5',
+                            cancelButton: 'rounded-xl font-medium text-xs px-4 py-2.5'
+                        }
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            processPayment();
+                        }
+                    });
+                } else {
+                    if (confirm(
+                            `Perhatian: Pembayaran ${totalAmount} bersifat non-refundable (tidak dapat dikembalikan setelah dibayar). Lanjutkan pembayaran?`
+                        )) {
+                        processPayment();
+                    }
+                }
+            });
+
+            async function processPayment() {
                 payBtn.disabled = true;
                 payBtn.classList.add('opacity-75', 'cursor-not-allowed');
                 if (payBtnSpinner) payBtnSpinner.classList.remove('hidden');
@@ -827,10 +866,19 @@
 
                     if (data.snap_token) {
                         if (typeof window.snap === 'undefined') {
-                            alert(
-                                'Gagal memuat modul pembayaran Midtrans. Mengalihkan ke halaman pembayaran...'
-                            );
-                            window.location.href = data.redirect_url;
+                            if (typeof Swal !== 'undefined') {
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Gagal Memuat Midtrans',
+                                    text: 'Gagal memuat modul pembayaran Midtrans. Mengalihkan ke halaman pembayaran...',
+                                    confirmButtonColor: '#ef4444'
+                                }).then(() => {
+                                    window.location.href = data.redirect_url;
+                                });
+                            } else {
+                                alert('Gagal memuat modul pembayaran Midtrans. Mengalihkan ke halaman pembayaran...');
+                                window.location.href = data.redirect_url;
+                            }
                             return;
                         }
 
@@ -840,31 +888,79 @@
                                     "{{ route('checkout.success', $booking->booking_code) }}";
                             },
                             onPending: function(result) {
-                                alert(
-                                    'Tagihan pembayaran telah dibuat. Silakan selesaikan pembayaran sesuai petunjuk yang diberikan.'
-                                );
+                                if (typeof Swal !== 'undefined') {
+                                    Swal.fire({
+                                        icon: 'info',
+                                        title: 'Menunggu Pembayaran',
+                                        text: 'Tagihan pembayaran Private Trip telah dibuat. Silakan selesaikan pembayaran sesuai petunjuk yang diberikan.',
+                                        confirmButtonColor: '#10b981'
+                                    });
+                                } else {
+                                    alert(
+                                        'Tagihan pembayaran telah dibuat. Silakan selesaikan pembayaran sesuai petunjuk yang diberikan.'
+                                    );
+                                }
                                 resetPayButton();
                             },
                             onError: function(result) {
-                                alert(
-                                    'Pembayaran gagal atau dibatalkan. Silakan coba kembali.'
-                                );
+                                if (typeof Swal !== 'undefined') {
+                                    Swal.fire({
+                                        icon: 'error',
+                                        title: 'Pembayaran Gagal',
+                                        text: 'Pembayaran gagal atau dibatalkan. Silakan coba kembali.',
+                                        confirmButtonColor: '#ef4444'
+                                    });
+                                } else {
+                                    alert(
+                                        'Pembayaran gagal atau dibatalkan. Silakan coba kembali.'
+                                    );
+                                }
                                 resetPayButton();
                             },
                             onClose: function() {
+                                if (typeof Swal !== 'undefined') {
+                                    Swal.fire({
+                                        icon: 'warning',
+                                        title: 'Pembayaran Belum Selesai',
+                                        text: 'Anda menutup popup pembayaran sebelum menyelesaikan transaksi. Silakan klik tombol bayar kembali untuk melanjutkan.',
+                                        confirmButtonText: 'Mengerti',
+                                        confirmButtonColor: '#10b981',
+                                        customClass: {
+                                            confirmButton: 'rounded-xl font-bold text-xs px-4 py-2.5'
+                                        }
+                                    });
+                                }
                                 resetPayButton();
                             }
                         });
                     } else {
-                        alert(data.message || 'Gagal memproses tiket pembayaran.');
+                        if (typeof Swal !== 'undefined') {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Gagal',
+                                text: data.message || 'Gagal memproses tiket pembayaran.',
+                                confirmButtonColor: '#ef4444'
+                            });
+                        } else {
+                            alert(data.message || 'Gagal memproses tiket pembayaran.');
+                        }
                         resetPayButton();
                     }
                 } catch (err) {
                     console.error(err);
-                    alert('Terjadi kesalahan jaringan atau server. Silakan coba kembali.');
+                    if (typeof Swal !== 'undefined') {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: 'Terjadi kesalahan jaringan atau server. Silakan coba kembali.',
+                            confirmButtonColor: '#ef4444'
+                        });
+                    } else {
+                        alert('Terjadi kesalahan jaringan atau server. Silakan coba kembali.');
+                    }
                     resetPayButton();
                 }
-            });
+            }
 
             function resetPayButton() {
                 payBtn.disabled = false;

@@ -905,6 +905,18 @@
                                 resetPayButton();
                             },
                             onClose: function() {
+                                if (typeof Swal !== 'undefined') {
+                                    Swal.fire({
+                                        icon: 'warning',
+                                        title: 'Pembayaran Belum Selesai',
+                                        text: 'Anda menutup popup pembayaran sebelum menyelesaikan transaksi. Silakan klik tombol bayar kembali untuk melanjutkan.',
+                                        confirmButtonText: 'Mengerti',
+                                        confirmButtonColor: '#10b981',
+                                        customClass: {
+                                            confirmButton: 'rounded-xl font-bold text-xs px-4 py-2.5'
+                                        }
+                                    });
+                                }
                                 resetPayButton();
                             }
                         });
