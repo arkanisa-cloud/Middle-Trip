@@ -13,6 +13,8 @@ Route::get('/ekspedisi', [ExpeditionController::class, 'index'])->name('ekspedis
 Route::get('/ekspedisi/{slug}', [ExpeditionController::class, 'show'])->name('ekspedisi.show');
 Route::get('/api/mountains/quick-search', [ExpeditionController::class, 'searchApi'])->name('api.mountains.search');
 Route::view('/kontak', 'customer.contact')->name('contact');
+Route::get('/privacy-policy', fn() => 'Halaman ini memuat Kebijakan Privasi MiddleTrip.');
+Route::get('/terms-of-service', fn() => 'Halaman ini memuat Syarat dan Ketentuan MiddleTrip.');
 
 // Booking & Checkout Routes
 Route::post('/bookings', [BookingController::class, 'store'])->middleware('auth')->name('bookings.store');
