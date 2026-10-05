@@ -77,6 +77,7 @@ class MidtransService
 
         $response = Http::withBasicAuth($serverKey, '')
             ->acceptJson()
+            ->timeout(10)
             ->post($apiUrl, $payload);
 
         if (! $response->successful()) {
