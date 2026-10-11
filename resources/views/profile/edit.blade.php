@@ -84,6 +84,28 @@
                                 </svg>
                                 <span class="truncate">{{ $user->email }}</span>
                             </span>
+                            @if ($user->phone)
+                                <span class="text-muted-soft hidden sm:inline">&bull;</span>
+                                <span class="flex items-center gap-1.5 truncate">
+                                    <svg class="w-3.5 h-3.5 text-muted-soft shrink-0" fill="none"
+                                        stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                            d="M2.25 6.75c0 8.284 6.716 15 15 15h2.25a2.25 2.25 0 0 0 2.25-2.25v-1.372c0-.516-.351-.966-.852-1.091l-4.423-1.106c-.44-.11-.902.055-1.173.417l-.97 1.293c-.282.376-.769.542-1.21.38a12.035 12.035 0 0 1-7.143-7.143c-.162-.441.004-.928.38-1.21l1.293-.97c.363-.271.527-.734.417-1.173L6.963 3.102a1.125 1.125 0 0 0-1.091-.852H4.5A2.25 2.25 0 0 0 2.25 4.5v2.25z" />
+                                    </svg>
+                                    <span class="truncate">{{ $user->phone }}</span>
+                                </span>
+                            @endif
+                            @if ($user->nik)
+                                <span class="text-muted-soft hidden sm:inline">&bull;</span>
+                                <span class="flex items-center gap-1.5 truncate">
+                                    <svg class="w-3.5 h-3.5 text-muted-soft shrink-0" fill="none"
+                                        stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                            d="M15 9h3.75M15 12h3.75M15 15h3.75M4.5 19.5h15a2.25 2.25 0 0 0 2.25-2.25V6.75A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25v10.5A2.25 2.25 0 0 0 4.5 19.5zm6-10.125a1.875 1.875 0 1 1-3.75 0 1.875 1.875 0 0 1 3.75 0zm1.294 6.33a2.625 2.625 0 0 0-5.088 0A1.5 1.5 0 0 0 7.5 17.25h4.5a1.5 1.5 0 0 0 .794-1.545z" />
+                                    </svg>
+                                    <span class="truncate">NIK: {{ $user->nik }}</span>
+                                </span>
+                            @endif
                             <span class="text-muted-soft hidden sm:inline">&bull;</span>
                             <span class="flex items-center gap-1.5">
                                 <svg class="w-3.5 h-3.5 text-muted-soft shrink-0" fill="none" stroke="currentColor"
@@ -139,7 +161,8 @@
                             'bg-white text-ink-heading shadow-xs font-bold' :
                             'text-muted hover:text-ink-heading font-medium'"
                         class="flex-1 sm:flex-none px-3.5 sm:px-5 py-2 sm:py-2.5 rounded-xl sm:rounded-full text-xs sm:text-sm transition-all flex items-center justify-center gap-1.5 sm:gap-2 cursor-pointer">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                            stroke-width="2">
                             <path stroke-linecap="round" stroke-linejoin="round"
                                 d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
                         </svg>
@@ -159,7 +182,8 @@
                             'bg-white text-ink-heading shadow-xs font-bold' :
                             'text-muted hover:text-ink-heading font-medium'"
                         class="flex-1 sm:flex-none px-3.5 sm:px-5 py-2 sm:py-2.5 rounded-xl sm:rounded-full text-xs sm:text-sm transition-all flex items-center justify-center gap-1.5 sm:gap-2 cursor-pointer">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                            stroke-width="2">
                             <path stroke-linecap="round" stroke-linejoin="round"
                                 d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
                             <path stroke-linecap="round" stroke-linejoin="round"
@@ -774,7 +798,7 @@
                             </div>
                             <input type="email" id="email" name="email"
                                 value="{{ old('email', $user->email) }}" required
-                                class="w-full pl-10 pr-4 py-2.5 border border-hairline rounded-xl text-sm focus:border-primary focus:ring-1 focus:ring-primary outline-none text-ink bg-white transition shadow-2xs font-outfit font-normal">
+                                class="w-full pl-10 pr-4 py-2.5 border {{ $errors->has('email') ? 'border-rose-400 bg-rose-50/20' : 'border-hairline bg-white' }} rounded-xl text-sm focus:border-primary focus:ring-1 focus:ring-primary outline-none text-ink transition shadow-2xs font-outfit font-normal">
                         </div>
                         @error('email')
                             <p class="text-xs text-rose-600 mt-1.5 font-medium flex items-center gap-1">
@@ -786,6 +810,193 @@
                                 <span>{{ $message }}</span>
                             </p>
                         @enderror
+                    </div>
+
+                    <!-- Nomor WhatsApp / HP -->
+                    <div x-data="{
+                        phone: '{{ old('phone', $user->phone ?? '') }}',
+                        status: 'idle',
+                        message: '',
+                        checkPhone() {
+                            const clean = (this.phone || '').replace(/[\s\-]/g, '');
+                            if (clean.length === 0) {
+                                this.status = 'idle';
+                                this.message = '';
+                                return;
+                            }
+                            if (clean.length < 10) {
+                                this.status = 'idle';
+                                this.message = '';
+                                return;
+                            }
+                            this.status = 'checking';
+                            this.message = 'Memvalidasi WhatsApp...';
+                    
+                            fetch('{{ route('api.validate.whatsapp') }}', {
+                                    method: 'POST',
+                                    headers: {
+                                        'Content-Type': 'application/json',
+                                        'Accept': 'application/json',
+                                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                                    },
+                                    body: JSON.stringify({ phone: clean })
+                                })
+                                .then(res => res.json().then(data => ({ ok: res.ok, data })))
+                                .then(res => {
+                                    if (res.ok && res.data.valid) {
+                                        this.status = 'valid';
+                                        this.message = res.data.message || 'Nomor WhatsApp aktif dan valid';
+                                    } else {
+                                        this.status = 'invalid';
+                                        this.message = res.data.message || 'Nomor WhatsApp tidak terdaftar atau palsu';
+                                    }
+                                })
+                                .catch(() => {
+                                    this.status = 'idle';
+                                    this.message = '';
+                                });
+                        }
+                    }">
+                        <label for="phone"
+                            class="block text-xs font-bold text-ink-heading uppercase tracking-wider mb-2">
+                            Nomor WhatsApp / HP
+                        </label>
+                        <div class="relative">
+                            <div
+                                class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-muted-soft">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                                    stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                        d="M2.25 6.75c0 8.284 6.716 15 15 15h2.25a2.25 2.25 0 0 0 2.25-2.25v-1.372c0-.516-.351-.966-.852-1.091l-4.423-1.106c-.44-.11-.902.055-1.173.417l-.97 1.293c-.282.376-.769.542-1.21.38a12.035 12.035 0 0 1-7.143-7.143c-.162-.441.004-.928.38-1.21l1.293-.97c.363-.271.527-.734.417-1.173L6.963 3.102a1.125 1.125 0 0 0-1.091-.852H4.5A2.25 2.25 0 0 0 2.25 4.5v2.25z" />
+                                </svg>
+                            </div>
+                            <input type="tel" id="phone" name="phone" x-model="phone"
+                                @input.debounce.500ms="checkPhone()" placeholder="081234567890"
+                                :class="{
+                                    'border-rose-400 focus:border-rose-500 focus:ring-rose-500 bg-rose-50/20': status === 'invalid' ||
+                                        {{ $errors->has('phone') ? 'true' : 'false' }},
+                                    'border-emerald-400 focus:border-emerald-500 focus:ring-emerald-500 bg-emerald-50/20': status === 'valid'
+                                }"
+                                class="w-full pl-10 pr-4 py-2.5 border border-hairline rounded-xl text-sm focus:border-primary focus:ring-1 focus:ring-primary outline-none text-ink bg-white transition shadow-2xs font-outfit font-normal">
+                        </div>
+
+                        <!-- Realtime Feedback Indicator -->
+                        <div x-show="status === 'checking'"
+                            class="text-sky-600 text-xs mt-1.5 flex items-center gap-1.5 font-medium">
+                            <svg class="animate-spin w-3.5 h-3.5" fill="none" viewBox="0 0 24 24">
+                                <circle class="opacity-25" cx="12" cy="12" r="10"
+                                    stroke="currentColor" stroke-width="4"></circle>
+                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
+                            </svg>
+                            <span x-text="message"></span>
+                        </div>
+                        <div x-show="status === 'valid'"
+                            class="text-emerald-600 text-xs mt-1.5 flex items-center gap-1 font-medium">
+                            <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd"
+                                    d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                                    clip-rule="evenodd" />
+                            </svg>
+                            <span x-text="message"></span>
+                        </div>
+                        <div x-show="status === 'invalid'"
+                            class="text-rose-600 text-xs mt-1.5 flex items-center gap-1 font-medium">
+                            <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd"
+                                    d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+                                    clip-rule="evenodd" />
+                            </svg>
+                            <span x-text="message"></span>
+                        </div>
+
+                        @error('phone')
+                            <p class="text-xs text-rose-600 mt-1.5 font-medium flex items-center gap-1">
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                                    stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                        d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                                </svg>
+                                <span>{{ $message }}</span>
+                            </p>
+                        @enderror
+                        <p class="text-[11px] text-muted mt-1 leading-relaxed">
+                            Nomor ini akan digunakan untuk konfirmasi reservasi dan koordinasi darurat oleh tim lapangan
+                            MiddleTrip.
+                        </p>
+                    </div>
+
+                    <!-- Nomor Induk Kependudukan (NIK) -->
+                    <div x-data="nikValidator('{{ old('nik', $user->nik ?? '') }}')" x-init="if (nik.length === 16) checkNik()">
+                        <label for="nik"
+                            class="block text-xs font-bold text-ink-heading uppercase tracking-wider mb-2">
+                            Nomor Induk Kependudukan (NIK KTP)
+                        </label>
+                        <div class="relative">
+                            <div
+                                class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-muted-soft">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                                    stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                        d="M15 9h3.75M15 12h3.75M15 15h3.75M4.5 19.5h15a2.25 2.25 0 0 0 2.25-2.25V6.75A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25v10.5A2.25 2.25 0 0 0 4.5 19.5zm6-10.125a1.875 1.875 0 1 1-3.75 0 1.875 1.875 0 0 1 3.75 0zm1.294 6.33a2.625 2.625 0 0 0-5.088 0A1.5 1.5 0 0 0 7.5 17.25h4.5a1.5 1.5 0 0 0 .794-1.545z" />
+                                </svg>
+                            </div>
+                            <input type="text" id="nik" name="nik" x-model="nik"
+                                @input.debounce.300ms="checkNik()" minlength="16" maxlength="16"
+                                placeholder="16 digit nomor KTP asli"
+                                :class="{
+                                    'border-rose-400 focus:border-rose-500 focus:ring-rose-500 bg-rose-50/20': status === 'invalid' ||
+                                        {{ $errors->has('nik') ? 'true' : 'false' }},
+                                    'border-emerald-400 focus:border-emerald-500 focus:ring-emerald-500 bg-emerald-50/20': status === 'valid'
+                                }"
+                                class="w-full pl-10 pr-4 py-2.5 border border-hairline rounded-xl text-sm focus:border-primary focus:ring-1 focus:ring-primary outline-none text-ink bg-white transition shadow-2xs font-outfit font-normal">
+                        </div>
+
+                        <!-- Realtime Feedback Indicator -->
+                        <div x-show="status === 'typing'" class="text-slate-400 text-xs mt-1.5 font-medium">
+                            <span x-text="message"></span>
+                        </div>
+                        <div x-show="status === 'checking'"
+                            class="text-sky-600 text-xs mt-1.5 flex items-center gap-1.5 font-medium">
+                            <svg class="animate-spin w-3.5 h-3.5" fill="none" viewBox="0 0 24 24">
+                                <circle class="opacity-25" cx="12" cy="12" r="10"
+                                    stroke="currentColor" stroke-width="4"></circle>
+                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
+                            </svg>
+                            <span x-text="message"></span>
+                        </div>
+                        <div x-show="status === 'valid'"
+                            class="text-emerald-600 text-xs mt-1.5 flex items-center gap-1 font-medium">
+                            <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd"
+                                    d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                                    clip-rule="evenodd" />
+                            </svg>
+                            <span x-text="message"></span>
+                        </div>
+                        <div x-show="status === 'invalid'"
+                            class="text-rose-600 text-xs mt-1.5 flex items-center gap-1 font-medium">
+                            <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd"
+                                    d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+                                    clip-rule="evenodd" />
+                            </svg>
+                            <span x-text="message"></span>
+                        </div>
+
+                        @error('nik')
+                            <p class="text-xs text-rose-600 mt-1.5 font-medium flex items-center gap-1">
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                                    stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                        d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                                </svg>
+                                <span>{{ $message }}</span>
+                            </p>
+                        @enderror
+                        <p class="text-[11px] text-muted mt-1 leading-relaxed">
+                            NIK Anda digunakan secara otomatis untuk legalitas pendaftaran perizinan SIMAKSI resmi Taman
+                            Nasional.
+                        </p>
                     </div>
 
                     <div class="pt-2 flex justify-end">
@@ -971,6 +1182,66 @@
     <!-- Footer Component -->
     <x-footer />
 
+    <script>
+        function nikValidator(initialValue = '') {
+            return {
+                nik: initialValue,
+                status: 'idle',
+                message: '',
+                checkNik() {
+                    const clean = (this.nik || '').replace(/[^\d]/g, '');
+                    this.nik = clean;
+                    if (clean.length === 0) {
+                        this.status = 'idle';
+                        this.message = '';
+                        return;
+                    }
+                    if (clean.length < 16) {
+                        this.status = 'typing';
+                        this.message = `${clean.length} dari 16 digit`;
+                        return;
+                    }
+                    if (clean.length > 16) {
+                        this.status = 'invalid';
+                        this.message = 'Nomor NIK harus tepat 16 digit angka';
+                        return;
+                    }
+
+                    this.status = 'checking';
+                    this.message = 'Memvalidasi NIK...';
+
+                    fetch('{{ route('api.validate.nik') }}', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'Accept': 'application/json',
+                                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                            },
+                            body: JSON.stringify({
+                                nik: clean
+                            })
+                        })
+                        .then(res => res.json().then(data => ({
+                            ok: res.ok,
+                            data
+                        })))
+                        .then(res => {
+                            if (res.ok && res.data.valid) {
+                                this.status = 'valid';
+                                this.message = res.data.message || 'NIK Valid';
+                            } else {
+                                this.status = 'invalid';
+                                this.message = res.data.message || 'Nomor NIK tidak valid';
+                            }
+                        })
+                        .catch(() => {
+                            this.status = 'idle';
+                            this.message = '';
+                        });
+                }
+            };
+        }
+    </script>
 </body>
 
 </html>

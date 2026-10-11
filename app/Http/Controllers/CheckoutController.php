@@ -5,6 +5,9 @@ namespace App\Http\Controllers;
 use App\Models\Booking;
 use App\Models\Expedition;
 use App\Models\PaymentTransaction;
+use App\Rules\ValidEmailAddress;
+use App\Rules\ValidNik;
+use App\Rules\ValidWhatsAppNumber;
 use App\Services\MidtransService;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\JsonResponse;
@@ -355,12 +358,12 @@ class CheckoutController extends Controller
         if ($request->has('customer_name') || $request->has('participants')) {
             $validated = $request->validate([
                 'customer_name' => ['required', 'string', 'min:3', 'max:150'],
-                'customer_phone' => ['required', 'string', 'min:9', 'max:25'],
-                'customer_nik' => ['required', 'digits:16'],
-                'customer_email' => ['required', 'email', 'max:150'],
+                'customer_phone' => ['required', 'string', new ValidWhatsAppNumber],
+                'customer_nik' => ['required', new ValidNik],
+                'customer_email' => ['required', 'string', 'max:150', new ValidEmailAddress],
                 'participants' => ['required', 'array', 'size:'.$booking->pax_count],
                 'participants.*.full_name' => ['required', 'string', 'min:3', 'max:150'],
-                'participants.*.nik' => ['required', 'digits:16'],
+                'participants.*.nik' => ['required', new ValidNik],
                 'participants.*.is_leader' => ['nullable'],
             ]);
 

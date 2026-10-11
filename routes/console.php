@@ -10,3 +10,6 @@ Artisan::command('inspire', function () {
 
 Schedule::command('expeditions:process-price-locks')->hourly();
 Schedule::command('bookings:expire-unpaid')->hourly();
+
+// Generate sitemap otomatis setiap jam 12 malam
+Schedule::command('sitemap:generate')->daily();

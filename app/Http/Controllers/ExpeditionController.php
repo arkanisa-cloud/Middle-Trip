@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\TrailGrade;
 use App\Models\Addon;
 use App\Models\Expedition;
 use App\Models\Mountain;
@@ -112,11 +113,11 @@ class ExpeditionController extends Controller
             }
 
             $rawGrade = $mountain->default_grade;
-            if ($rawGrade instanceof \App\Enums\TrailGrade) {
+            if ($rawGrade instanceof TrailGrade) {
                 $gradeLabel = $rawGrade->label();
                 $gradeBadge = $rawGrade->badgeClasses();
             } elseif (is_string($rawGrade)) {
-                $enum = \App\Enums\TrailGrade::tryFrom($rawGrade);
+                $enum = TrailGrade::tryFrom($rawGrade);
                 $gradeLabel = $enum ? $enum->label() : $rawGrade;
                 $gradeBadge = $enum ? $enum->badgeClasses() : 'bg-grade-a-bg text-grade-a-text';
             } else {
@@ -263,10 +264,10 @@ class ExpeditionController extends Controller
             'departureDatePrivateFull' => $privateDepartureDate?->translatedFormat('d F Y') ?? 'Bebas Pilih Tanggal',
             'returnDatePrivateFull' => $privateReturnDate?->translatedFormat('d F Y') ?? 'Sesuai Durasi Trip',
             'authCustomer' => [
-                'name' => $user?->name ?? 'Pendaki MiddleTrip',
-                'email' => $user?->email ?? 'pendaki@middletrip.com',
-                'phone' => $user?->phone ?? '081234567890',
-                'nik' => $user?->nik ?? '3301234567890001',
+                'name' => $user?->name ?? '',
+                'email' => $user?->email ?? '',
+                'phone' => $user?->phone ?? '',
+                'nik' => $user?->nik ?? '',
             ],
         ];
     }

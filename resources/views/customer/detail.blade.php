@@ -2228,16 +2228,16 @@
                         return;
                     }
 
-                    const customerName = (this.authCustomer.name || 'Pendaki MiddleTrip').trim();
-                    const customerEmail = (this.authCustomer.email || 'pendaki@middletrip.com').trim();
-                    const customerPhone = (this.authCustomer.phone || '081234567890').trim();
-                    const customerNik = (this.authCustomer.nik || '3301234567890001').trim();
+                    const customerName = (this.authCustomer.name || '').trim();
+                    const customerEmail = (this.authCustomer.email || '').trim();
+                    const customerPhone = (this.authCustomer.phone || '').trim();
+                    const customerNik = (this.authCustomer.nik || '').trim();
 
                     const participantsPayload = [];
                     for (let i = 0; i < this.paxCount; i++) {
                         participantsPayload.push({
-                            full_name: i === 0 ? customerName : `${customerName} Anggota #${i + 1}`,
-                            nik: i === 0 ? customerNik : String(3301234567890000 + (i + 1)),
+                            full_name: i === 0 ? customerName : '',
+                            nik: i === 0 ? customerNik : '',
                             is_leader: i === 0
                         });
                     }

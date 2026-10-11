@@ -5,6 +5,7 @@ use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\ExpeditionController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\ValidationController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
@@ -12,6 +13,12 @@ Route::redirect('/katalog', '/ekspedisi');
 Route::get('/ekspedisi', [ExpeditionController::class, 'index'])->name('ekspedisi.index');
 Route::get('/ekspedisi/{slug}', [ExpeditionController::class, 'show'])->name('ekspedisi.show');
 Route::get('/api/mountains/quick-search', [ExpeditionController::class, 'searchApi'])->name('api.mountains.search');
+Route::post('/api/validate/whatsapp', [ValidationController::class, 'validateWhatsApp'])
+    ->middleware('throttle:30,1')
+    ->name('api.validate.whatsapp');
+Route::post('/api/validate/nik', [ValidationController::class, 'validateNik'])
+    ->middleware('throttle:60,1')
+    ->name('api.validate.nik');
 Route::view('/kontak', 'customer.contact')->name('contact');
 Route::view('/privacy-policy', 'customer.privacy-policy')->name('privacy.policy');
 Route::view('/terms-of-service', 'customer.terms-of-service')->name('terms.service');
@@ -26,8 +33,8 @@ Route::post('/checkout/{booking_code}/settle', [CheckoutController::class, 'sett
 Route::get('/checkout/{booking_code}/private', [CheckoutController::class, 'private'])->name('checkout.private');
 Route::post('/checkout/{booking_code}/pay-private', [CheckoutController::class, 'payPrivate'])->name('checkout.pay_private');
 Route::get('/checkout/{booking_code}/success', [CheckoutController::class, 'success'])->name('checkout.success');
-Route::get('/bookings/{booking_code}/print', [\App\Http\Controllers\BookingInvoiceController::class, 'show'])->name('bookings.print');
-Route::post('/midtrans/notification', [\App\Http\Controllers\MidtransNotificationController::class, 'handle'])->name('midtrans.notification');
+Route::get('/bookings/{booking_code}/print', [BookingInvoiceController::class, 'show'])->name('bookings.print');
+Route::post('/midtrans/notification', [MidtransNotificationController::class, 'handle'])->name('midtrans.notification');
 
 Route::get('/dashboard', function () {
     if (auth()->user()?->isAdmin()) {
@@ -49,6 +56,8 @@ use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\ExpeditionScheduleController;
 use App\Http\Controllers\Admin\MeetingPointController;
 use App\Http\Controllers\Admin\MountainController;
+use App\Http\Controllers\BookingInvoiceController;
+use App\Http\Controllers\MidtransNotificationController;
 
 Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
@@ -68,9 +77,9 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::patch('bookings/{booking}/status', [BookingManagementController::class, 'updateStatus'])->name('bookings.update_status');
 
     // Admin Profile & Account Settings
-    Route::get('profile', [\App\Http\Controllers\Admin\ProfileController::class, 'edit'])->name('profile.edit');
-    Route::patch('profile', [\App\Http\Controllers\Admin\ProfileController::class, 'update'])->name('profile.update');
-    Route::put('profile/password', [\App\Http\Controllers\Admin\ProfileController::class, 'updatePassword'])->name('profile.password');
+    Route::get('profile', [App\Http\Controllers\Admin\ProfileController::class, 'edit'])->name('profile.edit');
+    Route::patch('profile', [App\Http\Controllers\Admin\ProfileController::class, 'update'])->name('profile.update');
+    Route::put('profile/password', [App\Http\Controllers\Admin\ProfileController::class, 'updatePassword'])->name('profile.password');
 });
 
 require __DIR__.'/auth.php';

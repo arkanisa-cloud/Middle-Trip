@@ -230,25 +230,131 @@
                                 @enderror
                             </div>
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
-                                <div>
+                                <div x-data="{
+                                    phone: '{{ old('customer_phone', $booking->customer_phone ?? '') }}',
+                                    status: 'idle',
+                                    message: '',
+                                    checkPhone() {
+                                        const clean = (this.phone || '').replace(/[\s\-]/g, '');
+                                        if (clean.length < 10) {
+                                            this.status = 'idle';
+                                            this.message = '';
+                                            return;
+                                        }
+                                        this.status = 'checking';
+                                        this.message = 'Memeriksa keaktifan WhatsApp...';
+                                
+                                        fetch('{{ route('api.validate.whatsapp') }}', {
+                                                method: 'POST',
+                                                headers: {
+                                                    'Content-Type': 'application/json',
+                                                    'Accept': 'application/json',
+                                                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                                                },
+                                                body: JSON.stringify({ phone: this.phone })
+                                            })
+                                            .then(res => res.json().then(data => ({ ok: res.ok, data })))
+                                            .then(res => {
+                                                if (res.ok && res.data.valid) {
+                                                    this.status = 'valid';
+                                                    this.message = res.data.message || 'Nomor WhatsApp aktif dan valid';
+                                                } else {
+                                                    this.status = 'invalid';
+                                                    this.message = res.data.message || 'Nomor WhatsApp tidak terdaftar atau palsu';
+                                                }
+                                            })
+                                            .catch(() => {
+                                                this.status = 'idle';
+                                                this.message = '';
+                                            });
+                                    }
+                                }">
                                     <label class="block text-muted font-medium mb-1">Nomor WhatsApp Aktif <span
                                             class="text-rose-500">*</span></label>
                                     <input type="tel" name="customer_phone" id="input_customer_phone"
-                                        value="{{ old('customer_phone') }}" required minlength="9" maxlength="25"
+                                        x-model="phone" @input.debounce.500ms="checkPhone()" required minlength="9"
+                                        maxlength="25"
+                                        :class="{
+                                            'border-rose-400 focus:border-rose-500 focus:ring-rose-500 bg-rose-50/20': status === 'invalid',
+                                            'border-emerald-400 focus:border-emerald-500 focus:ring-emerald-500 bg-emerald-50/20': status === 'valid'
+                                        }"
                                         class="w-full px-3.5 py-2.5 border border-slate-200 focus:border-primary focus:ring-1 focus:ring-primary rounded-lg bg-white text-slate-800 font-outfit text-sm font-normal transition placeholder:text-slate-400"
                                         placeholder="08123456789">
+                                    <div x-show="status === 'checking'"
+                                        class="text-sky-600 text-[11px] mt-1 flex items-center gap-1.5 font-medium">
+                                        <svg class="animate-spin w-3 h-3" fill="none" viewBox="0 0 24 24">
+                                            <circle class="opacity-25" cx="12" cy="12" r="10"
+                                                stroke="currentColor" stroke-width="4"></circle>
+                                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z">
+                                            </path>
+                                        </svg>
+                                        <span x-text="message"></span>
+                                    </div>
+                                    <div x-show="status === 'valid'"
+                                        class="text-emerald-600 text-[11px] mt-1 flex items-center gap-1 font-medium">
+                                        <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd"
+                                                d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                                                clip-rule="evenodd" />
+                                        </svg>
+                                        <span x-text="message"></span>
+                                    </div>
+                                    <div x-show="status === 'invalid'"
+                                        class="text-rose-600 text-[11px] mt-1 flex items-center gap-1 font-medium">
+                                        <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd"
+                                                d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+                                                clip-rule="evenodd" />
+                                        </svg>
+                                        <span x-text="message"></span>
+                                    </div>
                                     @error('customer_phone')
                                         <p class="text-rose-600 text-[11px] mt-1">{{ $message }}</p>
                                     @enderror
                                 </div>
-                                <div>
+                                <div x-data="nikValidator('{{ old('customer_nik', $booking->customer_nik ?? '') }}')" x-init="if (nik.length === 16) checkNik()">
                                     <label class="block text-muted font-medium mb-1">NIK Pemesan (16 Digit) <span
                                             class="text-rose-500">*</span></label>
-                                    <input type="text" name="customer_nik" id="input_customer_nik"
-                                        value="{{ old('customer_nik') }}" required minlength="16" maxlength="16"
-                                        pattern="[0-9]{16}"
+                                    <input type="text" name="customer_nik" id="input_customer_nik" x-model="nik"
+                                        @input.debounce.300ms="checkNik()" required minlength="16" maxlength="16"
+                                        :class="{
+                                            'border-rose-400 focus:border-rose-500 focus:ring-rose-500 bg-rose-50/20': status === 'invalid',
+                                            'border-emerald-400 focus:border-emerald-500 focus:ring-emerald-500 bg-emerald-50/20': status === 'valid'
+                                        }"
                                         class="w-full px-3.5 py-2.5 border border-slate-200 focus:border-primary focus:ring-1 focus:ring-primary rounded-lg bg-white text-slate-800 font-outfit text-sm font-normal transition placeholder:text-slate-400"
                                         placeholder="16 digit angka KTP">
+                                    <div x-show="status === 'typing'"
+                                        class="text-slate-400 text-[11px] mt-1 font-medium">
+                                        <span x-text="message"></span>
+                                    </div>
+                                    <div x-show="status === 'checking'"
+                                        class="text-sky-600 text-[11px] mt-1 flex items-center gap-1.5 font-medium">
+                                        <svg class="animate-spin w-3 h-3" fill="none" viewBox="0 0 24 24">
+                                            <circle class="opacity-25" cx="12" cy="12" r="10"
+                                                stroke="currentColor" stroke-width="4"></circle>
+                                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z">
+                                            </path>
+                                        </svg>
+                                        <span x-text="message"></span>
+                                    </div>
+                                    <div x-show="status === 'valid'"
+                                        class="text-emerald-600 text-[11px] mt-1 flex items-center gap-1 font-medium">
+                                        <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd"
+                                                d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                                                clip-rule="evenodd" />
+                                        </svg>
+                                        <span x-text="message"></span>
+                                    </div>
+                                    <div x-show="status === 'invalid'"
+                                        class="text-rose-600 text-[11px] mt-1 flex items-center gap-1 font-medium">
+                                        <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd"
+                                                d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+                                                clip-rule="evenodd" />
+                                        </svg>
+                                        <span x-text="message"></span>
+                                    </div>
                                     @error('customer_nik')
                                         <p class="text-rose-600 text-[11px] mt-1">{{ $message }}</p>
                                     @enderror
@@ -325,15 +431,51 @@
                                                 <p class="text-rose-600 text-[11px] mt-1">{{ $message }}</p>
                                             @enderror
                                         </div>
-                                        <div>
+                                        <div x-data="nikValidator('{{ old('participants.0.nik') }}')" x-init="if (nik.length === 16) checkNik()">
                                             <label class="block text-slate-600 font-medium mb-1">
                                                 NIK KTP (16 Digit) <span class="text-rose-500">*</span>
                                             </label>
                                             <input type="text" name="participants[0][nik]" id="participant_nik_0"
-                                                value="{{ old('participants.0.nik') }}" required minlength="16"
-                                                maxlength="16" pattern="[0-9]{16}"
+                                                x-model="nik" @input.debounce.300ms="checkNik()" required
+                                                minlength="16" maxlength="16"
+                                                :class="{
+                                                    'border-rose-400 focus:border-rose-500 focus:ring-rose-500 bg-rose-50/20': status === 'invalid',
+                                                    'border-emerald-400 focus:border-emerald-500 focus:ring-emerald-500 bg-emerald-50/20': status === 'valid'
+                                                }"
                                                 class="w-full px-3.5 py-2.5 border border-slate-200 focus:border-primary focus:ring-1 focus:ring-primary rounded-lg bg-white text-slate-800 font-outfit text-sm font-normal transition placeholder:text-slate-400"
                                                 placeholder="16 digit NIK">
+                                            <div x-show="status === 'typing'"
+                                                class="text-slate-400 text-[11px] mt-1 font-medium">
+                                                <span x-text="message"></span>
+                                            </div>
+                                            <div x-show="status === 'checking'"
+                                                class="text-sky-600 text-[11px] mt-1 flex items-center gap-1.5 font-medium">
+                                                <svg class="animate-spin w-3 h-3" fill="none" viewBox="0 0 24 24">
+                                                    <circle class="opacity-25" cx="12" cy="12" r="10"
+                                                        stroke="currentColor" stroke-width="4"></circle>
+                                                    <path class="opacity-75" fill="currentColor"
+                                                        d="M4 12a8 8 0 018-8v8H4z"></path>
+                                                </svg>
+                                                <span x-text="message"></span>
+                                            </div>
+                                            <div x-show="status === 'valid'"
+                                                class="text-emerald-600 text-[11px] mt-1 flex items-center gap-1 font-medium">
+                                                <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20">
+                                                    <path fill-rule="evenodd"
+                                                        d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                                                        clip-rule="evenodd" />
+                                                </svg>
+                                                <span x-text="message"></span>
+                                            </div>
+                                            <div x-show="status === 'invalid'"
+                                                class="text-rose-600 text-[11px] mt-1 flex items-center gap-1 font-medium">
+                                                <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20">
+                                                    <path fill-rule="evenodd"
+                                                        d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+                                                        clip-rule="evenodd" />
+                                                </svg>
+                                                <span x-text="message"></span>
+                                            </div>
                                             @error('participants.0.nik')
                                                 <p class="text-rose-600 text-[11px] mt-1">{{ $message }}</p>
                                             @enderror
@@ -394,17 +536,57 @@
                                                         <p class="text-rose-600 text-[11px] mt-1">{{ $message }}</p>
                                                     @enderror
                                                 </div>
-                                                <div>
+                                                <div x-data="nikValidator('{{ old("participants.{$i}.nik") }}')" x-init="if (nik.length === 16) checkNik()">
                                                     <label class="block text-slate-600 font-medium mb-1">
                                                         NIK (16 Digit) <span class="text-rose-500">*</span>
                                                     </label>
                                                     <input type="text"
                                                         name="participants[{{ $i }}][nik]"
-                                                        id="participant_nik_{{ $i }}"
-                                                        value="{{ old("participants.{$i}.nik") }}" required
-                                                        minlength="16" maxlength="16" pattern="[0-9]{16}"
+                                                        id="participant_nik_{{ $i }}" x-model="nik"
+                                                        @input.debounce.300ms="checkNik()" required minlength="16"
+                                                        maxlength="16"
+                                                        :class="{
+                                                            'border-rose-400 focus:border-rose-500 focus:ring-rose-500 bg-rose-50/20': status === 'invalid',
+                                                            'border-emerald-400 focus:border-emerald-500 focus:ring-emerald-500 bg-emerald-50/20': status === 'valid'
+                                                        }"
                                                         class="w-full px-3.5 py-2.5 border border-slate-200 focus:border-primary focus:ring-1 focus:ring-primary rounded-lg bg-white text-slate-800 font-outfit text-sm font-normal transition placeholder:text-slate-400"
                                                         placeholder="16 digit NIK">
+                                                    <div x-show="status === 'typing'"
+                                                        class="text-slate-400 text-[11px] mt-1 font-medium">
+                                                        <span x-text="message"></span>
+                                                    </div>
+                                                    <div x-show="status === 'checking'"
+                                                        class="text-sky-600 text-[11px] mt-1 flex items-center gap-1.5 font-medium">
+                                                        <svg class="animate-spin w-3 h-3" fill="none"
+                                                            viewBox="0 0 24 24">
+                                                            <circle class="opacity-25" cx="12" cy="12"
+                                                                r="10" stroke="currentColor" stroke-width="4">
+                                                            </circle>
+                                                            <path class="opacity-75" fill="currentColor"
+                                                                d="M4 12a8 8 0 018-8v8H4z"></path>
+                                                        </svg>
+                                                        <span x-text="message"></span>
+                                                    </div>
+                                                    <div x-show="status === 'valid'"
+                                                        class="text-emerald-600 text-[11px] mt-1 flex items-center gap-1 font-medium">
+                                                        <svg class="w-3.5 h-3.5" fill="currentColor"
+                                                            viewBox="0 0 20 20">
+                                                            <path fill-rule="evenodd"
+                                                                d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                                                                clip-rule="evenodd" />
+                                                        </svg>
+                                                        <span x-text="message"></span>
+                                                    </div>
+                                                    <div x-show="status === 'invalid'"
+                                                        class="text-rose-600 text-[11px] mt-1 flex items-center gap-1 font-medium">
+                                                        <svg class="w-3.5 h-3.5" fill="currentColor"
+                                                            viewBox="0 0 20 20">
+                                                            <path fill-rule="evenodd"
+                                                                d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
+                                                                clip-rule="evenodd" />
+                                                        </svg>
+                                                        <span x-text="message"></span>
+                                                    </div>
                                                     @error("participants.{$i}.nik")
                                                         <p class="text-rose-600 text-[11px] mt-1">{{ $message }}</p>
                                                     @enderror
@@ -664,9 +846,13 @@
                             <label class="flex items-start gap-2.5 pt-1 cursor-pointer select-none">
                                 <input type="checkbox" required checked
                                     class="w-4 h-4 rounded border-slate-300 text-primary focus:ring-primary focus:ring-offset-0 accent-primary cursor-pointer mt-0.5 transition-colors">
-                                <span class="text-[11px] text-muted leading-tight">Saya menyetujui <a href="{{ route('terms.service') }}" target="_blank"
+                                <span class="text-[11px] text-muted leading-tight">Saya menyetujui <a
+                                        href="{{ route('terms.service') }}" target="_blank"
                                         class="text-primary font-medium underline hover:text-primary-hover">Syarat
-                                        &amp; Ketentuan</a> serta <a href="{{ route('privacy.policy') }}" target="_blank" class="text-primary font-medium underline hover:text-primary-hover">Kebijakan Privasi</a> MiddleTrip.</span>
+                                        &amp; Ketentuan</a> serta <a href="{{ route('privacy.policy') }}"
+                                        target="_blank"
+                                        class="text-primary font-medium underline hover:text-primary-hover">Kebijakan
+                                        Privasi</a> MiddleTrip.</span>
                             </label>
                         </div>
 
@@ -766,14 +952,77 @@
             }
         }
 
+        function nikValidator(initialValue = '') {
+            return {
+                nik: initialValue,
+                status: 'idle',
+                message: '',
+                checkNik() {
+                    const clean = (this.nik || '').replace(/[^\d]/g, '');
+                    this.nik = clean;
+                    if (clean.length === 0) {
+                        this.status = 'idle';
+                        this.message = '';
+                        return;
+                    }
+                    if (clean.length < 16) {
+                        this.status = 'typing';
+                        this.message = `${clean.length} dari 16 digit`;
+                        return;
+                    }
+                    if (clean.length > 16) {
+                        this.status = 'invalid';
+                        this.message = 'Nomor NIK harus tepat 16 digit angka';
+                        return;
+                    }
+
+                    this.status = 'checking';
+                    this.message = 'Memvalidasi NIK...';
+
+                    fetch('{{ route('api.validate.nik') }}', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'Accept': 'application/json',
+                                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                            },
+                            body: JSON.stringify({
+                                nik: clean
+                            })
+                        })
+                        .then(res => res.json().then(data => ({
+                            ok: res.ok,
+                            data
+                        })))
+                        .then(res => {
+                            if (res.ok && res.data.valid) {
+                                this.status = 'valid';
+                                this.message = res.data.message || 'NIK Valid';
+                            } else {
+                                this.status = 'invalid';
+                                this.message = res.data.message || 'Nomor NIK tidak valid';
+                            }
+                        })
+                        .catch(() => {
+                            this.status = 'idle';
+                            this.message = '';
+                        });
+                }
+            };
+        }
+
         function copyPemesanToKetua() {
             const custName = document.getElementById('input_customer_name')?.value;
             const custNik = document.getElementById('input_customer_nik')?.value;
             if (custName && document.getElementById('participant_name_0')) {
-                document.getElementById('participant_name_0').value = custName;
+                const elName = document.getElementById('participant_name_0');
+                elName.value = custName;
+                elName.dispatchEvent(new Event('input'));
             }
             if (custNik && document.getElementById('participant_nik_0')) {
-                document.getElementById('participant_nik_0').value = custNik;
+                const elNik = document.getElementById('participant_nik_0');
+                elNik.value = custNik;
+                elNik.dispatchEvent(new Event('input'));
             }
             // Pastikan accordion ketua terbuka saat tombol salin ditekan
             const ketuaContent = document.getElementById('content-peserta-0');
@@ -876,7 +1125,9 @@
                                     window.location.href = data.redirect_url;
                                 });
                             } else {
-                                alert('Gagal memuat modul pembayaran Midtrans. Mengalihkan ke halaman pembayaran...');
+                                alert(
+                                    'Gagal memuat modul pembayaran Midtrans. Mengalihkan ke halaman pembayaran...'
+                                    );
                                 window.location.href = data.redirect_url;
                             }
                             return;

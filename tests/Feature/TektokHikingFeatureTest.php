@@ -7,6 +7,7 @@ use App\Models\Mountain;
 use App\Models\User;
 use Database\Seeders\ExpeditionSubsystemSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Http;
 use Tests\TestCase;
 
 class TektokHikingFeatureTest extends TestCase
@@ -77,17 +78,25 @@ class TektokHikingFeatureTest extends TestCase
             'price_tektok' => 350000,
         ]);
 
+        Http::fake([
+            'https://api.fonnte.com/validate' => Http::response([
+                'status' => true,
+                'registered' => ['6281298765432'],
+                'not_registered' => [],
+            ], 200),
+        ]);
+
         $payload = [
             'expedition_id' => $expedition->id,
             'route_id' => $expedition->route_id,
             'hiking_type' => 'tektok',
             'customer_name' => 'Pendaki Tektok',
-            'customer_email' => 'tektok@example.com',
-            'customer_phone' => '08123456789',
-            'customer_nik' => '3301234567890001',
+            'customer_email' => 'tektok@gmail.com',
+            'customer_phone' => '081298765432',
+            'customer_nik' => '3301011508950001',
             'pax_count' => 1,
             'participants' => [
-                ['full_name' => 'Pendaki Tektok', 'nik' => '3301234567890001', 'is_leader' => true],
+                ['full_name' => 'Pendaki Tektok', 'nik' => '3301011508950001', 'is_leader' => true],
             ],
         ];
 

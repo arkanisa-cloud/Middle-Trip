@@ -6,6 +6,7 @@ use App\Models\Mountain;
 use App\Models\Route;
 use App\Models\User;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Storage;
 
 test('profile page is displayed', function () {
@@ -24,8 +25,8 @@ test('profile information can be updated', function () {
     $response = $this
         ->actingAs($user)
         ->patch('/profile', [
-            'name' => 'Test User',
-            'email' => 'test@example.com',
+            'name' => 'Pendaki Update',
+            'email' => 'pendaki.update@gmail.com',
         ]);
 
     $response
@@ -34,9 +35,117 @@ test('profile information can be updated', function () {
 
     $user->refresh();
 
-    $this->assertSame('Test User', $user->name);
-    $this->assertSame('test@example.com', $user->email);
+    $this->assertSame('Pendaki Update', $user->name);
+    $this->assertSame('pendaki.update@gmail.com', $user->email);
     $this->assertNull($user->email_verified_at);
+});
+
+test('profile update rejects dummy email address like coba@mail.com', function () {
+    $user = User::factory()->create();
+
+    $response = $this
+        ->actingAs($user)
+        ->patch('/profile', [
+            'name' => 'Dummy Update',
+            'email' => 'coba@mail.com',
+        ]);
+
+    $response->assertSessionHasErrors(['email']);
+    $user->refresh();
+    $this->assertNotSame('coba@mail.com', $user->email);
+});
+
+test('profile update rejects dummy email coba@coba.com', function () {
+    $user = User::factory()->create();
+
+    $response = $this
+        ->actingAs($user)
+        ->patch('/profile', [
+            'name' => 'Dummy Update',
+            'email' => 'coba@coba.com',
+        ]);
+
+    $response->assertSessionHasErrors(['email']);
+    $user->refresh();
+    $this->assertNotSame('coba@coba.com', $user->email);
+});
+
+test('profile phone number can be updated with valid phone number', function () {
+    Http::fake([
+        'https://api.fonnte.com/validate' => Http::response([
+            'status' => true,
+            'registered' => ['6281298765432'],
+            'not_registered' => [],
+        ], 200),
+    ]);
+
+    $user = User::factory()->create();
+
+    $response = $this
+        ->actingAs($user)
+        ->patch('/profile', [
+            'name' => 'Pendaki Phone',
+            'email' => $user->email,
+            'phone' => '081298765432',
+        ]);
+
+    $response
+        ->assertSessionHasNoErrors()
+        ->assertRedirect('/profile?tab=settings');
+
+    $user->refresh();
+    $this->assertSame('081298765432', $user->phone);
+});
+
+test('profile update rejects dummy phone number', function () {
+    $user = User::factory()->create();
+
+    $response = $this
+        ->actingAs($user)
+        ->patch('/profile', [
+            'name' => 'Dummy Phone',
+            'email' => $user->email,
+            'phone' => '081234567890',
+        ]);
+
+    $response->assertSessionHasErrors(['phone']);
+    $user->refresh();
+    $this->assertNotSame('081234567890', $user->phone);
+});
+
+test('profile nik can be updated with valid nik', function () {
+    $user = User::factory()->create();
+
+    $response = $this
+        ->actingAs($user)
+        ->patch('/profile', [
+            'name' => 'Pendaki NIK',
+            'email' => $user->email,
+            'nik' => '3301011508950001',
+        ]);
+
+    $response
+        ->assertSessionHasNoErrors()
+        ->assertRedirect('/profile?tab=settings');
+
+    $user->refresh();
+    $this->assertSame('3301011508950001', $user->nik);
+});
+
+test('profile update rejects dummy nik', function () {
+    $user = User::factory()->create();
+
+    $response = $this
+        ->actingAs($user)
+        ->patch('/profile', [
+            'name' => 'Dummy NIK',
+            'email' => $user->email,
+            'nik' => '1234567890123456',
+        ]);
+
+    $response->assertSessionHasErrors(['nik']);
+    $user->refresh();
+    $this->assertNotSame('1234567890123456', $user->nik);
 });
 
 test('profile photo can be uploaded and updated', function () {

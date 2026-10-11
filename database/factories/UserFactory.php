@@ -24,9 +24,14 @@ class UserFactory extends Factory
      */
     public function definition(): array
     {
+        $cleanUser = preg_replace('/[^a-zA-Z0-9]/', '', strtolower(fake()->unique()->userName()));
+        if (strlen($cleanUser) < 4) {
+            $cleanUser .= 'user';
+        }
+
         return [
             'name' => fake()->name(),
-            'email' => fake()->unique()->safeEmail(),
+            'email' => $cleanUser.fake()->numberBetween(100, 999).'@gmail.com',
             'email_verified_at' => now(),
             'password' => static::$password ??= Hash::make('password'),
             'remember_token' => Str::random(10),

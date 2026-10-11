@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\ProfileUpdateRequest;
 use App\Models\Booking;
+use App\Services\ImageService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -53,6 +54,8 @@ class ProfileController extends Controller
 
         $user->name = $validated['name'];
         $user->email = $validated['email'];
+        $user->phone = $validated['phone'] ?? null;
+        $user->nik = $validated['nik'] ?? null;
 
         if ($request->boolean('remove_avatar')) {
             if ($user->avatar && ! str_starts_with($user->avatar, 'http')) {
@@ -63,7 +66,7 @@ class ProfileController extends Controller
             if ($user->avatar && ! str_starts_with($user->avatar, 'http')) {
                 Storage::disk('public')->delete($user->avatar);
             }
-            $path = app(\App\Services\ImageService::class)->storeAsWebp(
+            $path = app(ImageService::class)->storeAsWebp(
                 $request->file('avatar'),
                 'avatars',
                 'public',

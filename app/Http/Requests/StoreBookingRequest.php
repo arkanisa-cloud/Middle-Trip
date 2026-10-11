@@ -2,6 +2,9 @@
 
 namespace App\Http\Requests;
 
+use App\Rules\ValidEmailAddress;
+use App\Rules\ValidNik;
+use App\Rules\ValidWhatsAppNumber;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 
@@ -35,13 +38,13 @@ class StoreBookingRequest extends FormRequest
             'hiking_type' => ['nullable', 'string', 'in:camping,tektok'],
             'departure_date' => ['nullable', 'date', 'after_or_equal:today'],
             'customer_name' => ['required', 'string', 'min:3', 'max:150'],
-            'customer_email' => ['required', 'email', 'max:150'],
-            'customer_phone' => ['required', 'string', 'min:9', 'max:25'],
-            'customer_nik' => ['required', 'digits:16'],
+            'customer_email' => ['required', 'string', 'max:150', new ValidEmailAddress],
+            'customer_phone' => ['nullable', 'string', new ValidWhatsAppNumber],
+            'customer_nik' => ['nullable', new ValidNik],
             'pax_count' => ['required', 'integer', 'min:1', 'max:10'],
             'participants' => ['required', 'array', 'size:'.$this->input('pax_count', 1)],
-            'participants.*.full_name' => ['required', 'string', 'min:3', 'max:150'],
-            'participants.*.nik' => ['required', 'digits:16'],
+            'participants.*.full_name' => ['nullable', 'string', 'max:150'],
+            'participants.*.nik' => ['nullable', new ValidNik],
             'participants.*.is_leader' => ['nullable', 'boolean'],
             'addons' => ['nullable', 'array'],
             'addons.*.id' => ['required', 'exists:addons,id'],
