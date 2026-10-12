@@ -15,7 +15,8 @@ class HomeController extends Controller
         // 1. Ambil data seluruh gunung aktif beserta jalurnya untuk Hero Search Bar dependent dropdown
         $mountains = Mountain::query()
             ->active()
-            ->with(['routes' => fn ($query) => $query->orderByDesc('is_primary')->orderBy('name')])
+            ->select(['id', 'name', 'slug', 'elevation', 'base_price', 'cover_image'])
+            ->with(['routes' => fn ($query) => $query->select(['id', 'mountain_id', 'name', 'slug', 'grade', 'is_primary', 'duration_hours'])->orderByDesc('is_primary')->orderBy('name')])
             ->orderBy('name')
             ->get();
 

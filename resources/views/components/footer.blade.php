@@ -90,25 +90,30 @@
                 <div class="flex flex-wrap items-center gap-x-6 gap-y-4 pt-2">
                     <img src="{{ asset('storage/jhic/1. LOGO JHIC 2.0.png') }}" alt="JHIC 2.0"
                         title="Jagoan Hosting Indonesia Competition 2.0"
+                        width="53" height="28"
                         class="h-7 w-auto object-contain opacity-85 hover:opacity-100 transition-opacity"
                         loading="lazy" decoding="async">
 
                     <img src="{{ asset('storage/jhic/2. Logo Jagoan Hosting.png') }}" alt="Jagoan Hosting"
                         title="Jagoan Hosting"
+                        width="64" height="20"
                         class="h-5 w-auto object-contain opacity-85 hover:opacity-100 transition-opacity"
                         loading="lazy" decoding="async">
 
                     <img src="{{ asset('storage/jhic/3. KOMDIGI.png') }}" alt="KOMDIGI"
                         title="Kementerian Komunikasi dan Digital RI"
+                        width="39" height="28"
                         class="h-7 w-auto object-contain opacity-85 hover:opacity-100 transition-opacity"
                         loading="lazy" decoding="async">
 
                     <img src="{{ asset('storage/jhic/4. Garuda Spark Full Color.png') }}" alt="Garuda Spark"
                         title="Garuda Spark"
+                        width="44" height="24"
                         class="h-6 w-auto object-contain opacity-85 hover:opacity-100 transition-opacity"
                         loading="lazy" decoding="async">
 
                     <img src="{{ asset('storage/jhic/5. LOGO NGALUP.png') }}" alt="Ngalup.co" title="Ngalup.co"
+                        width="101" height="16"
                         class="h-4 w-auto object-contain opacity-85 hover:opacity-100 transition-opacity"
                         loading="lazy" decoding="async">
                 </div>

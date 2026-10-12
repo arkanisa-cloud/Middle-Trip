@@ -14,6 +14,8 @@
         <img 
             src="{{ $mountain->cover_image }}" 
             alt="{{ $mountain->name }}" 
+            width="400"
+            height="224"
             class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
             loading="lazy"
             decoding="async"

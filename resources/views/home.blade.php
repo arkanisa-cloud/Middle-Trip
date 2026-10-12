@@ -1,12 +1,31 @@
 <x-public-layout title="MiddleTrip - Jalan Tengah Menuju Puncak yang Sesungguhnya" active="home" :hero="true"
     body-class="bg-canvas-alt text-ink antialiased selection:bg-primary selection:text-white font-sans overflow-x-hidden">
 
+    @push('head_preload')
+        <link rel="preload" as="image" href="{{ asset('storage/mountains/hero-mobile.webp') }}" media="(max-width: 640px)" fetchpriority="high">
+        <link rel="preload" as="image" href="{{ asset('storage/mountains/hero.webp') }}" media="(min-width: 641px)" fetchpriority="high">
+    @endpush
+
     {{-- =====================================================================
          1. HERO HEADER & FLOATING EXPRESS SEARCH BAR
     ===================================================================== --}}
     <header
-        class="relative w-full min-h-[360px] sm:min-h-[440px] md:h-screen md:min-h-[660px] bg-cover bg-center flex flex-col justify-between"
-        style="background-image: linear-gradient(180deg, rgba(16, 24, 40, 0.45) 0%, rgba(16, 24, 40, 0.15) 40%, rgba(0,0,0,0.35) 100%), url('{{ asset('storage/mountains/hero.webp') }}');">
+        class="relative w-full min-h-[360px] sm:min-h-[440px] md:h-screen md:min-h-[660px] flex flex-col justify-between overflow-visible">
+
+        <!-- Hero Background Image & Gradient (Responsive WebP + Preload discovery) -->
+        <div class="absolute inset-0 overflow-hidden pointer-events-none -z-10">
+            <picture>
+                <source media="(max-width: 640px)" srcset="{{ asset('storage/mountains/hero-mobile.webp') }}">
+                <img src="{{ asset('storage/mountains/hero.webp') }}"
+                    alt="MiddleTrip Ekspedisi Pendakian Gunung Indonesia"
+                    fetchpriority="high"
+                    decoding="async"
+                    width="800"
+                    height="533"
+                    class="w-full h-full object-cover object-center" />
+            </picture>
+            <div class="absolute inset-0 bg-gradient-to-b from-[#101828]/45 via-[#101828]/15 to-black/35"></div>
+        </div>
 
         <!-- Hero Title Center -->
         <div
@@ -208,8 +227,8 @@
                 <!-- Big Hero Card: Featured Order 1 (Span 7) -->
                 <a href="{{ route('ekspedisi.show', $featuredHero->slug) }}"
                     class="lg:col-span-7 relative min-h-[340px] sm:min-h-[400px] md:min-h-[440px] lg:h-full lg:min-h-0 rounded-2xl overflow-hidden group shadow-sm bg-gray-900 cursor-pointer block">
-                    <img src="{{ $featuredHero->cover_image }}" alt="{{ $featuredHero->name }}" fetchpriority="high"
-                        decoding="async"
+                    <img src="{{ $featuredHero->cover_image }}" alt="{{ $featuredHero->name }}" loading="lazy"
+                        decoding="async" width="700" height="440"
                         class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition duration-500" />
                     <div class="absolute inset-0 bg-gradient-to-t from-black/85 via-black/30 to-black/30"></div>
 
@@ -256,7 +275,7 @@
                         class="flex-1 bg-surface-card rounded-2xl p-3.5 border border-gray-100 shadow-sm hover:shadow-md transition duration-200 cursor-pointer group flex flex-col justify-between block">
                         <div class="relative h-28 rounded-xl overflow-hidden mb-3 bg-gray-200">
                             <img src="{{ $card->cover_image }}" alt="{{ $card->name }}" loading="lazy"
-                                decoding="async"
+                                decoding="async" width="400" height="112"
                                 class="w-full h-full object-cover group-hover:scale-105 transition duration-500" />
                             <div class="absolute inset-0 bg-black/20"></div>
                             <div class="absolute top-2.5 left-2.5 right-2.5 flex items-center justify-between">
@@ -396,7 +415,7 @@
                         <div
                             class="relative w-full aspect-[4/3] rounded-2xl overflow-hidden shadow-lg border border-white/10">
                             <img id="grade-image" src="/storage/mountains/merbabu.webp" alt="Jalur Pemula"
-                                loading="lazy" decoding="async" class="w-full h-full object-cover" />
+                                loading="lazy" decoding="async" width="400" height="300" class="w-full h-full object-cover" />
                             <div
                                 class="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent">
                             </div>
