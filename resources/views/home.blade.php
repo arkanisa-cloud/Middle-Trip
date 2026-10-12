@@ -2,8 +2,10 @@
     body-class="bg-canvas-alt text-ink antialiased selection:bg-primary selection:text-white font-sans overflow-x-hidden">
 
     @push('head_preload')
-        <link rel="preload" as="image" href="{{ asset('storage/mountains/hero-mobile.webp') }}" media="(max-width: 640px)" fetchpriority="high">
-        <link rel="preload" as="image" href="{{ asset('storage/mountains/hero.webp') }}" media="(min-width: 641px)" fetchpriority="high">
+        <link rel="preload" as="image" href="{{ asset('images/hero.webp') }}" media="(max-width: 640px)"
+            fetchpriority="high">
+        <link rel="preload" as="image" href="{{ asset('images/hero.webp') }}" media="(min-width: 641px)"
+            fetchpriority="high">
     @endpush
 
     {{-- =====================================================================
@@ -15,13 +17,9 @@
         <!-- Hero Background Image & Gradient (Responsive WebP + Preload discovery) -->
         <div class="absolute inset-0 overflow-hidden pointer-events-none -z-10">
             <picture>
-                <source media="(max-width: 640px)" srcset="{{ asset('storage/mountains/hero-mobile.webp') }}">
-                <img src="{{ asset('storage/mountains/hero.webp') }}"
-                    alt="MiddleTrip Ekspedisi Pendakian Gunung Indonesia"
-                    fetchpriority="high"
-                    decoding="async"
-                    width="800"
-                    height="533"
+                <source media="(max-width: 640px)" srcset="{{ asset('images/hero-mobile.webp') }}">
+                <img src="{{ asset('images/hero.webp') }}" alt="MiddleTrip Ekspedisi Pendakian Gunung Indonesia"
+                    fetchpriority="high" decoding="async" width="1920" height="1280"
                     class="w-full h-full object-cover object-center" />
             </picture>
             <div class="absolute inset-0 bg-gradient-to-b from-[#101828]/45 via-[#101828]/15 to-black/35"></div>
@@ -415,7 +413,8 @@
                         <div
                             class="relative w-full aspect-[4/3] rounded-2xl overflow-hidden shadow-lg border border-white/10">
                             <img id="grade-image" src="/storage/mountains/merbabu.webp" alt="Jalur Pemula"
-                                loading="lazy" decoding="async" width="400" height="300" class="w-full h-full object-cover" />
+                                loading="lazy" decoding="async" width="400" height="300"
+                                class="w-full h-full object-cover" />
                             <div
                                 class="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent">
                             </div>
@@ -798,9 +797,10 @@
                 const gradeVal = selectedGradeVal ? selectedGradeVal.value.trim() : '';
 
                 // Jika slug belum diset tapi user mengetikkan nama gunung langsung di input:
-                if (!mSlug && typedText && typedText.toLowerCase() !== 'semua gunung' && typedText.toLowerCase() !== 'pilih gunung') {
+                if (!mSlug && typedText && typedText.toLowerCase() !== 'semua gunung' && typedText.toLowerCase() !==
+                    'pilih gunung') {
                     const cleanTyped = typedText.toLowerCase().replace(/^(mt\.?|gunung)\s*/i, '').trim();
-                    
+
                     // 1. Cari exact match
                     let matched = mountainsData.find(m => {
                         const cleanName = m.name.toLowerCase().replace(/^(mt\.?|gunung)\s*/i, '').trim();
@@ -811,7 +811,8 @@
                     if (!matched) {
                         matched = mountainsData.find(m => {
                             const cleanName = m.name.toLowerCase().replace(/^(mt\.?|gunung)\s*/i, '').trim();
-                            return cleanName.includes(cleanTyped) || cleanTyped.includes(cleanName) || m.slug.toLowerCase().includes(cleanTyped);
+                            return cleanName.includes(cleanTyped) || cleanTyped.includes(cleanName) || m.slug
+                                .toLowerCase().includes(cleanTyped);
                         });
                     }
 
