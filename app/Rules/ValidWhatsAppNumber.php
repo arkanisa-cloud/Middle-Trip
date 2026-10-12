@@ -32,7 +32,7 @@ class ValidWhatsAppNumber implements ValidationRule
 
         // 1. Cek format seluler Indonesia (harus diawali 08, 628, atau +628)
         if (! preg_match('/^(\+62|62|0)8[1-9][0-9]{7,11}$/', $clean)) {
-            $fail('Format nomor WhatsApp belum tepat. Mohon gunakan nomor ponsel Indonesia yang aktif (contoh: 081234567890).');
+            $fail('Format nomor WhatsApp belum tepat. Mohon gunakan nomor ponsel Indonesia yang aktif.');
 
             return;
         }

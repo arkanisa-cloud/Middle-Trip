@@ -61,14 +61,14 @@ class ValidEmailAddress implements ValidationRule
     public function validate(string $attribute, mixed $value, Closure $fail): void
     {
         if (! is_string($value) || ! filter_var($value, FILTER_VALIDATE_EMAIL)) {
-            $fail('Format alamat email belum tepat. Pastikan penulisan email sudah benar (contoh: nama@domain.com).');
+            $fail('Format alamat email belum tepat. Pastikan penulisan email sudah benar');
 
             return;
         }
 
         $parts = explode('@', strtolower(trim($value)), 2);
         if (count($parts) !== 2) {
-            $fail('Format alamat email belum tepat. Pastikan penulisan email sudah benar (contoh: nama@domain.com).');
+            $fail('Format alamat email belum tepat. Pastikan penulisan email sudah benar');
 
             return;
         }
@@ -77,7 +77,7 @@ class ValidEmailAddress implements ValidationRule
 
         // 1. Cek domain disposable / temporary email
         if (in_array($domain, $this->disposableDomains, true)) {
-            $fail('Demi keamanan akun Anda, kami tidak dapat menerima alamat email sementara (disposable). Mohon gunakan email pribadi atau resmi Anda yang aktif.');
+            $fail('Demi keamanan akun Anda, kami tidak dapat menerima alamat email sementara. Mohon gunakan email pribadi atau resmi Anda yang aktif.');
 
             return;
         }

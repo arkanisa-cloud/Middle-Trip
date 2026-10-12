@@ -27,7 +27,7 @@ class ValidationController extends Controller
         if (! preg_match('/^(\+62|62|0)8[1-9][0-9]{7,11}$/', $clean)) {
             return response()->json([
                 'valid' => false,
-                'message' => 'Format nomor WhatsApp belum tepat. Mohon gunakan nomor ponsel Indonesia yang aktif).',
+                'message' => 'Format nomor WhatsApp belum tepat. Mohon gunakan nomor ponsel Indonesia yang aktif.',
                 'is_dummy' => false,
             ], 422);
         }
