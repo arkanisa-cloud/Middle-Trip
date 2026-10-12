@@ -2,7 +2,7 @@
     body-class="bg-canvas-alt text-ink antialiased selection:bg-primary selection:text-white font-sans overflow-x-hidden">
 
     @push('head_preload')
-        <link rel="preload" as="image" href="{{ asset('images/hero.webp') }}" media="(max-width: 640px)"
+        <link rel="preload" as="image" href="{{ asset('images/hero-mobile.webp') }}" media="(max-width: 640px)"
             fetchpriority="high">
         <link rel="preload" as="image" href="{{ asset('images/hero.webp') }}" media="(min-width: 641px)"
             fetchpriority="high">
