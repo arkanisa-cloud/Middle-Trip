@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\Booking;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 use RuntimeException;
 
 class MidtransService
@@ -173,5 +174,32 @@ class MidtransService
         }
 
         return null;
+    }
+
+    /**
+     * Membatalkan transaksi di Midtrans secara real-time via Core API cancel endpoint.
+     * Segera membatalkan Virtual Account atau QRIS aktif agar tidak bisa dibayar lagi oleh nasabah.
+     */
+    public function cancelTransaction(string $orderId): bool
+    {
+        $serverKey = config('midtrans.server_key');
+        if (empty($serverKey)) {
+            return false;
+        }
+
+        $coreUrl = rtrim((string) config('midtrans.core_api_url'), '/').'/'.$orderId.'/cancel';
+
+        try {
+            $response = Http::withBasicAuth($serverKey, '')
+                ->acceptJson()
+                ->timeout(5)
+                ->post($coreUrl);
+
+            return $response->successful();
+        } catch (\Throwable $e) {
+            Log::warning("Gagal membatalkan transaksi Midtrans {$orderId}: ".$e->getMessage());
+
+            return false;
+        }
     }
 }

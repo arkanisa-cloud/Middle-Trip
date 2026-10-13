@@ -38,6 +38,11 @@ class CheckoutController extends Controller
                 ->with('error', "Pesanan #{$booking->booking_code} telah kedaluwarsa karena melewati batas waktu pembayaran 24 jam.");
         }
 
+        if ($booking->status === 'cancelled') {
+            return redirect()->route('home')
+                ->with('error', "Pesanan #{$booking->booking_code} telah dibatalkan karena kuota batch ekspedisi telah terisi penuh oleh pendaki lain.");
+        }
+
         if (in_array($booking->status, ['reserved', 'price_locked'], true)) {
             return redirect()->route('checkout.status', $booking->booking_code);
         }
@@ -55,6 +60,19 @@ class CheckoutController extends Controller
     public function payDp(Request $request, string $bookingCode): JsonResponse|RedirectResponse
     {
         $booking = Booking::with('expedition')->where('booking_code', $bookingCode)->firstOrFail();
+
+        if ($booking->status === 'cancelled') {
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'status' => 'cancelled',
+                    'message' => 'Pesanan ini telah dibatalkan karena kuota batch ekspedisi telah habis terisi oleh pendaki lain.',
+                    'redirect_url' => route('home'),
+                ], 422);
+            }
+
+            return redirect()->route('home')
+                ->with('error', "Pesanan #{$booking->booking_code} telah dibatalkan karena kuota batch ekspedisi telah habis terisi oleh pendaki lain.");
+        }
 
         if ($booking->isExpired()) {
             $booking->markAsExpired();

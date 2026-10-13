@@ -183,4 +183,107 @@ class MidtransWebhookTest extends TestCase
         $this->assertEquals('open', $booking->fresh()->status);
         $this->assertEquals('expired', PaymentTransaction::where('transaction_code', $orderId)->first()->status);
     }
+
+    public function test_first_to_pay_wins_and_auto_cancels_other_pending_bookings_when_quota_full(): void
+    {
+        $expedition = Expedition::where('type', 'open')->first();
+        // Set kuota maksimal 1, kuota terisi 0 (hanya tersisa 1 slot)
+        $expedition->update(['quota_max' => 1, 'quota_booked' => 0]);
+
+        // User A (Booking 1, sisa slot 1)
+        $bookingA = Booking::create([
+            'booking_code' => 'MT-USER-A',
+            'expedition_id' => $expedition->id,
+            'route_id' => $expedition->route_id,
+            'trip_type' => 'open',
+            'customer_name' => 'User A',
+            'customer_email' => 'usera@example.com',
+            'customer_phone' => '08123456781',
+            'customer_nik' => '3301234567890001',
+            'pax_count' => 1,
+            'booking_fee_per_pax' => 150000,
+            'total_booking_fee' => 150000,
+            'grand_total' => 500000,
+            'status' => 'open',
+        ]);
+        $orderIdA = 'MT-DP-'.$bookingA->id.'-A123';
+        $txA = PaymentTransaction::create([
+            'booking_id' => $bookingA->id,
+            'transaction_code' => $orderIdA,
+            'payment_stage' => 'booking_fee',
+            'payment_method' => 'bank_transfer',
+            'amount' => 150000,
+            'status' => 'pending',
+        ]);
+
+        // User B (Booking 2, juga mengincar slot terakhir)
+        $bookingB = Booking::create([
+            'booking_code' => 'MT-USER-B',
+            'expedition_id' => $expedition->id,
+            'route_id' => $expedition->route_id,
+            'trip_type' => 'open',
+            'customer_name' => 'User B',
+            'customer_email' => 'userb@example.com',
+            'customer_phone' => '08123456782',
+            'customer_nik' => '3301234567890002',
+            'pax_count' => 1,
+            'booking_fee_per_pax' => 150000,
+            'total_booking_fee' => 150000,
+            'grand_total' => 500000,
+            'status' => 'open',
+        ]);
+        $orderIdB = 'MT-DP-'.$bookingB->id.'-B123';
+        $txB = PaymentTransaction::create([
+            'booking_id' => $bookingB->id,
+            'transaction_code' => $orderIdB,
+            'payment_stage' => 'booking_fee',
+            'payment_method' => 'bank_transfer',
+            'amount' => 150000,
+            'status' => 'pending',
+        ]);
+
+        // 1. User A membayar lebih dulu dan notifikasi sukses masuk
+        $serverKey = 'SB-Mid-server-TEST12345';
+        $signatureA = hash('sha512', $orderIdA.'200'.'150000.00'.$serverKey);
+        $payloadA = [
+            'order_id' => $orderIdA,
+            'status_code' => '200',
+            'gross_amount' => '150000.00',
+            'signature_key' => $signatureA,
+            'transaction_status' => 'settlement',
+            'payment_type' => 'bank_transfer',
+        ];
+
+        $resA = $this->postJson('/midtrans/notification', $payloadA);
+        $resA->assertOk();
+
+        // Verifikasi User A menang (reserved) dan kuota bertambah jadi 1 (penuh)
+        $this->assertEquals('reserved', $bookingA->fresh()->status);
+        $this->assertEquals('success', $txA->fresh()->status);
+        $this->assertEquals(1, $expedition->fresh()->quota_booked);
+
+        // Verifikasi tagihan User B otomatis dibatalkan (cancelled) dan transaksinya expired
+        $this->assertEquals('cancelled', $bookingB->fresh()->status);
+        $this->assertEquals('expired', $txB->fresh()->status);
+
+        // 2. Sekarang uji edge case: Jika webhook pembayaran User B tetap masuk beberapa detik kemudian
+        $signatureB = hash('sha512', $orderIdB.'200'.'150000.00'.$serverKey);
+        $payloadB = [
+            'order_id' => $orderIdB,
+            'status_code' => '200',
+            'gross_amount' => '150000.00',
+            'signature_key' => $signatureB,
+            'transaction_status' => 'settlement',
+            'payment_type' => 'bank_transfer',
+        ];
+
+        $resB = $this->postJson('/midtrans/notification', $payloadB);
+        $resB->assertOk();
+
+        // Kuota TIDAK BOLEH jebol ke 2! Tetap 1!
+        $this->assertEquals(1, $expedition->fresh()->quota_booked);
+        // Status User B tetap cancelled dengan catatan Overbooked butuh refund
+        $this->assertEquals('cancelled', $bookingB->fresh()->status);
+        $this->assertStringContainsString('Overbooked', $bookingB->fresh()->notes);
+    }
 }
