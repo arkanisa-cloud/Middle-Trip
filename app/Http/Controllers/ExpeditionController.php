@@ -552,17 +552,34 @@ class ExpeditionController extends Controller
         $maxElev = max($elevations);
         $elevRange = max(1, $maxElev - $minElev);
 
+        // Lebar SVG dinamis berdasarkan jumlah titik (minimal 700px, bertambah jika titik > 5 agar tidak berjejal)
+        $svgWidth = $count <= 5 ? 700 : max(700, ($count * 115) + 80);
+        $svgHeight = 250;
+        $marginLeft = 60;
+        $marginRight = 60;
+        $usableWidth = $svgWidth - ($marginLeft + $marginRight);
+
         $points = [];
         $svgPoints = [];
         foreach ($pointsRaw as $i => $pt) {
-            $x = (int) round(40 + ($i * (610 / max(1, $count - 1))));
+            $x = (int) round($marginLeft + ($i * ($usableWidth / max(1, $count - 1))));
             $norm = ((int) $pt['elevation'] - $minElev) / $elevRange;
-            $y = (int) round(190 - ($norm * 145)); // 190 di bawah, 45 di atas
+            // Posisi vertikal titik: puncak di 55px, dasar di 185px
+            $y = (int) round(185 - ($norm * 130));
+
+            // Staggering / selang-seling label agar teks nama & elevasi tidak saling tabrak
+            $isOdd = ($i % 2 !== 0);
+            $yElev = $isOdd ? ($y - 24) : ($y - 12);
+            $yName = $isOdd ? ($y + 36) : ($y + 20);
+
             $points[] = [
                 'name' => $pt['name'],
                 'elevation' => number_format((int) $pt['elevation'], 0, ',', '.').'m',
                 'x' => $x,
                 'y' => $y,
+                'y_elev' => $yElev,
+                'y_name' => $yName,
+                'is_odd' => $isOdd,
             ];
             $svgPoints[] = "{$x} {$y}";
         }
@@ -570,13 +587,18 @@ class ExpeditionController extends Controller
         $path = 'M '.implode(' L ', $svgPoints);
         $lastX = $points[$count - 1]['x'];
         $firstX = $points[0]['x'];
-        $area = $path." L {$lastX} 210 L {$firstX} 210 Z";
+        $bottomY = 215;
+        $area = $path." L {$lastX} {$bottomY} L {$firstX} {$bottomY} Z";
 
         return [
             'title' => 'Elevasi & Rute Pendakian ('.$routeName.')',
             'points' => $points,
             'path' => $path,
             'area' => $area,
+            'svg_width' => $svgWidth,
+            'svg_height' => $svgHeight,
+            'view_box' => "0 0 {$svgWidth} {$svgHeight}",
+            'is_scrollable' => $count > 5,
             'notes' => [
                 [
                     'title' => 'Titik Air:',

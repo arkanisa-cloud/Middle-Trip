@@ -440,8 +440,23 @@
                     <div
                         class="border border-hairline rounded-2xl sm:rounded-3xl p-4 sm:p-6 bg-surface-card shadow-xs transition-all duration-300">
                         <!-- Elevation Graph Illustration (Responsive SVG) -->
-                        <div class="w-full h-48 sm:h-60 md:h-64 py-2 relative flex items-center justify-center overflow-x-auto no-scrollbar">
-                            <svg id="elevation-svg" viewBox="0 0 700 240" class="w-full min-w-[320px] h-full overflow-visible"
+                        @php
+                            $svgWidth = $currentElevProfile['svg_width'] ?? 700;
+                            $svgViewBox = $currentElevProfile['view_box'] ?? '0 0 700 250';
+                            $isScrollable = !empty($currentElevProfile['is_scrollable']) || count($currentElevProfile['points'] ?? []) > 5;
+                        @endphp
+                        @if ($isScrollable)
+                            <div class="flex items-center justify-end pb-1 text-[11px] text-muted font-medium gap-1.5">
+                                <span class="hidden sm:inline">Geser horizontal untuk rute lengkap</span>
+                                <span class="sm:hidden">Geser grafik rute</span>
+                                <svg class="w-3.5 h-3.5 text-primary animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                                </svg>
+                            </div>
+                        @endif
+                        <div class="w-full h-52 sm:h-64 py-2 relative flex items-center overflow-x-auto no-scrollbar scroll-smooth">
+                            <svg id="elevation-svg" viewBox="{{ $svgViewBox }}" class="h-full overflow-visible"
+                                style="min-width: {{ $svgWidth }}px; width: 100%;"
                                 preserveAspectRatio="none">
                                 <defs>
                                     <linearGradient id="elevationLineGrad" x1="0" y1="0"
@@ -470,16 +485,18 @@
                                     @foreach ($currentElevProfile['points'] as $index => $point)
                                         @php
                                              $isLast = $index === count($currentElevProfile['points']) - 1;
+                                             $yElev = $point['y_elev'] ?? ($point['y'] - 12);
+                                             $yName = $point['y_name'] ?? ($point['y'] + 18);
                                         @endphp
                                         <circle cx="{{ $point['x'] }}" cy="{{ $point['y'] }}"
                                             r="{{ $isLast ? '6' : '4.5' }}"
                                             fill="{{ $isLast ? '#A0401C' : '#FFFFFF' }}"
                                             stroke="{{ $isLast ? '#FFFFFF' : '#A0401C' }}" stroke-width="2.5" />
-                                        <text x="{{ $point['x'] }}" y="{{ $point['y'] - 12 }}" text-anchor="middle"
+                                        <text x="{{ $point['x'] }}" y="{{ $yElev }}" text-anchor="middle"
                                             class="text-[10px] font-bold fill-muted-soft">
                                             {{ $point['elevation'] }}
                                         </text>
-                                        <text x="{{ $point['x'] }}" y="{{ $point['y'] + 18 }}" text-anchor="middle"
+                                        <text x="{{ $point['x'] }}" y="{{ $yName }}" text-anchor="middle"
                                             class="text-[11px] font-semibold fill-body-strong">
                                             {{ $point['name'] }}
                                         </text>
@@ -1721,6 +1738,14 @@
                 titleEl.innerText = elevation.title;
             }
 
+            const svgEl = document.getElementById('elevation-svg');
+            if (svgEl) {
+                if (elevation.view_box) svgEl.setAttribute('viewBox', elevation.view_box);
+                if (elevation.svg_width) {
+                    svgEl.style.minWidth = `${elevation.svg_width}px`;
+                }
+            }
+
             const svgArea = document.getElementById('elevation-area-path');
             const svgLine = document.getElementById('elevation-line-path');
             const pointsGroup = document.getElementById('elevation-points-group');
@@ -1732,6 +1757,8 @@
                 pointsGroup.innerHTML = '';
                 elevation.points.forEach((p, idx) => {
                     const isLast = idx === elevation.points.length - 1;
+                    const yElev = p.y_elev !== undefined ? p.y_elev : (p.y - 12);
+                    const yName = p.y_name !== undefined ? p.y_name : (p.y + 18);
 
                     const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
                     circle.setAttribute('cx', p.x);
@@ -1744,7 +1771,7 @@
 
                     const textElev = document.createElementNS('http://www.w3.org/2000/svg', 'text');
                     textElev.setAttribute('x', p.x);
-                    textElev.setAttribute('y', p.y - 12);
+                    textElev.setAttribute('y', yElev);
                     textElev.setAttribute('text-anchor', 'middle');
                     textElev.setAttribute('class', 'text-[10px] font-bold fill-muted-soft');
                     textElev.textContent = p.elevation;
@@ -1752,7 +1779,7 @@
 
                     const textName = document.createElementNS('http://www.w3.org/2000/svg', 'text');
                     textName.setAttribute('x', p.x);
-                    textName.setAttribute('y', p.y + 18);
+                    textName.setAttribute('y', yName);
                     textName.setAttribute('text-anchor', 'middle');
                     textName.setAttribute('class', 'text-[11px] font-semibold fill-body-strong');
                     textName.textContent = p.name;
