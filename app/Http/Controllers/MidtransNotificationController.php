@@ -47,9 +47,9 @@ class MidtransNotificationController extends Controller
                 'paid_at' => $parsed['is_success'] ? now() : $transaction->paid_at,
             ]);
 
-            if ($parsed['is_success']) {
-                $booking = Booking::with('expedition')->where('id', $transaction->booking_id)->first();
-                if ($booking) {
+            $booking = Booking::with('expedition')->where('id', $transaction->booking_id)->first();
+            if ($booking) {
+                if ($parsed['is_success']) {
                     if ($transaction->payment_stage === 'booking_fee' && $booking->status === 'open') {
                         $booking->update(['status' => 'reserved']);
                         $booking->expedition?->syncQuotaBooked();
@@ -57,6 +57,8 @@ class MidtransNotificationController extends Controller
                         $booking->update(['status' => 'paid']);
                         $booking->expedition?->syncQuotaBooked();
                     }
+                } elseif ($parsed['status'] === 'expired' && in_array($booking->status, ['open', 'price_locked'], true)) {
+                    $booking->markAsExpired('Kedaluwarsa melalui notifikasi Midtrans');
                 }
             }
         });

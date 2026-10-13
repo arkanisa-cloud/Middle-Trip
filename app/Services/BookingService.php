@@ -6,6 +6,7 @@ use App\Models\Addon;
 use App\Models\Booking;
 use App\Models\Expedition;
 use App\Models\MeetingPoint;
+use App\Models\Route;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
@@ -22,7 +23,7 @@ class BookingService
     {
         return DB::transaction(function () use ($data, $userId): Booking {
             $paxCount = (int) $data['pax_count'];
-            $route = \App\Models\Route::with('mountain')->findOrFail($data['route_id']);
+            $route = Route::with('mountain')->findOrFail($data['route_id']);
             $mountain = $route->mountain;
 
             $expedition = null;
@@ -174,6 +175,7 @@ class BookingService
                 'grand_total' => $grandTotal,
                 'remaining_payment_total' => $remainingPaymentTotal,
                 'status' => 'open',
+                'payment_deadline' => now()->addHours(24),
                 'notes' => $data['notes'] ?? null,
             ]);
 

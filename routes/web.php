@@ -1,9 +1,11 @@
 <?php
 
 use App\Http\Controllers\BookingController;
+use App\Http\Controllers\BookingInvoiceController;
 use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\ExpeditionController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\MidtransNotificationController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ValidationController;
 use Illuminate\Support\Facades\Route;
@@ -56,8 +58,6 @@ use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\ExpeditionScheduleController;
 use App\Http\Controllers\Admin\MeetingPointController;
 use App\Http\Controllers\Admin\MountainController;
-use App\Http\Controllers\BookingInvoiceController;
-use App\Http\Controllers\MidtransNotificationController;
 
 Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/', [DashboardController::class, 'index'])->name('dashboard');

@@ -25,11 +25,26 @@ class CheckoutController extends Controller
     /**
      * Menampilkan formulir pemesanan & pembayaran DP awal (Step 1).
      */
-    public function step1(string $bookingCode): View
+    public function step1(string $bookingCode): View|RedirectResponse
     {
         $booking = Booking::with(['expedition.mountain.priceTiers', 'route', 'meetingPoint', 'participants', 'addons'])
             ->where('booking_code', $bookingCode)
             ->firstOrFail();
+
+        if ($booking->isExpired()) {
+            $booking->markAsExpired();
+
+            return redirect()->route('profile.edit', ['tab' => 'orders'])
+                ->with('error', "Pesanan #{$booking->booking_code} telah kedaluwarsa karena melewati batas waktu pembayaran 24 jam.");
+        }
+
+        if (in_array($booking->status, ['reserved', 'price_locked'], true)) {
+            return redirect()->route('checkout.status', $booking->booking_code);
+        }
+
+        if ($booking->status === 'paid') {
+            return redirect()->route('checkout.success', $booking->booking_code);
+        }
 
         return view('customer.checkout.step1_payment', compact('booking'));
     }
@@ -40,6 +55,21 @@ class CheckoutController extends Controller
     public function payDp(Request $request, string $bookingCode): JsonResponse|RedirectResponse
     {
         $booking = Booking::with('expedition')->where('booking_code', $bookingCode)->firstOrFail();
+
+        if ($booking->isExpired()) {
+            $booking->markAsExpired();
+
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'status' => 'expired',
+                    'message' => 'Pesanan ini telah kedaluwarsa karena melewati batas waktu pembayaran 24 jam.',
+                    'redirect_url' => route('profile.edit', ['tab' => 'orders']),
+                ], 422);
+            }
+
+            return redirect()->route('profile.edit', ['tab' => 'orders'])
+                ->with('error', "Pesanan #{$booking->booking_code} telah kedaluwarsa karena melewati batas waktu pembayaran 24 jam.");
+        }
 
         $this->updateCustomerAndParticipants($request, $booking);
 
@@ -109,6 +139,13 @@ class CheckoutController extends Controller
             ->where('booking_code', $bookingCode)
             ->firstOrFail();
 
+        if ($booking->isExpired()) {
+            $booking->markAsExpired();
+
+            return redirect()->route('profile.edit', ['tab' => 'orders'])
+                ->with('error', "Pesanan #{$booking->booking_code} telah kedaluwarsa karena melewati batas waktu pembayaran.");
+        }
+
         if ($booking->status === 'open') {
             $latestTx = $booking->paymentTransactions()
                 ->where('payment_stage', 'booking_fee')
@@ -147,6 +184,21 @@ class CheckoutController extends Controller
     public function settle(Request $request, string $bookingCode): JsonResponse|RedirectResponse
     {
         $booking = Booking::where('booking_code', $bookingCode)->firstOrFail();
+
+        if ($booking->isExpired()) {
+            $booking->markAsExpired();
+
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'status' => 'expired',
+                    'message' => 'Pesanan ini telah kedaluwarsa karena melewati batas waktu pembayaran.',
+                    'redirect_url' => route('profile.edit', ['tab' => 'orders']),
+                ], 422);
+            }
+
+            return redirect()->route('profile.edit', ['tab' => 'orders'])
+                ->with('error', "Pesanan #{$booking->booking_code} telah kedaluwarsa.");
+        }
 
         if ($booking->status === 'paid') {
             if ($request->expectsJson()) {
@@ -208,6 +260,13 @@ class CheckoutController extends Controller
             ->where('booking_code', $bookingCode)
             ->firstOrFail();
 
+        if ($booking->isExpired()) {
+            $booking->markAsExpired();
+
+            return redirect()->route('profile.edit', ['tab' => 'orders'])
+                ->with('error', "Pesanan #{$booking->booking_code} telah kedaluwarsa karena melewati batas waktu pembayaran 24 jam.");
+        }
+
         if ($booking->status === 'paid') {
             return redirect()->route('checkout.success', $booking->booking_code);
         }
@@ -221,6 +280,21 @@ class CheckoutController extends Controller
     public function payPrivate(Request $request, string $bookingCode): JsonResponse|RedirectResponse
     {
         $booking = Booking::where('booking_code', $bookingCode)->firstOrFail();
+
+        if ($booking->isExpired()) {
+            $booking->markAsExpired();
+
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'status' => 'expired',
+                    'message' => 'Pesanan ini telah kedaluwarsa karena melewati batas waktu pembayaran 24 jam.',
+                    'redirect_url' => route('profile.edit', ['tab' => 'orders']),
+                ], 422);
+            }
+
+            return redirect()->route('profile.edit', ['tab' => 'orders'])
+                ->with('error', "Pesanan #{$booking->booking_code} telah kedaluwarsa karena melewati batas waktu pembayaran 24 jam.");
+        }
 
         if ($booking->status === 'paid') {
             if ($request->expectsJson()) {

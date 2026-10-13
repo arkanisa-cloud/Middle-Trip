@@ -3,8 +3,8 @@
 namespace App\Console\Commands;
 
 use App\Models\Booking;
-use Carbon\Carbon;
 use Illuminate\Console\Command;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\DB;
 
 class ExpireUnpaidBookingsCommand extends Command
@@ -21,41 +21,28 @@ class ExpireUnpaidBookingsCommand extends Command
      *
      * @var string
      */
-    protected $description = 'Expire bookings whose settlement payment deadline has passed';
+    protected $description = 'Expire unpaid bookings that exceeded the 24-hour window or settlement deadline';
 
     /**
      * Execute the console command.
      */
     public function handle(): int
     {
-        $now = Carbon::now();
-
+        /** @var Collection<int, Booking> $expiredBookings */
         $expiredBookings = Booking::with('expedition')
-            ->where('status', 'price_locked')
-            ->whereNotNull('payment_deadline')
-            ->where('payment_deadline', '<', $now)
+            ->unpaidExpired()
             ->get();
 
         $expiredCount = 0;
 
         foreach ($expiredBookings as $booking) {
             DB::transaction(function () use ($booking, &$expiredCount) {
-                $booking->update([
-                    'status' => 'expired',
-                ]);
-
-                if ($booking->expedition) {
-                    $newQuota = max(0, $booking->expedition->quota_booked - $booking->pax_count);
-                    $booking->expedition->update([
-                        'quota_booked' => $newQuota,
-                    ]);
-                }
-
+                $booking->markAsExpired();
                 $expiredCount++;
             });
         }
 
-        $this->info("Expired {$expiredCount} unpaid bookings and released quota.");
+        $this->info("Expired {$expiredCount} unpaid bookings and synchronized quota.");
 
         return self::SUCCESS;
     }

@@ -78,8 +78,8 @@
                         <span class="text-[10px] font-bold">2</span>
                     </div>
                     <span
-                        class="text-[8px] sm:text-[9px] uppercase tracking-wider text-primary font-bold mt-1 text-center">Bayar
-                        100%</span>
+                        class="text-[8px] sm:text-[9px] uppercase tracking-wider text-primary font-bold mt-1 text-center">Lunasi
+                    </span>
                 </div>
 
                 <div class="w-10 sm:w-16 md:w-20 h-[2px] border-t-2 border-dotted border-gray-300 -mt-3.5 mx-1 sm:mx-2">
@@ -144,10 +144,6 @@
                                     PRIVATE TRIP
                                 </span>
                                 <span
-                                    class="inline-block px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200 tracking-wide">
-                                    Tanpa DP (Langsung Lunas 100%)
-                                </span>
-                                <span
                                     class="text-[11px] font-mono font-medium text-muted">#{{ $booking->booking_code }}</span>
                             </div>
 
@@ -184,7 +180,7 @@
                             </div>
                             <div>
                                 <p class="text-muted text-[11px] font-medium">Rute</p>
-                                <p class="text-ink font-semibold mt-0.5">Via {{ $booking->route->name ?? 'Standar' }}
+                                <p class="text-ink font-semibold mt-0.5">{{ $booking->route->name ?? 'Standar' }}
                                 </p>
                             </div>
                             <div>
@@ -802,11 +798,22 @@
                 <div class="lg:col-span-5">
                     <div class="sticky top-20">
                         <div class="bg-white rounded-2xl border border-hairline p-6 shadow-sm">
-                            <div class="flex items-center justify-between mb-4">
-                                <h2 class="text-sm font-bold text-ink-heading">Pembayaran Penuh (100%)</h2>
+                            <div class="flex items-center justify-between mb-3">
+                                <h2 class="text-sm font-bold text-ink-heading">Pembayaran</h2>
                                 <span
                                     class="text-[10px] font-bold text-primary bg-primary-50 px-2 py-0.5 rounded-full">Private
                                     Trip</span>
+                            </div>
+
+                            <!-- Peringatan Batas Bayar 24 Jam -->
+                            <div class="mb-4 p-3 rounded-xl bg-amber-50/90 border border-amber-200/80 flex items-start gap-2.5">
+                                <svg class="w-4 h-4 text-amber-600 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                                <div class="text-[11px] text-amber-900 leading-relaxed">
+                                    <span class="font-bold block text-amber-950">Batas Waktu Pembayaran (Maks. 24 Jam)</span>
+                                    Selesaikan pembayaran s.d. <span class="font-bold text-amber-950 underline">{{ $booking->payment_deadline ? $booking->payment_deadline->translatedFormat('d M Y, H:i') : $booking->created_at->addHours(24)->translatedFormat('d M Y, H:i') }} WIB</span>. Pesanan otomatis kedaluwarsa jika melewati batas waktu.
+                                </div>
                             </div>
 
                             <!-- Price Breakdown -->
@@ -1127,7 +1134,7 @@
                             } else {
                                 alert(
                                     'Gagal memuat modul pembayaran Midtrans. Mengalihkan ke halaman pembayaran...'
-                                    );
+                                );
                                 window.location.href = data.redirect_url;
                             }
                             return;

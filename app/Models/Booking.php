@@ -132,4 +132,83 @@ class Booking extends Model
     {
         return $this->hasMany(PaymentTransaction::class);
     }
+
+    /**
+     * Memeriksa apakah pesanan sudah kedaluwarsa karena melewati batas waktu 24 jam atau deadline pelunasan.
+     */
+    public function isExpired(): bool
+    {
+        if ($this->status === 'expired') {
+            return true;
+        }
+
+        // Pesanan Open (Belum bayar DP / Full payment)
+        if ($this->status === 'open') {
+            if ($this->payment_deadline && $this->payment_deadline->isPast()) {
+                return true;
+            }
+
+            if ($this->created_at && $this->created_at->diffInHours(now(), false) >= 24) {
+                return true;
+            }
+        }
+
+        // Pesanan Price Locked (Belum melunasi sisa tagihan)
+        if ($this->status === 'price_locked') {
+            if ($this->payment_deadline && $this->payment_deadline->isPast()) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Menandai pesanan sebagai kedaluwarsa dan mengembalikan kuota kursi ekspedisi.
+     */
+    public function markAsExpired(?string $reason = null): bool
+    {
+        if ($this->status === 'expired') {
+            return true;
+        }
+
+        $note = $reason ?? 'Kedaluwarsa otomatis karena melewati batas waktu pembayaran 24 jam pada '.now()->format('d/m/Y H:i');
+        $updatedNotes = $this->notes ? $this->notes.' | '.$note : $note;
+
+        $updated = (bool) $this->update([
+            'status' => 'expired',
+            'notes' => $updatedNotes,
+        ]);
+
+        if ($this->expedition) {
+            $this->expedition->syncQuotaBooked();
+        }
+
+        return $updated;
+    }
+
+    /**
+     * Scope query untuk mengambil pesanan yang belum dibayar dan sudah kedaluwarsa (> 24 jam).
+     */
+    public function scopeUnpaidExpired($query)
+    {
+        $now = now();
+
+        return $query->where(function ($q) use ($now) {
+            $q->where('status', 'open')
+                ->where(function ($sub) use ($now) {
+                    $sub->where(function ($d) use ($now) {
+                        $d->whereNotNull('payment_deadline')
+                            ->where('payment_deadline', '<=', $now);
+                    })->orWhere(function ($c) use ($now) {
+                        $c->whereNull('payment_deadline')
+                            ->where('created_at', '<=', $now->copy()->subHours(24));
+                    });
+                });
+        })->orWhere(function ($q) use ($now) {
+            $q->where('status', 'price_locked')
+                ->whereNotNull('payment_deadline')
+                ->where('payment_deadline', '<=', $now);
+        });
+    }
 }

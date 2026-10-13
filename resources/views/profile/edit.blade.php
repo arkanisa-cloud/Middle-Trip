@@ -256,6 +256,15 @@
                         :class="filterStatus === 'paid' ? 'bg-white' : 'bg-emerald-500'"></span>
                     Lunas &amp; Tiket Terbit ({{ $bookings->where('status', 'paid')->count() }})
                 </button>
+
+                <button type="button" @click="filterStatus = 'expired'"
+                    :class="filterStatus === 'expired' ? 'bg-primary text-white font-bold shadow-xs' :
+                        'bg-white text-body hover:text-ink-heading border border-hairline font-semibold'"
+                    class="px-4 py-2 rounded-full text-xs transition-all shadow-2xs whitespace-nowrap cursor-pointer flex items-center gap-1.5">
+                    <span class="w-1.5 h-1.5 rounded-full"
+                        :class="filterStatus === 'expired' ? 'bg-white' : 'bg-rose-500'"></span>
+                    Kedaluwarsa ({{ $bookings->whereIn('status', ['expired', 'cancelled'])->count() }})
+                </button>
             </div>
 
             @if ($bookings->count() > 0)
@@ -364,13 +373,20 @@
                         $statusText = 'Lunas - Siap Mendaki';
                         $statusDot = 'bg-emerald-500';
                         $filterCategory = 'paid';
+                    } elseif ($booking->status === 'expired') {
+                        $actionUrl = '#';
+                        $actionLabel = 'Kedaluwarsa';
+                        $statusBadgeClass = 'bg-rose-50 text-rose-800 border-rose-200';
+                        $statusText = 'Kedaluwarsa (> 24 Jam)';
+                        $statusDot = 'bg-rose-500';
+                        $filterCategory = 'expired';
                     } else {
                         $actionUrl = '#';
                         $actionLabel = 'Detail Pesanan';
                         $statusBadgeClass = 'bg-rose-50 text-rose-800 border-rose-200';
-                        $statusText = 'Dibatalkan / Kadaluwarsa';
+                        $statusText = 'Dibatalkan';
                         $statusDot = 'bg-rose-500';
-                        $filterCategory = 'cancelled';
+                        $filterCategory = 'expired';
                     }
                 @endphp
 
@@ -504,10 +520,17 @@
                                 <span class="text-base sm:text-xl font-extrabold text-ink-heading">
                                     Rp {{ number_format($booking->grand_total, 0, ',', '.') }}
                                 </span>
-                                @if ($booking->status === 'open' && $booking->trip_type === 'open')
+                                @if ($booking->status === 'open')
+                                    @if ($booking->trip_type === 'open')
+                                        <span
+                                            class="text-[10px] sm:text-[11px] text-amber-700 font-bold bg-amber-50 px-2 py-0.5 rounded-full border border-amber-200">
+                                            DP Awal: Rp {{ number_format($booking->total_booking_fee, 0, ',', '.') }}
+                                        </span>
+                                    @endif
                                     <span
-                                        class="text-[10px] sm:text-[11px] text-amber-700 font-bold bg-amber-50 px-2 py-0.5 rounded-full border border-amber-200">
-                                        DP Awal: Rp {{ number_format($booking->total_booking_fee, 0, ',', '.') }}
+                                        class="text-[10px] sm:text-[11px] text-amber-800 font-semibold bg-amber-100/70 px-2 py-0.5 rounded-full border border-amber-200 flex items-center gap-1">
+                                        <svg class="w-3 h-3 text-amber-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                                        Batas Bayar: {{ ($booking->payment_deadline ?? $booking->created_at->addHours(24))->translatedFormat('d M H:i') }} WIB (Maks. 24 Jam)
                                     </span>
                                 @elseif ($booking->status === 'price_locked')
                                     <span
@@ -552,6 +575,16 @@
                                         viewBox="0 0 24 24" stroke-width="2.5">
                                         <path stroke-linecap="round" stroke-linejoin="round"
                                             d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                                    </svg>
+                                </a>
+                            @elseif ($booking->status === 'expired')
+                                <a href="{{ route('ekspedisi.show', $booking->mountain?->slug ?? ($booking->expedition?->mountain?->slug ?? ($booking->route?->mountain?->slug ?? ''))) }}"
+                                    class="w-full sm:w-auto bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs sm:text-sm px-6 py-2.5 rounded-xl sm:rounded-full transition-all inline-flex items-center justify-center gap-2 active:scale-95 cursor-pointer text-center">
+                                    <span>Booking Ulang</span>
+                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor"
+                                        viewBox="0 0 24 24" stroke-width="2">
+                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                            d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182m0-4.991v4.99" />
                                     </svg>
                                 </a>
                             @endif
