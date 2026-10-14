@@ -61,6 +61,8 @@ class MountainController extends Controller
      */
     public function store(Request $request): RedirectResponse
     {
+        $this->sanitizeNumericInputs($request);
+
         $validated = $request->validate([
             'name' => 'required|string|max:150',
             'elevation' => 'required|integer|min:0',
@@ -102,7 +104,7 @@ class MountainController extends Controller
                         if ($openPrice > 0) {
                             $maxAllowed = floor($openPrice / 2);
                             if ($value > $maxAllowed) {
-                                $fail("Booking Fee DP per pax pada jalur ini tidak boleh lebih dari 50% harga Open Camping (Maksimal Rp " . number_format($maxAllowed, 0, ',', '.') . ").");
+                                $fail('Booking Fee DP per pax pada jalur ini tidak boleh lebih dari 50% harga Open Camping (Maksimal Rp '.number_format($maxAllowed, 0, ',', '.').').');
                             }
                         }
                     }
@@ -138,6 +140,13 @@ class MountainController extends Controller
             'gallery_file_captions.*' => 'nullable|string|max:150',
         ], [
             'cover_image_file.required_without' => 'Foto sampul (Cover Image) wajib diunggah saat menambahkan gunung baru.',
+            'routes.*.checkpoints.*.elevation.integer' => 'Ketinggian pos checkpoint harus berupa angka bulat (contoh: 1800, tanpa titik atau tulisan mdpl).',
+            'routes.*.checkpoints.*.elevation.min' => 'Ketinggian pos checkpoint tidak boleh bernilai negatif.',
+        ], [
+            'routes.*.checkpoints.*.elevation' => 'Ketinggian Pos (MDPL)',
+            'routes.*.checkpoints.*.name' => 'Nama Pos Checkpoint',
+            'routes.*.name' => 'Nama Jalur (Via)',
+            'elevation' => 'Ketinggian Gunung (MDPL)',
         ]);
 
         $mountain = DB::transaction(function () use ($validated, $request): Mountain {
@@ -314,7 +323,11 @@ class MountainController extends Controller
             if (! empty($itinSource['days']) && is_array($itinSource['days'])) {
                 foreach ($itinSource['days'] as $dIdx => $d) {
                     $timelineStr = ! empty($d['timeline']) && is_array($d['timeline'])
-                        ? implode("\n", array_map(fn ($item) => ($item['time'] ?? '08:00').' - '.($item['activity'] ?? ''), $d['timeline']))
+                        ? implode("\n", array_map(function ($item) {
+                            $time = ! empty($item['time']) && $item['time'] !== '—' ? $item['time'] : '';
+
+                            return $time ? "{$time} - ".($item['activity'] ?? '') : ($item['activity'] ?? '');
+                        }, $d['timeline']))
                         : '';
                     $itineraryDays[] = [
                         'day' => $d['day'] ?? ('Day '.($dIdx + 1)),
@@ -330,11 +343,19 @@ class MountainController extends Controller
                 $day2 = $itinSource['days'][1] ?? null;
 
                 $day1Timeline = ! empty($day1['timeline'])
-                    ? implode("\n", array_map(fn ($item) => ($item['time'] ?? '08:00').' - '.($item['activity'] ?? ''), $day1['timeline']))
+                    ? implode("\n", array_map(function ($item) {
+                        $time = ! empty($item['time']) && $item['time'] !== '—' ? $item['time'] : '';
+
+                        return $time ? "{$time} - ".($item['activity'] ?? '') : ($item['activity'] ?? '');
+                    }, $day1['timeline']))
                     : "08:00 - Registrasi & Persiapan di Basecamp\n09:00 - Mulai Trekking Menuju Pos 1 & 2\n12:30 - Makan Siang & Istirahat di Pos Tengah\n16:00 - Tiba di Camp Area & Dirikan Tenda";
 
                 $day2Timeline = ! empty($day2['timeline'])
-                    ? implode("\n", array_map(fn ($item) => ($item['time'] ?? '03:30').' - '.($item['activity'] ?? ''), $day2['timeline']))
+                    ? implode("\n", array_map(function ($item) {
+                        $time = ! empty($item['time']) && $item['time'] !== '—' ? $item['time'] : '';
+
+                        return $time ? "{$time} - ".($item['activity'] ?? '') : ($item['activity'] ?? '');
+                    }, $day2['timeline']))
                     : "03:30 - Summit Push Menuju Puncak\n05:30 - Sunrise Spektakuler di Puncak\n08:00 - Kembali ke Camp, Sarapan & Packing\n10:00 - Perjalanan Turun Menuju Basecamp\n14:00 - Tiba di Basecamp & Penutupan Trip";
 
                 $itineraryDays = [
@@ -357,7 +378,11 @@ class MountainController extends Controller
             $tektokDays = $tektokData['days'] ?? null;
             $tektokDay1 = $tektokDays[0] ?? null;
             $tektokTimeline = ! empty($tektokDay1['timeline']) && is_array($tektokDay1['timeline'])
-                ? implode("\n", array_map(fn ($item) => ($item['time'] ?? '00:00').' - '.($item['activity'] ?? ''), $tektokDay1['timeline']))
+                ? implode("\n", array_map(function ($item) {
+                    $time = ! empty($item['time']) && $item['time'] !== '—' ? $item['time'] : '';
+
+                    return $time ? "{$time} - ".($item['activity'] ?? '') : ($item['activity'] ?? '');
+                }, $tektokDay1['timeline']))
                 : "00:00 - Registrasi & Cek Medis di Basecamp\n01:00 - Mulai Trekking Dini Hari Menuju Pos 2 & 3\n05:30 - Sunrise Spektakuler di Puncak Tertinggi\n07:30 - Foto Bersama & Mulai Perjalanan Turun\n12:00 - Tiba Kembali di Basecamp & Penutupan Trip";
             $tektokTitle = $tektokData['title'] ?? "Itinerary 1D Tek-tok ({$r->name})";
             $tektokDesc = $tektokDay1['description'] ?? 'Pendakian cepat langsung turun dalam 1 hari tanpa mendirikan tenda.';
@@ -448,6 +473,8 @@ class MountainController extends Controller
      */
     public function update(Request $request, Mountain $mountain): RedirectResponse
     {
+        $this->sanitizeNumericInputs($request);
+
         $validated = $request->validate([
             'name' => 'required|string|max:150',
             'elevation' => 'required|integer|min:0',
@@ -490,7 +517,7 @@ class MountainController extends Controller
                         if ($openPrice > 0) {
                             $maxAllowed = floor($openPrice / 2);
                             if ($value > $maxAllowed) {
-                                $fail("Booking Fee DP per pax pada jalur ini tidak boleh lebih dari 50% harga Open Camping (Maksimal Rp " . number_format($maxAllowed, 0, ',', '.') . ").");
+                                $fail('Booking Fee DP per pax pada jalur ini tidak boleh lebih dari 50% harga Open Camping (Maksimal Rp '.number_format($maxAllowed, 0, ',', '.').').');
                             }
                         }
                     }
@@ -528,6 +555,14 @@ class MountainController extends Controller
             'gallery_files.*' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:5120',
             'gallery_file_captions' => 'nullable|array',
             'gallery_file_captions.*' => 'nullable|string|max:150',
+        ], [
+            'routes.*.checkpoints.*.elevation.integer' => 'Ketinggian pos checkpoint harus berupa angka bulat (contoh: 1800, tanpa titik atau tulisan mdpl).',
+            'routes.*.checkpoints.*.elevation.min' => 'Ketinggian pos checkpoint tidak boleh bernilai negatif.',
+        ], [
+            'routes.*.checkpoints.*.elevation' => 'Ketinggian Pos (MDPL)',
+            'routes.*.checkpoints.*.name' => 'Nama Pos Checkpoint',
+            'routes.*.name' => 'Nama Jalur (Via)',
+            'elevation' => 'Ketinggian Gunung (MDPL)',
         ]);
 
         // Validate if any deleted route is currently being booked or has bookings
@@ -840,14 +875,16 @@ class MountainController extends Controller
             $lines = array_values(array_filter(array_map('trim', explode("\n", $raw))));
             $items = [];
             foreach ($lines as $line) {
-                if (preg_match('/^(\d{1,2}[:.]\d{2})\s*[-:]\s*(.+)$/u', $line, $matches)) {
+                if (preg_match('/^(\d{1,2}[:.]\d{2}(?:\s*[-–—]\s*\d{1,2}[:.]\d{2})?(?:\s*(?:WIB|WITA|WIT))?)\s*(?:[-:–—•]\s*|\s+)(.+)$/iu', $line, $matches)) {
+                    $rawTime = trim($matches[1]);
+                    $normalizedTime = preg_replace('/(\d{1,2})\.(\d{2})/', '$1:$2', $rawTime);
                     $items[] = [
-                        'time' => str_replace('.', ':', trim($matches[1])),
+                        'time' => $normalizedTime,
                         'activity' => trim($matches[2]),
                     ];
                 } elseif (! empty($line)) {
                     $items[] = [
-                        'time' => '—',
+                        'time' => '',
                         'activity' => $line,
                     ];
                 }
@@ -1061,5 +1098,64 @@ class MountainController extends Controller
         }
 
         return $finalGallery;
+    }
+
+    /**
+     * Sanitasi input angka agar bebas dari titik pemisah ribuan, teks satuan (mdpl, m, rp), koma, dan spasi.
+     */
+    private function sanitizeNumericInputs(Request $request): void
+    {
+        $input = $request->all();
+
+        // 1. Sanitasi elevasi gunung utama
+        if (isset($input['elevation']) && is_string($input['elevation'])) {
+            $clean = preg_replace('/[^0-9]/', '', $input['elevation']);
+            $input['elevation'] = $clean === '' ? null : (int) $clean;
+        }
+
+        // 2. Sanitasi harga base & tektok level gunung
+        foreach (['base_price', 'price_private', 'price_tektok', 'price_private_tektok', 'booking_fee_per_pax'] as $field) {
+            if (isset($input[$field]) && is_string($input[$field])) {
+                $clean = preg_replace('/[^0-9]/', '', $input[$field]);
+                $input[$field] = $clean === '' ? null : (int) $clean;
+            }
+        }
+
+        // 3. Sanitasi rute dan checkpoints
+        if (isset($input['routes']) && is_array($input['routes'])) {
+            foreach ($input['routes'] as $rIdx => $route) {
+                // Sanitasi harga rute
+                foreach (['price_camping_open', 'price_tektok_open', 'price_camping_private', 'price_tektok_private', 'booking_fee_per_pax'] as $rf) {
+                    if (isset($route[$rf]) && is_string($route[$rf])) {
+                        $clean = preg_replace('/[^0-9]/', '', $route[$rf]);
+                        $input['routes'][$rIdx][$rf] = $clean === '' ? null : (int) $clean;
+                    }
+                }
+
+                // Sanitasi checkpoints pos elevasi
+                if (isset($route['checkpoints']) && is_array($route['checkpoints'])) {
+                    foreach ($route['checkpoints'] as $cpIdx => $cp) {
+                        if (isset($cp['elevation']) && is_string($cp['elevation'])) {
+                            $clean = preg_replace('/[^0-9]/', '', $cp['elevation']);
+                            $input['routes'][$rIdx]['checkpoints'][$cpIdx]['elevation'] = $clean === '' ? null : (int) $clean;
+                        }
+                    }
+                }
+            }
+        }
+
+        // 4. Sanitasi price tiers
+        if (isset($input['price_tiers']) && is_array($input['price_tiers'])) {
+            foreach ($input['price_tiers'] as $ptIdx => $pt) {
+                foreach (['min_pax', 'max_pax', 'price_per_pax'] as $pf) {
+                    if (isset($pt[$pf]) && is_string($pt[$pf])) {
+                        $clean = preg_replace('/[^0-9]/', '', $pt[$pf]);
+                        $input['price_tiers'][$ptIdx][$pf] = $clean === '' ? null : (int) $clean;
+                    }
+                }
+            }
+        }
+
+        $request->replace($input);
     }
 }

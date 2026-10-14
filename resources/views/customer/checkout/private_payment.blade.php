@@ -124,7 +124,7 @@
 
         <form action="{{ route('checkout.pay_private', $booking->booking_code) }}" method="POST" id="payment-form">
             @csrf
-            <div class="grid grid-cols-1 lg:grid-cols-12 gap-7 items-start">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-7 relative">
 
                 <!-- Left Column (7 cols) -->
                 <div class="lg:col-span-7 space-y-4">
@@ -794,77 +794,82 @@
 
                 </div>
 
-                <!-- Right Column (5 cols) -->
-                <div class="lg:col-span-5">
-                    <div class="sticky top-20">
-                        <div class="bg-white rounded-2xl border border-hairline p-6 shadow-sm">
-                            <div class="flex items-center justify-between mb-3">
-                                <h2 class="text-sm font-bold text-ink-heading">Pembayaran</h2>
-                                <span
-                                    class="text-[10px] font-bold text-primary bg-primary-50 px-2 py-0.5 rounded-full">Private
-                                    Trip</span>
-                            </div>
-
-                            <!-- Peringatan Batas Bayar 24 Jam -->
-                            <div class="mb-4 p-3 rounded-xl bg-amber-50/90 border border-amber-200/80 flex items-start gap-2.5">
-                                <svg class="w-4 h-4 text-amber-600 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                </svg>
-                                <div class="text-[11px] text-amber-900 leading-relaxed">
-                                    <span class="font-bold block text-amber-950">Batas Waktu Pembayaran (Maks. 24 Jam)</span>
-                                    Selesaikan pembayaran s.d. <span class="font-bold text-amber-950 underline">{{ $booking->payment_deadline ? $booking->payment_deadline->translatedFormat('d M Y, H:i') : $booking->created_at->addHours(24)->translatedFormat('d M Y, H:i') }} WIB</span>. Pesanan otomatis kedaluwarsa jika melewati batas waktu.
-                                </div>
-                            </div>
-
-                            <!-- Price Breakdown -->
-                            <div class="space-y-2.5 text-xs pb-4">
-                                <div class="flex justify-between text-muted">
-                                    <span>Tiket Trip ({{ $booking->pax_count }} pax @ Rp
-                                        {{ number_format($booking->locked_price_per_pax ?? $booking->grand_total / max(1, $booking->pax_count), 0, ',', '.') }})</span>
-                                    <span class="font-semibold text-ink">Rp
-                                        {{ number_format(($booking->locked_price_per_pax ?? $booking->grand_total / max(1, $booking->pax_count)) * $booking->pax_count, 0, ',', '.') }}</span>
-                                </div>
-
-                                @if (($booking->shuttle_fee_total ?? 0) > 0)
-                                    <div class="flex justify-between text-muted">
-                                        <span>Shuttle Meeting Point</span>
-                                        <span class="font-semibold text-ink">Rp
-                                            {{ number_format($booking->shuttle_fee_total, 0, ',', '.') }}</span>
-                                    </div>
-                                @endif
-
-                                @if (($booking->addons_fee_total ?? 0) > 0)
-                                    <div class="flex justify-between text-muted">
-                                        <span>Sewa Alat &amp; Add-on</span>
-                                        <span class="font-semibold text-ink">Rp
-                                            {{ number_format($booking->addons_fee_total, 0, ',', '.') }}</span>
-                                    </div>
-                                @endif
-
-                                <div
-                                    class="flex justify-between text-sm font-bold text-ink-heading pt-2 border-t border-hairline">
-                                    <span>Total Pembayaran Langsung</span>
-                                    <span class="text-primary font-extrabold text-base">Rp
-                                        {{ number_format($booking->grand_total, 0, ',', '.') }}</span>
-                                </div>
-                            </div>
-
-                            <!-- Checkbox Persetujuan Syarat & Ketentuan -->
-                            <label class="flex items-start gap-2.5 pt-1 cursor-pointer select-none">
-                                <input type="checkbox" required checked
-                                    class="w-4 h-4 rounded border-slate-300 text-primary focus:ring-primary focus:ring-offset-0 accent-primary cursor-pointer mt-0.5 transition-colors">
-                                <span class="text-[11px] text-muted leading-tight">Saya menyetujui <a
-                                        href="{{ route('terms.service') }}" target="_blank"
-                                        class="text-primary font-medium underline hover:text-primary-hover">Syarat
-                                        &amp; Ketentuan</a> serta <a href="{{ route('privacy.policy') }}"
-                                        target="_blank"
-                                        class="text-primary font-medium underline hover:text-primary-hover">Kebijakan
-                                        Privasi</a> MiddleTrip.</span>
-                            </label>
+                <!-- RIGHT COLUMN: Sticky Payment Action -->
+                <aside class="lg:col-span-5 w-full">
+                    <div
+                        class="sticky top-24 z-20 bg-white border border-hairline rounded-2xl p-5 sm:p-6 shadow-sm space-y-5">
+                        <div class="flex items-center justify-between pb-3 border-b border-hairline">
+                            <h2 class="text-xs font-bold text-ink-heading uppercase tracking-wider">Pembayaran</h2>
+                            <span
+                                class="text-[10px] font-bold text-primary bg-primary-50 px-2 py-0.5 rounded-full">Private
+                                Trip</span>
                         </div>
 
+                        <!-- Peringatan Batas Bayar 24 Jam -->
+                        <div class="p-3 rounded-xl bg-amber-50/90 border border-amber-200/80 flex items-start gap-2.5">
+                            <svg class="w-4 h-4 text-amber-600 shrink-0 mt-0.5" fill="none" stroke="currentColor"
+                                viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            <div class="text-[11px] text-amber-900 leading-relaxed">
+                                <span class="font-bold block text-amber-950">Batas Waktu Pembayaran (Maks. 24
+                                    Jam)</span>
+                                Selesaikan pembayaran s.d. <span
+                                    class="font-bold text-amber-950 underline">{{ $booking->payment_deadline ? $booking->payment_deadline->translatedFormat('d M Y, H:i') : $booking->created_at->addHours(24)->translatedFormat('d M Y, H:i') }}
+                                    WIB</span>. Pesanan otomatis kedaluwarsa jika melewati batas waktu.
+                            </div>
+                        </div>
+
+                        <!-- Price Breakdown -->
+                        <div class="space-y-2.5 text-xs">
+                            <div class="flex items-center justify-between text-muted">
+                                <span>Tiket Trip ({{ $booking->pax_count }} pax @ Rp
+                                    {{ number_format($booking->locked_price_per_pax ?? $booking->grand_total / max(1, $booking->pax_count), 0, ',', '.') }})</span>
+                                <span class="font-semibold text-ink">Rp
+                                    {{ number_format(($booking->locked_price_per_pax ?? $booking->grand_total / max(1, $booking->pax_count)) * $booking->pax_count, 0, ',', '.') }}</span>
+                            </div>
+
+                            @if (($booking->shuttle_fee_total ?? 0) > 0)
+                                <div class="flex items-center justify-between text-muted">
+                                    <span>Shuttle Meeting Point</span>
+                                    <span class="font-semibold text-ink">Rp
+                                        {{ number_format($booking->shuttle_fee_total, 0, ',', '.') }}</span>
+                                </div>
+                            @endif
+
+                            @if (($booking->addons_fee_total ?? 0) > 0)
+                                <div class="flex items-center justify-between text-muted">
+                                    <span>Sewa Alat &amp; Add-on</span>
+                                    <span class="font-semibold text-ink">Rp
+                                        {{ number_format($booking->addons_fee_total, 0, ',', '.') }}</span>
+                                </div>
+                            @endif
+
+                            <div class="pt-2.5 border-t border-hairline flex items-center justify-between">
+                                <div>
+                                    <span class="text-xs font-bold text-ink-heading block">Total Pembayaran Langsung</span>
+                                    <span class="text-[10px] text-muted">Pelunasan 100% Private Trip</span>
+                                </div>
+                                <span class="text-base font-extrabold text-primary">Rp
+                                    {{ number_format($booking->grand_total, 0, ',', '.') }}</span>
+                            </div>
+                        </div>
+
+                        <!-- Checkbox Persetujuan Syarat & Ketentuan -->
+                        <label class="flex items-start gap-2.5 cursor-pointer select-none">
+                            <input type="checkbox" required checked
+                                class="w-4 h-4 rounded border-slate-300 text-primary focus:ring-primary focus:ring-offset-0 accent-primary cursor-pointer mt-0.5 transition-colors">
+                            <span class="text-[11px] text-muted leading-tight">Saya menyetujui <a
+                                    href="{{ route('terms.service') }}" target="_blank"
+                                    class="text-primary font-medium underline hover:text-primary-hover">Syarat
+                                    &amp; Ketentuan</a> serta <a href="{{ route('privacy.policy') }}" target="_blank"
+                                    class="text-primary font-medium underline hover:text-primary-hover">Kebijakan
+                                    Privasi</a> MiddleTrip.</span>
+                        </label>
+
                         <button type="submit" id="pay-button"
-                            class="w-full mt-4 bg-primary hover:bg-primary-hover active:scale-[0.99] text-white py-3.5 px-4 rounded-xl font-bold text-xs sm:text-sm shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer">
+                            class="w-full bg-primary hover:bg-primary-hover active:scale-[0.99] text-white py-3.5 px-4 rounded-xl font-bold text-xs sm:text-sm shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer">
                             <svg id="pay-button-spinner" class="hidden animate-spin -ml-1 mr-2 h-4 w-4 text-white"
                                 fill="none" viewBox="0 0 24 24">
                                 <circle class="opacity-25" cx="12" cy="12" r="10"
@@ -879,7 +884,7 @@
 
                         <!-- Tombol Batalkan Pesanan Private Trip -->
                         <button type="button" onclick="confirmCancelBooking()"
-                            class="w-full mt-2 bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 py-2.5 px-4 rounded-xl font-bold text-xs transition flex items-center justify-center gap-1.5 cursor-pointer">
+                            class="w-full bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 py-2.5 px-4 rounded-xl font-bold text-xs transition flex items-center justify-center gap-1.5 cursor-pointer">
                             <svg class="w-3.5 h-3.5 text-rose-600" fill="none" stroke="currentColor"
                                 viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -888,15 +893,13 @@
                             <span>Batalkan Pesanan Ini</span>
                         </button>
 
-                        <p class="text-[10px] text-center text-muted mt-4 leading-relaxed">
+                        <p class="text-[10px] text-center text-muted leading-relaxed">
                             Setelah pembayaran selesai, slot private trip Anda akan langsung berstatus
                             <strong>Lunas</strong> dan Anda akan mendapatkan tautan WhatsApp grup koordinasi
                             rombongan.
                         </p>
                     </div>
-                </div>
-            </div>
-
+                </aside>
             </div>
         </form>
     </main>

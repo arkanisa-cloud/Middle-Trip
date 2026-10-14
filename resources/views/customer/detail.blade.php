@@ -583,15 +583,23 @@
                                     <div
                                         class="space-y-2 sm:space-y-2.5 text-xs text-body-strong pt-2 border-t border-hairline-soft">
                                         @foreach ($day['timeline'] as $item)
-                                            <div class="flex items-start sm:items-center gap-2 sm:gap-3">
-                                                <svg class="w-3.5 h-3.5 text-muted-soft shrink-0 mt-0.5 sm:mt-0" fill="none"
-                                                    viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                                    <path stroke-linecap="round" stroke-linejoin="round"
-                                                        d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                                </svg>
-                                                <span
-                                                    class="font-bold text-ink-heading w-12 shrink-0">{{ $item['time'] }}</span>
-                                                <span class="text-body font-medium flex-1">{{ $item['activity'] }}</span>
+                                            <div class="flex items-start sm:items-center gap-2 sm:gap-3 py-1 border-b border-hairline/30 last:border-b-0">
+                                                @if (!empty($item['time']) && $item['time'] !== '—')
+                                                    <div class="flex items-center gap-1.5 px-2.5 py-0.5 rounded-lg bg-canvas border border-hairline/80 text-ink-heading font-bold text-[11px] shrink-0 whitespace-nowrap shadow-2xs">
+                                                        <svg class="w-3.5 h-3.5 text-primary shrink-0" fill="none"
+                                                            viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                                            <path stroke-linecap="round" stroke-linejoin="round"
+                                                                d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                                        </svg>
+                                                        <span>{{ $item['time'] }}</span>
+                                                    </div>
+                                                @else
+                                                    <div class="flex items-center gap-1.5 px-2 py-0.5 rounded-lg bg-primary-subtle/50 text-primary font-semibold text-[11px] shrink-0 whitespace-nowrap">
+                                                        <span class="w-1.5 h-1.5 rounded-full bg-primary shrink-0"></span>
+                                                        <span>Aktivitas</span>
+                                                    </div>
+                                                @endif
+                                                <span class="text-body font-medium flex-1 text-xs leading-relaxed">{{ $item['activity'] }}</span>
                                             </div>
                                         @endforeach
                                     </div>
@@ -1837,15 +1845,27 @@
             if (daysContainer && itinerary.days) {
                 daysContainer.innerHTML = itinerary.days.map((day, dIndex) => {
                     const markerColor = dIndex === 0 ? 'bg-primary' : 'bg-surface-dark';
-                    const timelineHtml = (day.timeline || []).map(item => `
-                        <div class="flex items-center gap-3">
-                            <svg class="w-3.5 h-3.5 text-muted-soft shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                            </svg>
-                            <span class="font-bold text-ink-heading w-12 shrink-0">${item.time}</span>
-                            <span class="text-body font-medium">${item.activity}</span>
-                        </div>
-                    `).join('');
+                    const timelineHtml = (day.timeline || []).map(item => {
+                        const hasTime = item.time && item.time !== '—';
+                        const badgeHtml = hasTime
+                            ? `<div class="flex items-center gap-1.5 px-2.5 py-0.5 rounded-lg bg-canvas border border-hairline/80 text-ink-heading font-bold text-[11px] shrink-0 whitespace-nowrap shadow-2xs">
+                                <svg class="w-3.5 h-3.5 text-primary shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                                <span>${item.time}</span>
+                            </div>`
+                            : `<div class="flex items-center gap-1.5 px-2 py-0.5 rounded-lg bg-primary-subtle/50 text-primary font-semibold text-[11px] shrink-0 whitespace-nowrap">
+                                <span class="w-1.5 h-1.5 rounded-full bg-primary shrink-0"></span>
+                                <span>Aktivitas</span>
+                            </div>`;
+
+                        return `
+                            <div class="flex items-start sm:items-center gap-2 sm:gap-3 py-1 border-b border-hairline/30 last:border-b-0">
+                                ${badgeHtml}
+                                <span class="text-body font-medium flex-1 text-xs leading-relaxed">${item.activity}</span>
+                            </div>
+                        `;
+                    }).join('');
 
                     return `
                         <div class="relative group">

@@ -100,7 +100,9 @@
                         <label class="block text-xs font-bold text-ink-heading uppercase tracking-wider mb-2">
                             Ketinggian (MDPL) <span class="text-rose-500">*</span>
                         </label>
-                        <input type="number" name="elevation" x-model="form.elevation" required placeholder="3142"
+                        <input type="text" inputmode="numeric" name="elevation" x-model="form.elevation"
+                            @input="form.elevation = (form.elevation || '').toString().replace(/[^0-9]/g, '')"
+                            required placeholder="3142"
                             class="w-full text-xs rounded-xl border border-hairline bg-canvas p-3 text-ink focus:border-primary focus:ring-1 focus:ring-primary shadow-xs">
                     </div>
 
@@ -596,52 +598,78 @@
                                         <span class="text-[10px] text-muted">Pengaturan harga trip dan DP per pax untuk via
                                             ini</span>
                                     </div>
-                                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
-                                        <div>
+                                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3"
+                                        :class="{
+                                            'lg:grid-cols-5': form.has_open_trip && form.has_private_trip,
+                                            'lg:grid-cols-3': (form.has_open_trip && !form.has_private_trip) || (!form.has_open_trip && form.has_private_trip),
+                                            'lg:grid-cols-1': !form.has_open_trip && !form.has_private_trip
+                                        }">
+                                        <!-- Open Trip Pricing (Camping & Tektok) -->
+                                        <div x-show="form.has_open_trip" x-transition>
                                             <label class="block text-[11px] font-semibold text-muted mb-1">Open Trip -
                                                 Camping (Rp) <span class="text-rose-500">*</span></label>
-                                            <input type="number" :name="`routes[${index}][price_camping_open]`"
-                                                x-model.number="r.price_camping_open"
-                                                @input="if(Number(r.booking_fee_per_pax) > Math.floor((Number(r.price_camping_open)||0)/2)) { r.booking_fee_per_pax = Math.floor((Number(r.price_camping_open)||0)/2); }"
-                                                placeholder="500000"
+                                            <input type="text" inputmode="numeric" :name="`routes[${index}][price_camping_open]`"
+                                                :value="formatPrice(r.price_camping_open)"
+                                                @input="r.price_camping_open = handlePriceInput($event, r, 'price_camping_open'); onPriceCampingChange(r)"
+                                                placeholder="500.000"
                                                 class="w-full text-xs rounded-xl border border-hairline bg-canvas p-2.5 text-ink focus:border-primary font-semibold"
-                                                required>
+                                                :required="form.has_open_trip">
                                         </div>
-                                        <div>
+                                        <div x-show="form.has_open_trip" x-transition>
                                             <label class="block text-[11px] font-semibold text-muted mb-1">Open Trip -
                                                 Tektok (Rp)</label>
-                                            <input type="number" :name="`routes[${index}][price_tektok_open]`"
-                                                x-model.number="r.price_tektok_open" placeholder="400000"
+                                            <input type="text" inputmode="numeric" :name="`routes[${index}][price_tektok_open]`"
+                                                :value="formatPrice(r.price_tektok_open)"
+                                                @input="r.price_tektok_open = handlePriceInput($event, r, 'price_tektok_open')"
+                                                placeholder="400.000"
                                                 class="w-full text-xs rounded-xl border border-hairline bg-canvas p-2.5 text-ink focus:border-primary">
                                         </div>
-                                        <div>
+
+                                        <!-- Private Trip Pricing (Camping & Tektok) -->
+                                        <div x-show="form.has_private_trip" x-transition>
                                             <label class="block text-[11px] font-semibold text-muted mb-1">Private Trip -
                                                 Camping (Rp)</label>
-                                            <input type="number" :name="`routes[${index}][price_camping_private]`"
-                                                x-model.number="r.price_camping_private" placeholder="750000"
+                                            <input type="text" inputmode="numeric" :name="`routes[${index}][price_camping_private]`"
+                                                :value="formatPrice(r.price_camping_private)"
+                                                @input="r.price_camping_private = handlePriceInput($event, r, 'price_camping_private')"
+                                                placeholder="750.000"
                                                 class="w-full text-xs rounded-xl border border-hairline bg-canvas p-2.5 text-ink focus:border-primary">
                                         </div>
-                                        <div>
+                                        <div x-show="form.has_private_trip" x-transition>
                                             <label class="block text-[11px] font-semibold text-muted mb-1">Private Trip -
                                                 Tektok (Rp)</label>
-                                            <input type="number" :name="`routes[${index}][price_tektok_private]`"
-                                                x-model.number="r.price_tektok_private" placeholder="650000"
+                                            <input type="text" inputmode="numeric" :name="`routes[${index}][price_tektok_private]`"
+                                                :value="formatPrice(r.price_tektok_private)"
+                                                @input="r.price_tektok_private = handlePriceInput($event, r, 'price_tektok_private')"
+                                                placeholder="650.000"
                                                 class="w-full text-xs rounded-xl border border-hairline bg-canvas p-2.5 text-ink focus:border-primary">
                                         </div>
-                                        <div>
+
+                                        <!-- Booking Fee DP per Pax -->
+                                        <div x-show="form.has_open_trip || form.has_private_trip" x-transition>
                                             <label class="block text-[11px] font-semibold text-muted mb-1">Booking Fee DP /
-                                                Pax (Rp) <span class="text-rose-500">*</span></label>
-                                            <input type="number" :name="`routes[${index}][booking_fee_per_pax]`"
-                                                x-model.number="r.booking_fee_per_pax"
-                                                :max="Math.floor((Number(r.price_camping_open) || 0) / 2)" min="0"
-                                                placeholder="150000"
-                                                @input="if(Number(r.booking_fee_per_pax) > Math.floor((Number(r.price_camping_open)||0)/2)) { r.booking_fee_per_pax = Math.floor((Number(r.price_camping_open)||0)/2); }"
+                                                 Pax (Rp) <span class="text-rose-500">*</span></label>
+                                            <input type="text" inputmode="numeric" :name="`routes[${index}][booking_fee_per_pax]`"
+                                                :value="formatPrice(r.booking_fee_per_pax)"
+                                                @input="handleBookingFeeInput($event, r)"
+                                                placeholder="150.000"
                                                 class="w-full text-xs rounded-xl border border-hairline bg-canvas p-2.5 text-ink focus:border-primary font-semibold"
-                                                required>
-                                            <span class="text-[10px] text-amber-600 font-medium mt-1 block">
-                                                Maks. 50%: Rp <span
-                                                    x-text="new Intl.NumberFormat('id-ID').format(Math.floor((Number(r.price_camping_open) || 0) / 2))"></span>
-                                            </span>
+                                                :required="form.has_open_trip">
+                                            <template x-if="form.has_open_trip && r.price_camping_open">
+                                                <span class="text-[10px] text-amber-600 font-medium mt-1 block">
+                                                    Maks. 50%: Rp <span
+                                                        x-text="new Intl.NumberFormat('id-ID').format(Math.floor((Number(r.price_camping_open) || 0) / 2))"></span>
+                                                </span>
+                                            </template>
+                                        </div>
+
+                                        <!-- Notice when neither is checked -->
+                                        <div x-show="!form.has_open_trip && !form.has_private_trip"
+                                            class="sm:col-span-2 lg:col-span-5 p-3 rounded-xl bg-amber-50 border border-amber-200 text-amber-800 text-xs flex items-center gap-2">
+                                            <svg class="w-4 h-4 text-amber-600 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                                            </svg>
+                                            <span>Centang <strong>Open Trip</strong> atau <strong>Private Trip</strong> di Section 1 agar kolom input tarif pada jalur ini aktif.</span>
                                         </div>
                                     </div>
                                 </div>
@@ -721,9 +749,11 @@
                                                 <div class="sm:col-span-4">
                                                     <label class="block text-[10px] font-bold text-muted mb-1">Ketinggian
                                                         (MDPL)</label>
-                                                    <input type="number"
+                                                    <input type="text" inputmode="numeric"
                                                         :name="`routes[${index}][checkpoints][${cpIndex}][elevation]`"
-                                                        x-model="cp.elevation" placeholder="1800"
+                                                        x-model="cp.elevation"
+                                                        @input="cp.elevation = (cp.elevation || '').toString().replace(/[^0-9]/g, '')"
+                                                        placeholder="1800"
                                                         class="w-full text-xs rounded-xl border border-hairline bg-surface-card p-2 text-ink focus:border-primary font-semibold">
                                                 </div>
                                                 <div class="sm:col-span-1 text-right pt-2 sm:pt-0">
@@ -879,11 +909,36 @@
                                                             class="w-full text-xs rounded-xl border border-hairline bg-surface-card p-2 text-ink focus:border-primary leading-relaxed"></textarea>
                                                     </div>
                                                     <div>
-                                                        <label class="block text-[10px] font-bold text-muted mb-1">Jadwal
-                                                            Timeline (Format: HH:MM - Kegiatan)</label>
+                                                        <div class="flex items-center justify-between mb-1">
+                                                            <label class="block text-[10px] font-bold text-muted">Jadwal Timeline</label>
+                                                            <span class="text-[9.5px] text-muted-soft">Format bebas: <code class="bg-surface-card px-1 py-0.5 rounded">08:00 - Registrasi</code> | <code class="bg-surface-card px-1 py-0.5 rounded">08.00 - 10.00 Trekking</code></span>
+                                                        </div>
                                                         <textarea rows="4" :name="`routes[${index}][itinerary_days][${dIndex}][timeline]`" x-model="dayItem.timeline"
                                                             placeholder="08:00 - Registrasi di Basecamp&#10;09:00 - Mulai Trekking ke Pos 1&#10;12:30 - Makan Siang&#10;16:00 - Tiba di Camp Area"
                                                             class="w-full text-xs font-mono rounded-xl border border-hairline bg-surface-card p-2.5 text-ink focus:border-primary leading-relaxed"></textarea>
+
+                                                        <!-- Live Visual Timeline Preview -->
+                                                        <template x-if="parseTimelinePreview(dayItem.timeline).length > 0">
+                                                            <div class="mt-2 p-2.5 rounded-xl bg-canvas border border-hairline/80 space-y-1.5">
+                                                                <div class="flex items-center justify-between">
+                                                                    <span class="text-[9.5px] font-bold text-muted uppercase tracking-wider">Pratinjau Otomatis Frontend:</span>
+                                                                    <span class="text-[9.5px] text-emerald-600 font-semibold" x-text="`${parseTimelinePreview(dayItem.timeline).length} Agenda`"></span>
+                                                                </div>
+                                                                <div class="space-y-1 max-h-32 overflow-y-auto pr-1">
+                                                                    <template x-for="(item, pIdx) in parseTimelinePreview(dayItem.timeline)" :key="pIdx">
+                                                                        <div class="flex items-center gap-2 text-[11px]">
+                                                                            <template x-if="item.time">
+                                                                                <span class="px-1.5 py-0.5 rounded bg-primary-subtle text-primary font-bold text-[9.5px] shrink-0" x-text="item.time"></span>
+                                                                            </template>
+                                                                            <template x-if="!item.time">
+                                                                                <span class="px-1.5 py-0.5 rounded bg-primary-subtle/40 text-primary font-semibold text-[9.5px] shrink-0">Aktivitas</span>
+                                                                            </template>
+                                                                            <span class="text-ink truncate font-medium text-[11px]" x-text="item.activity"></span>
+                                                                        </div>
+                                                                    </template>
+                                                                </div>
+                                                            </div>
+                                                        </template>
                                                     </div>
                                                 </div>
                                             </template>
@@ -925,11 +980,36 @@
                                                     class="w-full text-xs rounded-xl border border-hairline bg-surface-card p-2.5 text-ink focus:border-primary leading-relaxed"></textarea>
                                             </div>
                                             <div>
-                                                <label class="block text-[11px] font-bold text-muted mb-1">Jadwal Timeline
-                                                    Lengkap (Format: HH:MM - Kegiatan)</label>
-                                                <textarea rows="6" :name="`routes[${index}][itinerary_tektok_timeline]`" x-model="r.itinerary_tektok_timeline"
+                                                <div class="flex items-center justify-between mb-1">
+                                                    <label class="block text-[11px] font-bold text-muted">Jadwal Timeline Lengkap</label>
+                                                    <span class="text-[9.5px] text-muted-soft">Format bebas: <code class="bg-surface-card px-1 py-0.5 rounded">00:00 - Registrasi</code> | <code class="bg-surface-card px-1 py-0.5 rounded">01:00 Trekking Dini Hari</code></span>
+                                                </div>
+                                                <textarea rows="5" :name="`routes[${index}][itinerary_tektok_timeline]`" x-model="r.itinerary_tektok_timeline"
                                                     placeholder="00:00 - Registrasi & Cek Medis di Basecamp&#10;01:00 - Mulai Trekking Dini Hari Menuju Pos 2&#10;05:30 - Sunrise Spektakuler di Puncak Tertinggi&#10;07:30 - Foto Bersama & Mulai Turun&#10;12:00 - Tiba Kembali di Basecamp & Penutupan"
                                                     class="w-full text-xs font-mono rounded-xl border border-hairline bg-surface-card p-3 text-ink focus:border-primary leading-relaxed"></textarea>
+
+                                                <!-- Live Visual Timeline Preview -->
+                                                <template x-if="parseTimelinePreview(r.itinerary_tektok_timeline).length > 0">
+                                                    <div class="mt-2 p-2.5 rounded-xl bg-canvas border border-hairline/80 space-y-1.5">
+                                                        <div class="flex items-center justify-between">
+                                                            <span class="text-[9.5px] font-bold text-muted uppercase tracking-wider">Pratinjau Otomatis Frontend:</span>
+                                                            <span class="text-[9.5px] text-emerald-600 font-semibold" x-text="`${parseTimelinePreview(r.itinerary_tektok_timeline).length} Agenda`"></span>
+                                                        </div>
+                                                        <div class="space-y-1 max-h-36 overflow-y-auto pr-1">
+                                                            <template x-for="(item, pIdx) in parseTimelinePreview(r.itinerary_tektok_timeline)" :key="pIdx">
+                                                                <div class="flex items-center gap-2 text-[11px]">
+                                                                    <template x-if="item.time">
+                                                                        <span class="px-1.5 py-0.5 rounded bg-primary-subtle text-primary font-bold text-[9.5px] shrink-0" x-text="item.time"></span>
+                                                                    </template>
+                                                                    <template x-if="!item.time">
+                                                                        <span class="px-1.5 py-0.5 rounded bg-primary-subtle/40 text-primary font-semibold text-[9.5px] shrink-0">Aktivitas</span>
+                                                                    </template>
+                                                                    <span class="text-ink truncate font-medium text-[11px]" x-text="item.activity"></span>
+                                                                </div>
+                                                            </template>
+                                                        </div>
+                                                    </div>
+                                                </template>
                                             </div>
                                         </div>
                                     </div>
@@ -942,13 +1022,14 @@
     </div>
 
     <!-- Section 3: Matriks Harga Bertingkat Kuota -->
-    <div class="bg-surface-card border border-hairline rounded-3xl p-6 md:p-8 shadow-xs space-y-6">
+    <div x-show="form.has_open_trip" x-transition
+        class="bg-surface-card border border-hairline rounded-3xl p-6 md:p-8 shadow-xs space-y-6">
         <div class="flex items-center justify-between border-b border-hairline pb-4">
             <div>
                 <h3 class="text-base font-extrabold text-ink-heading">3. Matriks Harga Bertingkat Kuota (Dynamic Tiering)
                 </h3>
                 <p class="text-xs text-muted">Tetapkan harga otomatis berdasarkan batas minimal kuota peserta yang
-                    terkumpul</p>
+                    terkumpul (Khusus Open Trip)</p>
             </div>
             <button type="button" @click="addTier()"
                 class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-primary-subtle text-primary text-xs font-bold hover:bg-primary hover:text-white transition-colors">
@@ -967,15 +1048,17 @@
                     <div class="sm:col-span-5">
                         <label class="block text-[11px] font-bold text-muted mb-1">Minimal Peserta (≥ Pax)</label>
                         <input type="number" :name="`price_tiers[${index}][min_pax]`" x-model="t.min_pax"
-                            min="1" required placeholder="1, 4, 7..."
+                            min="1" :required="form.has_open_trip" placeholder="1, 4, 7..."
                             class="w-full text-xs rounded-xl border border-hairline bg-surface-card p-2 text-ink focus:border-primary">
                     </div>
 
                     <!-- Price per Pax -->
                     <div class="sm:col-span-6">
                         <label class="block text-[11px] font-bold text-muted mb-1">Harga Final / Pax (Rp)</label>
-                        <input type="number" :name="`price_tiers[${index}][price_per_pax]`" x-model="t.price_per_pax"
-                            required placeholder="550000"
+                        <input type="text" inputmode="numeric" :name="`price_tiers[${index}][price_per_pax]`"
+                            :value="formatPrice(t.price_per_pax)"
+                            @input="t.price_per_pax = handlePriceInput($event, t, 'price_per_pax')"
+                            :required="form.has_open_trip" placeholder="550.000"
                             class="w-full text-xs rounded-xl border border-hairline bg-surface-card p-2 text-ink focus:border-primary font-bold">
                     </div>
 
@@ -1448,6 +1531,52 @@
                 },
                 removeFacilityExcluded(index) {
                     this.facilitiesExcluded.splice(index, 1);
+                },
+                formatPrice(val) {
+                    if (val === null || val === undefined || val === '') return '';
+                    let clean = val.toString().replace(/[^0-9]/g, '');
+                    if (!clean) return '';
+                    return new Intl.NumberFormat('id-ID').format(clean);
+                },
+                handlePriceInput(event, obj, prop) {
+                    let clean = event.target.value.replace(/[^0-9]/g, '');
+                    let num = clean ? parseInt(clean, 10) : '';
+                    obj[prop] = num;
+                    event.target.value = clean ? new Intl.NumberFormat('id-ID').format(clean) : '';
+                    return num;
+                },
+                onPriceCampingChange(r) {
+                    let maxFee = Math.floor((Number(r.price_camping_open) || 0) / 2);
+                    if (Number(r.booking_fee_per_pax) > maxFee && maxFee > 0) {
+                        r.booking_fee_per_pax = maxFee;
+                    }
+                },
+                handleBookingFeeInput(event, r) {
+                    let num = this.handlePriceInput(event, r, 'booking_fee_per_pax');
+                    let maxFee = Math.floor((Number(r.price_camping_open) || 0) / 2);
+                    if (maxFee > 0 && num > maxFee) {
+                        r.booking_fee_per_pax = maxFee;
+                        event.target.value = this.formatPrice(maxFee);
+                    }
+                },
+                parseTimelinePreview(raw) {
+                    if (!raw) return [];
+                    return raw.split('\n')
+                        .map(l => l.trim())
+                        .filter(l => l.length > 0)
+                        .map(line => {
+                            const match = line.match(/^(\d{1,2}[:.]\d{2}(?:\s*[-–—]\s*\d{1,2}[:.]\d{2})?(?:\s*(?:WIB|WITA|WIT))?)\s*(?:[-:–—•]\s*|\s+)(.+)$/i);
+                            if (match) {
+                                return {
+                                    time: match[1].replace(/(\d{1,2})\.(\d{2})/g, '$1:$2'),
+                                    activity: match[2].trim()
+                                };
+                            }
+                            return {
+                                time: '',
+                                activity: line
+                            };
+                        });
                 }
             };
         }

@@ -17,7 +17,7 @@
     },
     "require-dev": {
         "barryvdh/laravel-debugbar": "^4.4",
-        "fakerphp/faker": "^1.23    ",
+        "fakerphp/faker": "^1.23",
         "laravel/boost": "^2.9",
         "laravel/breeze": "^2.4",
         "laravel/pail": "^1.2.5",

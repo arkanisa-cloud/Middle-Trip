@@ -684,3 +684,131 @@ test('admin can store and update mountain with custom multi-day itinerary such a
     expect($routeGuci->itinerary['days_count'])->toBe(4);
     expect($routeGuci->itinerary['title'])->toBe('Itinerary 4D3N (Via Guci Long Trip)');
 });
+
+test('admin can store mountain with formatted string elevation such as dots and mdpl unit', function () {
+    $admin = User::factory()->create([
+        'email' => 'admin_elev_format@middletrip.com',
+        'is_admin' => true,
+    ]);
+
+    $coverFile = UploadedFile::fake()->image('mountain.jpg', 1200, 800);
+
+    $payload = [
+        'name' => 'Gunung Sumbing Format Test',
+        'elevation' => '3.371 MDPL',
+        'province' => 'Jawa Tengah',
+        'grade' => 'Grade A',
+        'cover_image_file' => $coverFile,
+        'base_price' => '650.000',
+        'price_lock_days_before_departure' => 3,
+        'routes' => [
+            [
+                'name' => 'Via Garung',
+                'grade' => 'Grade A',
+                'price_camping_open' => '500.000',
+                'booking_fee_per_pax' => '150.000',
+                'is_primary' => true,
+                'checkpoints' => [
+                    ['name' => 'Basecamp Garung', 'elevation' => '1.500 mdpl'],
+                    ['name' => 'Pos 1', 'elevation' => '1.800'],
+                    ['name' => 'Pos 2', 'elevation' => '2,200 mdpl'],
+                    ['name' => 'Puncak Rajawali', 'elevation' => '3.371 MDPL'],
+                ],
+            ],
+        ],
+        'price_tiers' => [
+            ['min_pax' => '1', 'price_per_pax' => '700.000'],
+        ],
+    ];
+
+    $response = $this->actingAs($admin)->post(route('admin.mountains.store'), $payload);
+    $response->assertSessionHasNoErrors();
+    $response->assertRedirect(route('admin.mountains.index'));
+
+    $mountain = Mountain::where('name', 'Gunung Sumbing Format Test')->first();
+    expect($mountain)->not->toBeNull();
+    expect($mountain->elevation)->toBe(3371);
+
+    $route = $mountain->routes()->first();
+    expect($route)->not->toBeNull();
+    expect($route->price_camping_open)->toBe(500000);
+    expect($route->booking_fee_per_pax)->toBe(150000);
+
+    $pts = $route->elevation_checkpoints['points'];
+    expect($pts[0]['elevation'])->toBe(1500);
+    expect($pts[1]['elevation'])->toBe(1800);
+    expect($pts[2]['elevation'])->toBe(2200);
+    expect($pts[3]['elevation'])->toBe(3371);
+});
+
+test('admin can store mountain with flexible itinerary timeline formats and customer page renders correctly', function () {
+    $admin = User::factory()->create(['is_admin' => true]);
+    $coverFile = UploadedFile::fake()->image('mountain.jpg', 800, 600);
+
+    $timelineDay1 = "08.00 - Registrasi & Cek Perlengkapan\n09:00 - 11:30 Trekking Menuju Pos 1 & 2\n12:30 Makan Siang Bersama\nBriefing Keselamatan Jalur";
+    $timelineTektok = "00:00 WIB - Registrasi Dini Hari\n01.00 - 05.00 Summit Attack\nFoto Bersama di Puncak";
+
+    $payload = [
+        'name' => 'Gunung Prau Itinerary Test',
+        'elevation' => '2565',
+        'province' => 'Jawa Tengah',
+        'grade' => 'Grade A',
+        'cover_image_file' => $coverFile,
+        'has_open_trip' => 1,
+        'has_private_trip' => 1,
+        'routes' => [
+            [
+                'name' => 'Via Dieng',
+                'grade' => 'Grade A',
+                'price_camping_open' => '450.000',
+                'booking_fee_per_pax' => '100.000',
+                'is_primary' => true,
+                'itinerary_days' => [
+                    [
+                        'day' => 'Day 1',
+                        'title' => 'Day 1: Basecamp ke Sunrise Camp',
+                        'desc' => 'Trekking santai melalui kebun warga.',
+                        'timeline' => $timelineDay1,
+                    ],
+                ],
+                'itinerary_tektok_title' => 'Itinerary 1D Prau',
+                'itinerary_tektok_desc' => 'Pendakian 1 hari.',
+                'itinerary_tektok_timeline' => $timelineTektok,
+            ],
+        ],
+    ];
+
+    $response = $this->actingAs($admin)->post(route('admin.mountains.store'), $payload);
+    $response->assertSessionHasNoErrors();
+    $response->assertRedirect(route('admin.mountains.index'));
+
+    $mountain = Mountain::where('name', 'Gunung Prau Itinerary Test')->first();
+    expect($mountain)->not->toBeNull();
+
+    $route = $mountain->routes()->first();
+    expect($route)->not->toBeNull();
+
+    $itinCamping = $route->itinerary['camping'] ?? $route->itinerary;
+    $day1Items = $itinCamping['days'][0]['timeline'];
+
+    expect($day1Items[0]['time'])->toBe('08:00');
+    expect($day1Items[0]['activity'])->toBe('Registrasi & Cek Perlengkapan');
+
+    expect($day1Items[1]['time'])->toBe('09:00 - 11:30');
+    expect($day1Items[1]['activity'])->toBe('Trekking Menuju Pos 1 & 2');
+
+    expect($day1Items[2]['time'])->toBe('12:30');
+    expect($day1Items[2]['activity'])->toBe('Makan Siang Bersama');
+
+    expect($day1Items[3]['time'])->toBe('');
+    expect($day1Items[3]['activity'])->toBe('Briefing Keselamatan Jalur');
+
+    // Verify customer detail page renders these properly
+    $customerResponse = $this->get(route('ekspedisi.show', $mountain->slug));
+    $customerResponse->assertOk();
+    $customerResponse->assertSee('08:00');
+    $customerResponse->assertSee('Registrasi & Cek Perlengkapan');
+    $customerResponse->assertSee('09:00 - 11:30');
+    $customerResponse->assertSee('Trekking Menuju Pos 1 & 2');
+    $customerResponse->assertSee('Briefing Keselamatan Jalur');
+});
