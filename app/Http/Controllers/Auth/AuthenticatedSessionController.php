@@ -16,8 +16,10 @@ class AuthenticatedSessionController extends Controller
      */
     public function create(): View
     {
-        if (! session()->has('url.intended') && url()->previous() !== route('login')) {
-            session()->put('url.intended', url()->previous());
+        $previous = url()->previous();
+
+        if (! session()->has('url.intended') && ! $this->isGuestOrDashboardUrl($previous)) {
+            session()->put('url.intended', $previous);
         }
 
         return view('auth.login');
@@ -36,7 +38,47 @@ class AuthenticatedSessionController extends Controller
             return redirect()->route('admin.dashboard');
         }
 
-        return redirect()->intended(route('dashboard', absolute: false));
+        $intended = session()->get('url.intended');
+        if ($this->isGuestOrDashboardUrl($intended)) {
+            session()->forget('url.intended');
+        }
+
+        return redirect()->intended(route('home', absolute: false));
+    }
+
+    /**
+     * Check if a given URL is a guest route, auth route, or dashboard.
+     */
+    public static function isGuestOrDashboardUrl(?string $url): bool
+    {
+        if (! $url) {
+            return true;
+        }
+
+        $path = parse_url($url, PHP_URL_PATH) ?? '';
+        $normalizedPath = trim($path, '/');
+
+        $blacklisted = [
+            '',
+            'login',
+            'register',
+            'forgot-password',
+            'reset-password',
+            'dashboard',
+            'auth/google',
+            'auth/google/callback',
+        ];
+
+        foreach ($blacklisted as $item) {
+            if ($item === '' && $normalizedPath === '') {
+                return false; // Root '/' is valid
+            }
+            if ($item !== '' && ($normalizedPath === $item || str_starts_with($normalizedPath, $item.'/'))) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**

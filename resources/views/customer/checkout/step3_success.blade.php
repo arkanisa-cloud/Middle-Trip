@@ -181,7 +181,7 @@
                         </div>
                         <div>
                             <p class="text-muted text-[11px] font-medium">Rute</p>
-                            <p class="text-ink font-semibold mt-0.5">Via {{ $booking->route->name ?? 'Standar' }}</p>
+                            <p class="text-ink font-semibold mt-0.5">{{ $booking->route->name ?? 'Standar' }}</p>
                         </div>
                         <div>
                             <p class="text-muted text-[11px] font-medium">Meeting Point</p>

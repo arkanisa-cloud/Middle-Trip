@@ -6,7 +6,9 @@ use App\Models\Addon;
 use App\Models\Booking;
 use App\Models\Expedition;
 use App\Models\MeetingPoint;
+use App\Models\PaymentTransaction;
 use App\Models\Route;
+use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
@@ -40,6 +42,27 @@ class BookingService
                 if (! $expedition) {
                     throw ValidationException::withMessages([
                         'expedition_id' => 'Jadwal batch ekspedisi wajib dipilih untuk Open Trip.',
+                    ]);
+                }
+
+                if ($expedition->status === 'price_locked') {
+                    throw ValidationException::withMessages([
+                        'expedition_id' => 'Pendaftaran untuk batch ekspedisi ini sudah ditutup karena harga telah dikunci (Price Locked).',
+                    ]);
+                }
+
+                if ($expedition->status !== 'open') {
+                    throw ValidationException::withMessages([
+                        'expedition_id' => 'Pendaftaran untuk batch ekspedisi ini sudah tidak aktif atau ditutup.',
+                    ]);
+                }
+
+                $requestedHikingType = $data['hiking_type'] ?? null;
+                if ($requestedHikingType && $expedition->hiking_type && $expedition->hiking_type !== $requestedHikingType) {
+                    $batchTypeLabel = $expedition->hiking_type === 'camping' ? 'Camping' : 'Tek-tok';
+                    $requestedTypeLabel = $requestedHikingType === 'camping' ? 'Camping' : 'Tek-tok';
+                    throw ValidationException::withMessages([
+                        'hiking_type' => "Batch jadwal ekspedisi yang dipilih bertipe {$batchTypeLabel}, tidak dapat mendaftar untuk tipe {$requestedTypeLabel}.",
                     ]);
                 }
 
@@ -99,7 +122,9 @@ class BookingService
                 }
             }
 
-            $hikingType = $data['hiking_type'] ?? $expedition?->hiking_type ?? 'camping';
+            $hikingType = $tripType === 'open'
+                ? ($expedition?->hiking_type ?? $data['hiking_type'] ?? 'camping')
+                : ($data['hiking_type'] ?? 'camping');
 
             if ($tripType === 'private') {
                 // Private Trip: Gunakan harga via jika diatur, atau fallback ke tier harga gunung
@@ -152,6 +177,13 @@ class BookingService
             // Generate Booking Code unik: MT-YYYYMMDD-XXXXX
             $bookingCode = 'MT-'.date('Ymd').'-'.strtoupper(Str::random(5));
 
+            // Fallback ke profil user jika data pemesan masih kosong
+            $user = $userId ? User::find($userId) : null;
+            $customerName = ! empty($data['customer_name']) ? $data['customer_name'] : ($user?->name ?? 'Pendaki MiddleTrip');
+            $customerEmail = ! empty($data['customer_email']) ? $data['customer_email'] : ($user?->email ?? '');
+            $customerPhone = ! empty($data['customer_phone']) ? $data['customer_phone'] : ($user?->phone ?? null);
+            $customerNik = ! empty($data['customer_nik']) ? $data['customer_nik'] : ($user?->nik ?? null);
+
             /** @var Booking $booking */
             $booking = Booking::create([
                 'booking_code' => $bookingCode,
@@ -162,10 +194,10 @@ class BookingService
                 'trip_type' => $tripType,
                 'departure_date' => $departureDate,
                 'return_date' => $returnDate,
-                'customer_name' => $data['customer_name'],
-                'customer_email' => $data['customer_email'],
-                'customer_phone' => $data['customer_phone'],
-                'customer_nik' => $data['customer_nik'],
+                'customer_name' => $customerName,
+                'customer_email' => $customerEmail,
+                'customer_phone' => $customerPhone,
+                'customer_nik' => $customerNik,
                 'pax_count' => $paxCount,
                 'booking_fee_per_pax' => $bookingFeePerPax,
                 'total_booking_fee' => $totalBookingFee,
@@ -182,9 +214,12 @@ class BookingService
             // Simpan data peserta (Ketua & Anggota)
             foreach ($data['participants'] as $index => $participant) {
                 $isLeader = (bool) ($participant['is_leader'] ?? ($index === 0));
+                $pName = ! empty($participant['full_name']) ? $participant['full_name'] : ($isLeader ? $customerName : null);
+                $pNik = ! empty($participant['nik']) ? $participant['nik'] : ($isLeader ? $customerNik : null);
+
                 $booking->participants()->create([
-                    'full_name' => $participant['full_name'],
-                    'nik' => $participant['nik'],
+                    'full_name' => $pName,
+                    'nik' => $pNik,
                     'is_leader' => $isLeader,
                 ]);
             }
@@ -195,6 +230,77 @@ class BookingService
             }
 
             return $booking;
+        });
+    }
+
+    /**
+     * Mengeksekusi penguncian harga (Price Lock) pada ekspedisi:
+     * 1. Kunci tarif final pada ekspedisi.
+     * 2. Batalkan semua pesanan yang belum membayar DP (status 'open') dan batalkan transaksi pendingnya.
+     * 3. Kunci harga & terbitkan tagihan pelunasan untuk pesanan yang sudah bayar DP (status 'reserved').
+     * 4. Sinkronisasi kuota terisi.
+     */
+    public function executePriceLock(Expedition $expedition): void
+    {
+        DB::transaction(function () use ($expedition): void {
+            $lockedExpedition = Expedition::with(['mountain.priceTiers', 'bookings'])->lockForUpdate()->find($expedition->id);
+            if (! $lockedExpedition || ! $lockedExpedition->mountain) {
+                return;
+            }
+
+            $paxCount = max(1, (int) $lockedExpedition->quota_booked);
+            $lockedPrice = $lockedExpedition->mountain->getTierPriceForPax($paxCount);
+
+            $lockedExpedition->update([
+                'current_locked_price' => $lockedPrice,
+                'status' => 'price_locked',
+            ]);
+
+            // 1. Batalkan semua pesanan yang belum bayar DP (status 'open')
+            $unpaidBookings = $lockedExpedition->bookings()->where('status', 'open')->get();
+            $midtrans = app(MidtransService::class);
+
+            foreach ($unpaidBookings as $unpaidBooking) {
+                $pendingTransactions = PaymentTransaction::where('booking_id', $unpaidBooking->id)
+                    ->where('status', 'pending')
+                    ->get();
+
+                foreach ($pendingTransactions as $pendingTx) {
+                    try {
+                        $midtrans->cancelTransaction($pendingTx->transaction_code);
+                    } catch (\Throwable $e) {
+                        // ignore error in sandbox/mock
+                    }
+                    $pendingTx->update(['status' => 'expired']);
+                }
+
+                $unpaidBooking->update([
+                    'status' => 'cancelled',
+                    'notes' => trim(($unpaidBooking->notes ?? '').' | Dibatalkan otomatis karena pendaftaran batch ekspedisi telah ditutup & harga dikunci (Price Locked).', ' |'),
+                ]);
+            }
+
+            // 2. Kunci harga untuk pesanan yang sudah membayar DP (status 'reserved')
+            $paymentDeadline = Carbon::now()->addHours(48);
+            $reservedBookings = $lockedExpedition->bookings()->where('status', 'reserved')->get();
+
+            foreach ($reservedBookings as $booking) {
+                $ticketTotal = $booking->pax_count * $lockedPrice;
+                $shuttleTotal = (int) ($booking->shuttle_fee_total ?? 0);
+                $addonsTotal = (int) ($booking->addons_fee_total ?? 0);
+                $grandTotal = $ticketTotal + $shuttleTotal + $addonsTotal;
+                $remaining = max(0, $grandTotal - (int) $booking->total_booking_fee);
+
+                $booking->update([
+                    'status' => 'price_locked',
+                    'locked_price_per_pax' => $lockedPrice,
+                    'grand_total' => $grandTotal,
+                    'remaining_payment_total' => $remaining,
+                    'payment_deadline' => $paymentDeadline,
+                ]);
+            }
+
+            $lockedExpedition->syncQuotaBooked();
         });
     }
 }

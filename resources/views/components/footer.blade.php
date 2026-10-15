@@ -40,7 +40,7 @@
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"
                                 d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
                         </svg>
-                        <span>+62 812-3456-7890 (Customer Service)</span>
+                        <span></span>
                     </a>
                 </div>
             </div>
@@ -68,8 +68,10 @@
                     </li>
                     <li><a href="{{ route('home') }}#faq" class="hover:text-primary transition-colors">FAQ &amp;
                             SIMAKSI</a></li>
-                    <li><a href="{{ route('privacy.policy') }}" class="hover:text-primary transition-colors">Kebijakan Privasi</a></li>
-                    <li><a href="{{ route('terms.service') }}" class="hover:text-primary transition-colors">Syarat &amp; Ketentuan</a></li>
+                    <li><a href="{{ route('privacy.policy') }}" class="hover:text-primary transition-colors">Kebijakan
+                            Privasi</a></li>
+                    <li><a href="{{ route('terms.service') }}" class="hover:text-primary transition-colors">Syarat &amp;
+                            Ketentuan</a></li>
                 </ul>
             </div>
 
@@ -89,28 +91,24 @@
                 <!-- Sponsor Logos (Clean, without bulky cards, optically balanced) -->
                 <div class="flex flex-wrap items-center gap-x-6 gap-y-4 pt-2">
                     <img src="{{ asset('storage/jhic/1. LOGO JHIC 2.0.png') }}" alt="JHIC 2.0"
-                        title="Jagoan Hosting Indonesia Competition 2.0"
-                        width="53" height="28"
-                        class="h-7 w-auto object-contain opacity-85 hover:opacity-100 transition-opacity"
-                        loading="lazy" decoding="async">
+                        title="Jagoan Hosting Indonesia Competition 2.0" width="53" height="28"
+                        class="h-7 w-auto object-contain opacity-85 hover:opacity-100 transition-opacity" loading="lazy"
+                        decoding="async">
 
                     <img src="{{ asset('storage/jhic/2. Logo Jagoan Hosting.png') }}" alt="Jagoan Hosting"
-                        title="Jagoan Hosting"
-                        width="64" height="20"
-                        class="h-5 w-auto object-contain opacity-85 hover:opacity-100 transition-opacity"
-                        loading="lazy" decoding="async">
+                        title="Jagoan Hosting" width="64" height="20"
+                        class="h-5 w-auto object-contain opacity-85 hover:opacity-100 transition-opacity" loading="lazy"
+                        decoding="async">
 
                     <img src="{{ asset('storage/jhic/3. KOMDIGI.png') }}" alt="KOMDIGI"
-                        title="Kementerian Komunikasi dan Digital RI"
-                        width="39" height="28"
-                        class="h-7 w-auto object-contain opacity-85 hover:opacity-100 transition-opacity"
-                        loading="lazy" decoding="async">
+                        title="Kementerian Komunikasi dan Digital RI" width="39" height="28"
+                        class="h-7 w-auto object-contain opacity-85 hover:opacity-100 transition-opacity" loading="lazy"
+                        decoding="async">
 
                     <img src="{{ asset('storage/jhic/4. Garuda Spark Full Color.png') }}" alt="Garuda Spark"
-                        title="Garuda Spark"
-                        width="44" height="24"
-                        class="h-6 w-auto object-contain opacity-85 hover:opacity-100 transition-opacity"
-                        loading="lazy" decoding="async">
+                        title="Garuda Spark" width="44" height="24"
+                        class="h-6 w-auto object-contain opacity-85 hover:opacity-100 transition-opacity" loading="lazy"
+                        decoding="async">
 
                     <img src="{{ asset('storage/jhic/5. LOGO NGALUP.png') }}" alt="Ngalup.co" title="Ngalup.co"
                         width="101" height="16"

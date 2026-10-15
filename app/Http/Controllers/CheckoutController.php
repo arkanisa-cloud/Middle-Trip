@@ -40,7 +40,17 @@ class CheckoutController extends Controller
 
         if ($booking->status === 'cancelled') {
             return redirect()->route('home')
-                ->with('error', "Pesanan #{$booking->booking_code} telah dibatalkan karena kuota batch ekspedisi telah terisi penuh oleh pendaki lain.");
+                ->with('error', "Pesanan #{$booking->booking_code} telah dibatalkan.");
+        }
+
+        if ($booking->expedition && $booking->expedition->status === 'price_locked' && $booking->status === 'open') {
+            $booking->update([
+                'status' => 'cancelled',
+                'notes' => trim(($booking->notes ?? '').' | Dibatalkan karena pendaftaran batch ekspedisi telah ditutup & harga dikunci (Price Locked).', ' |'),
+            ]);
+
+            return redirect()->route('home')
+                ->with('error', "Pesanan #{$booking->booking_code} telah dibatalkan karena pendaftaran batch ekspedisi telah ditutup dan harga telah dikunci (Price Locked).");
         }
 
         if (in_array($booking->status, ['reserved', 'price_locked'], true)) {
@@ -50,6 +60,8 @@ class CheckoutController extends Controller
         if ($booking->status === 'paid') {
             return redirect()->route('checkout.success', $booking->booking_code);
         }
+
+        $this->syncBookingWithAuthUser($booking);
 
         return view('customer.checkout.step1_payment', compact('booking'));
     }
@@ -65,13 +77,31 @@ class CheckoutController extends Controller
             if ($request->expectsJson()) {
                 return response()->json([
                     'status' => 'cancelled',
-                    'message' => 'Pesanan ini telah dibatalkan karena kuota batch ekspedisi telah habis terisi oleh pendaki lain.',
+                    'message' => 'Pesanan ini telah dibatalkan.',
                     'redirect_url' => route('home'),
                 ], 422);
             }
 
             return redirect()->route('home')
-                ->with('error', "Pesanan #{$booking->booking_code} telah dibatalkan karena kuota batch ekspedisi telah habis terisi oleh pendaki lain.");
+                ->with('error', "Pesanan #{$booking->booking_code} telah dibatalkan.");
+        }
+
+        if ($booking->expedition && $booking->expedition->status === 'price_locked' && $booking->status === 'open') {
+            $booking->update([
+                'status' => 'cancelled',
+                'notes' => trim(($booking->notes ?? '').' | Dibatalkan karena pendaftaran batch ekspedisi telah ditutup & harga dikunci (Price Locked).', ' |'),
+            ]);
+
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'status' => 'cancelled',
+                    'message' => 'Pesanan ini telah dibatalkan karena pendaftaran batch ekspedisi telah ditutup dan harga telah dikunci (Price Locked).',
+                    'redirect_url' => route('home'),
+                ], 422);
+            }
+
+            return redirect()->route('home')
+                ->with('error', "Pesanan #{$booking->booking_code} telah dibatalkan karena pendaftaran batch ekspedisi telah ditutup dan harga telah dikunci (Price Locked).");
         }
 
         if ($booking->isExpired()) {
@@ -289,6 +319,8 @@ class CheckoutController extends Controller
             return redirect()->route('checkout.success', $booking->booking_code);
         }
 
+        $this->syncBookingWithAuthUser($booking);
+
         return view('customer.checkout.private_payment', compact('booking'));
     }
 
@@ -474,6 +506,48 @@ class CheckoutController extends Controller
                     'is_leader' => (bool) ($part['is_leader'] ?? ($index === 0)),
                 ]);
             }
+        }
+    }
+
+    /**
+     * Sinkronisasi data pemesan pada booking dengan profil pengguna yang sedang login jika belum terisi.
+     */
+    private function syncBookingWithAuthUser(Booking $booking): void
+    {
+        $user = auth()->user();
+        if (! $user) {
+            return;
+        }
+
+        $updated = false;
+
+        if (! $booking->user_id) {
+            $booking->user_id = $user->id;
+            $updated = true;
+        }
+
+        if (empty($booking->customer_name) && ! empty($user->name)) {
+            $booking->customer_name = $user->name;
+            $updated = true;
+        }
+
+        if (empty($booking->customer_email) && ! empty($user->email)) {
+            $booking->customer_email = $user->email;
+            $updated = true;
+        }
+
+        if (empty($booking->customer_phone) && ! empty($user->phone)) {
+            $booking->customer_phone = $user->phone;
+            $updated = true;
+        }
+
+        if (empty($booking->customer_nik) && ! empty($user->nik)) {
+            $booking->customer_nik = $user->nik;
+            $updated = true;
+        }
+
+        if ($updated) {
+            $booking->save();
         }
     }
 }

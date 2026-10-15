@@ -313,7 +313,7 @@
     </main>
 
     {{-- =====================================================================
-         3. SECTION: KLASIFIKASI JALUR (ALPINE FOREST TOPOGRAPHIC SURFACE)
+         3. SECTION: KLASIFIKASI JALUR 
     ===================================================================== --}}
     <section id="klasifikasi" class="w-full bg-surface-forest text-white py-20 px-4 topo-pattern relative">
         <div class="max-w-5xl mx-auto">
@@ -399,10 +399,10 @@
                             <div id="grade-tags" class="flex flex-wrap gap-2">
                                 <span
                                     class="text-xs bg-surface-forest-tag border border-white/10 px-3.5 py-1.5 rounded-full text-gray-200">Mt.
-                                    Merbabu</span>
+                                    Andong</span>
                                 <span
                                     class="text-xs bg-surface-forest-tag border border-white/10 px-3.5 py-1.5 rounded-full text-gray-200">Mt.
-                                    Prau</span>
+                                    Bismo</span>
                             </div>
                         </div>
 
@@ -412,7 +412,7 @@
                     <div class="lg:col-span-5">
                         <div
                             class="relative w-full aspect-[4/3] rounded-2xl overflow-hidden shadow-lg border border-white/10">
-                            <img id="grade-image" src="/storage/mountains/merbabu.webp" alt="Jalur Pemula"
+                            <img id="grade-image" src="/storage/mountains/andong.webp" alt="Jalur Pemula"
                                 loading="lazy" decoding="async" width="400" height="300"
                                 class="w-full h-full object-cover" />
                             <div
@@ -496,7 +496,7 @@
                 </button>
                 <div id="faq-content-3"
                     class="hidden px-6 pb-4 pt-1 text-body text-xs md:text-[13px] leading-relaxed border-t border-hairline-soft">
-                    Kami sangat menyarankan pemula untuk memulai dari Grade A (seperti Merbabu via Selo atau Prau).
+                    Kami sangat menyarankan pemula untuk memulai dari Grade A.
                     Namun jika Anda memiliki rutinitas kardio aktif dan didampingi guide privat kami, Grade B tetap
                     dapat dipertimbangkan setelah konsultasi awal.
                 </div>
@@ -517,7 +517,7 @@
                     desc: 'Sangat direkomendasikan bagi Anda yang baru pertama kali ingin mencicipi dinginnya udara puncak gunung.',
                     duration: '2 – 5 Jam / Hari',
                     effort: 'Jogging Ringan',
-                    tags: ['Mt. Merbabu', 'Mt. Prau'],
+                    tags: ['Mt. Andong', 'Mt. Bismo'],
                     img: '/storage/mountains/merbabu.webp'
                 },
                 'B': {
@@ -525,7 +525,7 @@
                     desc: 'Untuk pendaki yang sudah memiliki pengalaman dan ketahanan fisik cukup pada tanjakan curam berkepanjangan.',
                     duration: '6 – 8 Jam / Hari',
                     effort: 'Latihan Kardio Rutin',
-                    tags: ['Mt. Sumbing', 'Mt. Sindoro', 'Mt. Lawu'],
+                    tags: ['Mt. Sumbing', 'Mt. Merbabu', 'Mt. Lawu'],
                     img: '/storage/mountains/kembang.webp'
                 },
                 'C': {

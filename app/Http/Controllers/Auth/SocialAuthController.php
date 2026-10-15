@@ -72,6 +72,11 @@ class SocialAuthController extends Controller
             return redirect()->route('admin.dashboard');
         }
 
+        $intended = session()->get('url.intended');
+        if (AuthenticatedSessionController::isGuestOrDashboardUrl($intended)) {
+            session()->forget('url.intended');
+        }
+
         return redirect()->intended(route('home', absolute: false));
     }
 }

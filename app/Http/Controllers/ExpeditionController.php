@@ -167,27 +167,58 @@ class ExpeditionController extends Controller
         $expedition['price_tektok'] = $mountainModel->effective_price_tektok;
         $expedition['price_private_tektok'] = $mountainModel->effective_price_private_tektok;
 
-        $openExpedition = $mountainModel->expeditions->where('type', 'open')->where('status', 'open')->first();
+        $openCampingExpedition = $mountainModel->expeditions
+            ->where('type', 'open')
+            ->where('status', 'open')
+            ->where('hiking_type', 'camping')
+            ->sortBy('departure_date')
+            ->first();
+
+        $openTektokExpedition = $mountainModel->expeditions
+            ->where('type', 'open')
+            ->where('status', 'open')
+            ->where('hiking_type', 'tektok')
+            ->sortBy('departure_date')
+            ->first();
+
+        $openExpedition = $openCampingExpedition ?? $openTektokExpedition;
         $privateExpedition = $mountainModel->expeditions->where('type', 'private')->first();
 
         $addons = Addon::where('is_active', true)->get();
+
+        $hasOpenCamping = $openCampingExpedition !== null;
+        $hasOpenTektok = $openTektokExpedition !== null;
+        $hasOpenSchedule = $hasOpenCamping || $hasOpenTektok;
+
+        $expedition['has_open_schedule'] = $hasOpenSchedule;
+        $expedition['has_open_camping'] = $hasOpenCamping;
+        $expedition['has_open_tektok'] = $hasOpenTektok;
+        $expedition['default_hiking_type'] = $openCampingExpedition ? 'camping' : ($openTektokExpedition ? 'tektok' : 'camping');
 
         if ($openExpedition) {
             $expedition['quota_current'] = $openExpedition->quota_booked;
             $expedition['quota_max'] = $openExpedition->quota_max;
             $expedition['departure_date'] = Carbon::parse($openExpedition->departure_date)->format('d/m/Y');
-            $expedition['has_open_schedule'] = true;
         } else {
             $expedition['quota_current'] = 0;
             $expedition['quota_max'] = 0;
             $expedition['departure_date'] = 'Belum ada jadwal';
-            $expedition['has_open_schedule'] = false;
         }
+
+        $expedition['open_camping_date'] = $openCampingExpedition ? Carbon::parse($openCampingExpedition->departure_date)->format('d/m/Y') : 'Belum ada jadwal';
+        $expedition['open_camping_quota_current'] = $openCampingExpedition?->quota_booked ?? 0;
+        $expedition['open_camping_quota_max'] = $openCampingExpedition?->quota_max ?? 0;
+
+        $expedition['open_tektok_date'] = $openTektokExpedition ? Carbon::parse($openTektokExpedition->departure_date)->format('d/m/Y') : 'Belum ada jadwal';
+        $expedition['open_tektok_quota_current'] = $openTektokExpedition?->quota_booked ?? 0;
+        $expedition['open_tektok_quota_max'] = $openTektokExpedition?->quota_max ?? 0;
 
         $bookingConfig = $this->buildBookingConfig(
             mountain: $mountainModel,
             expeditionData: $expedition,
             openExpedition: $openExpedition,
+            openCampingExpedition: $openCampingExpedition,
+            openTektokExpedition: $openTektokExpedition,
             privateExpedition: $privateExpedition,
             addons: $addons
         );
@@ -196,6 +227,8 @@ class ExpeditionController extends Controller
             'expedition' => $expedition,
             'mountainModel' => $mountainModel,
             'openExpedition' => $openExpedition,
+            'openCampingExpedition' => $openCampingExpedition,
+            'openTektokExpedition' => $openTektokExpedition,
             'privateExpedition' => $privateExpedition,
             'addons' => $addons,
             'bookingConfig' => $bookingConfig,
@@ -212,6 +245,8 @@ class ExpeditionController extends Controller
         ?Mountain $mountain,
         array $expeditionData,
         ?Expedition $openExpedition,
+        ?Expedition $openCampingExpedition,
+        ?Expedition $openTektokExpedition,
         ?Expedition $privateExpedition,
         mixed $addons
     ): array {
@@ -223,21 +258,39 @@ class ExpeditionController extends Controller
             ? Carbon::parse($openExpedition->return_date)
             : ($openDepartureDate ? $openDepartureDate->copy()->addDays(1) : null);
 
+        $campingDepartureDate = $openCampingExpedition?->departure_date ? Carbon::parse($openCampingExpedition->departure_date) : null;
+        $campingReturnDate = $openCampingExpedition?->return_date
+            ? Carbon::parse($openCampingExpedition->return_date)
+            : ($campingDepartureDate ? $campingDepartureDate->copy()->addDays(1) : null);
+
+        $tektokDepartureDate = $openTektokExpedition?->departure_date ? Carbon::parse($openTektokExpedition->departure_date) : null;
+        $tektokReturnDate = $openTektokExpedition?->return_date
+            ? Carbon::parse($openTektokExpedition->return_date)
+            : $tektokDepartureDate;
+
         $privateDepartureDate = $privateExpedition?->departure_date ? Carbon::parse($privateExpedition->departure_date) : null;
         $privateReturnDate = $privateExpedition?->return_date
             ? Carbon::parse($privateExpedition->return_date)
             : ($privateDepartureDate ? $privateDepartureDate->copy()->addDays(1) : null);
 
-        $hasOpenSchedule = $openExpedition !== null;
+        $hasOpenCampingSchedule = $openCampingExpedition !== null;
+        $hasOpenTektokSchedule = $openTektokExpedition !== null;
+        $hasOpenSchedule = $hasOpenCampingSchedule || $hasOpenTektokSchedule;
         $defaultTripType = $hasOpenSchedule ? 'open' : ($mountain?->has_private_trip ? 'private' : 'open');
+        $defaultHikingType = $hasOpenCampingSchedule ? 'camping' : ($hasOpenTektokSchedule ? 'tektok' : 'camping');
 
         return [
             'isLoggedIn' => $user !== null,
             'loginUrl' => route('login'),
             'defaultTripType' => $defaultTripType,
+            'defaultHikingType' => $defaultHikingType,
             'hasOpenSchedule' => $hasOpenSchedule,
+            'hasOpenCampingSchedule' => $hasOpenCampingSchedule,
+            'hasOpenTektokSchedule' => $hasOpenTektokSchedule,
             'hasPrivateTrip' => (bool) ($mountain?->has_private_trip ?? false),
             'openExpeditionId' => $openExpedition?->id,
+            'openCampingExpeditionId' => $openCampingExpedition?->id,
+            'openTektokExpeditionId' => $openTektokExpedition?->id,
             'privateExpeditionId' => $privateExpedition?->id ?? ($mountain?->expeditions->firstWhere('type', 'private')?->id ?? null),
             'routeId' => $primaryRoute?->id ?? 1,
             'routes' => $mountain?->routes?->toArray() ?? [],
@@ -253,6 +306,12 @@ class ExpeditionController extends Controller
             'availableQuota' => $openExpedition ? max(0, (int) $openExpedition->quota_max - (int) $openExpedition->quota_booked) : 0,
             'openQuotaBooked' => $openExpedition?->quota_booked ?? 0,
             'openQuotaMax' => $openExpedition?->quota_max ?? 0,
+            'openCampingQuotaMax' => $openCampingExpedition?->quota_max ?? 0,
+            'openCampingQuotaBooked' => $openCampingExpedition?->quota_booked ?? 0,
+            'availableCampingQuota' => $openCampingExpedition ? max(0, (int) $openCampingExpedition->quota_max - (int) $openCampingExpedition->quota_booked) : 0,
+            'openTektokQuotaMax' => $openTektokExpedition?->quota_max ?? 0,
+            'openTektokQuotaBooked' => $openTektokExpedition?->quota_booked ?? 0,
+            'availableTektokQuota' => $openTektokExpedition ? max(0, (int) $openTektokExpedition->quota_max - (int) $openTektokExpedition->quota_booked) : 0,
             'durationDays' => $mountain?->duration_days ?? 2,
             'durationNights' => $mountain?->duration_nights ?? 1,
             'minPrivateDate' => now()->addDays(1)->toDateString(),
@@ -260,6 +319,12 @@ class ExpeditionController extends Controller
             'departureDateOpenShort' => $openDepartureDate?->format('d/m/Y') ?? 'Belum ada jadwal',
             'departureDateOpenFull' => $openDepartureDate?->translatedFormat('d F Y') ?? 'Belum ada jadwal',
             'returnDateOpenFull' => $openReturnDate?->translatedFormat('d F Y') ?? 'Belum ada jadwal',
+            'departureDateCampingOpenShort' => $campingDepartureDate?->format('d/m/Y') ?? 'Belum ada jadwal',
+            'departureDateCampingOpenFull' => $campingDepartureDate?->translatedFormat('d F Y') ?? 'Belum ada jadwal',
+            'returnDateCampingOpenFull' => $campingReturnDate?->translatedFormat('d F Y') ?? 'Belum ada jadwal',
+            'departureDateTektokOpenShort' => $tektokDepartureDate?->format('d/m/Y') ?? 'Belum ada jadwal',
+            'departureDateTektokOpenFull' => $tektokDepartureDate?->translatedFormat('d F Y') ?? 'Belum ada jadwal',
+            'returnDateTektokOpenFull' => $tektokReturnDate?->translatedFormat('d F Y') ?? 'Belum ada jadwal',
             'departureDatePrivateShort' => $privateDepartureDate?->format('d/m/Y') ?? 'Bebas Pilih',
             'departureDatePrivateFull' => $privateDepartureDate?->translatedFormat('d F Y') ?? 'Bebas Pilih Tanggal',
             'returnDatePrivateFull' => $privateReturnDate?->translatedFormat('d F Y') ?? 'Sesuai Durasi Trip',

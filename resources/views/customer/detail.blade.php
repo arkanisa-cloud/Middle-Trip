@@ -29,7 +29,8 @@
     <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 sm:pt-24 md:pt-28 pb-28 lg:pb-20 w-full flex-1">
 
         <!-- Breadcrumb Navigation -->
-        <nav class="flex items-center gap-2 text-xs font-medium text-muted mb-4 overflow-x-auto no-scrollbar whitespace-nowrap" aria-label="Breadcrumb">
+        <nav class="flex items-center gap-2 text-xs font-medium text-muted mb-4 overflow-x-auto no-scrollbar whitespace-nowrap"
+            aria-label="Breadcrumb">
             <a href="{{ route('home') }}" class="hover:text-primary transition-colors shrink-0">Home</a>
             <span class="text-muted-soft shrink-0">&gt;</span>
             <a href="{{ route('ekspedisi.index') }}" class="hover:text-primary transition-colors shrink-0">Ekspedisi</a>
@@ -39,7 +40,8 @@
 
         <!-- Page Title & Chromatic Grade Badges -->
         <div class="mb-6 sm:mb-7">
-            <h1 class="text-2xl sm:text-4xl lg:text-[42px] font-extrabold text-ink-heading tracking-tight mb-3 sm:mb-3.5">
+            <h1
+                class="text-2xl sm:text-4xl lg:text-[42px] font-extrabold text-ink-heading tracking-tight mb-3 sm:mb-3.5">
                 {{ $expedition['title'] }}
             </h1>
 
@@ -109,8 +111,8 @@
                 <div class="w-full relative rounded-2xl overflow-hidden group h-[240px] sm:h-[340px] md:h-[450px] cursor-pointer"
                     onclick="openPhotoModal(0)">
                     <img src="{{ $expedition['gallery'][0]['url'] ?? $expedition['image'] }}"
-                        alt="{{ $expedition['gallery'][0]['caption'] ?? $expedition['title'] }}"
-                        fetchpriority="high" decoding="async"
+                        alt="{{ $expedition['gallery'][0]['caption'] ?? $expedition['title'] }}" fetchpriority="high"
+                        decoding="async"
                         onerror="this.src='{{ $expedition['image'] ?? 'https://placehold.co/1200x800/203a43/ffffff?text=Ekspedisi' }}'"
                         class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                     <div class="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent"></div>
@@ -144,8 +146,8 @@
                     <div class="sm:col-span-1 md:col-span-6 relative rounded-2xl overflow-hidden group h-[220px] sm:h-[340px] md:h-[450px] cursor-pointer"
                         onclick="openPhotoModal(1)">
                         <img src="{{ $expedition['gallery'][1]['url'] }}"
-                            alt="{{ $expedition['gallery'][1]['caption'] ?? 'Dokumentasi Ekspedisi' }}"
-                            loading="lazy" decoding="async"
+                            alt="{{ $expedition['gallery'][1]['caption'] ?? 'Dokumentasi Ekspedisi' }}" loading="lazy"
+                            decoding="async"
                             onerror="this.src='{{ $expedition['image'] ?? 'https://placehold.co/900x900/203a43/ffffff?text=Ekspedisi' }}'"
                             class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 brightness-95" />
                         <div class="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent">
@@ -179,7 +181,8 @@
                         </div>
                     </div>
                     <!-- Right Stacked 2-Grid -->
-                    <div class="md:col-span-6 grid grid-cols-2 md:grid-cols-1 md:grid-rows-2 gap-3 h-[180px] sm:h-[220px] md:h-[450px]">
+                    <div
+                        class="md:col-span-6 grid grid-cols-2 md:grid-cols-1 md:grid-rows-2 gap-3 h-[180px] sm:h-[220px] md:h-[450px]">
                         <!-- Top Photo -->
                         <div class="relative rounded-2xl overflow-hidden group h-full cursor-pointer"
                             onclick="openPhotoModal(1)">
@@ -229,12 +232,13 @@
                         </div>
                     </div>
                     <!-- Right 3-Grid -->
-                    <div class="md:col-span-6 grid grid-cols-2 grid-rows-2 gap-2 sm:gap-3 h-[220px] sm:h-[320px] md:h-[450px]">
+                    <div
+                        class="md:col-span-6 grid grid-cols-2 grid-rows-2 gap-2 sm:gap-3 h-[220px] sm:h-[320px] md:h-[450px]">
                         <div class="col-span-2 relative rounded-2xl overflow-hidden group h-full cursor-pointer"
                             onclick="openPhotoModal(1)">
                             <img src="{{ $expedition['gallery'][1]['url'] }}"
-                                alt="{{ $expedition['gallery'][1]['caption'] ?? 'Dokumentasi' }}"
-                                loading="lazy" decoding="async"
+                                alt="{{ $expedition['gallery'][1]['caption'] ?? 'Dokumentasi' }}" loading="lazy"
+                                decoding="async"
                                 onerror="this.src='{{ $expedition['image'] ?? 'https://placehold.co/600x400/294861/ffffff?text=Ekspedisi' }}'"
                                 class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                             <div
@@ -244,8 +248,8 @@
                         <div class="col-span-1 relative rounded-2xl overflow-hidden group h-full cursor-pointer"
                             onclick="openPhotoModal(2)">
                             <img src="{{ $expedition['gallery'][2]['url'] }}"
-                                alt="{{ $expedition['gallery'][2]['caption'] ?? 'Dokumentasi' }}"
-                                loading="lazy" decoding="async"
+                                alt="{{ $expedition['gallery'][2]['caption'] ?? 'Dokumentasi' }}" loading="lazy"
+                                decoding="async"
                                 onerror="this.src='{{ $expedition['image'] ?? 'https://placehold.co/600x400/39566e/ffffff?text=Ekspedisi' }}'"
                                 class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                             <div
@@ -255,8 +259,8 @@
                         <div class="col-span-1 relative rounded-2xl overflow-hidden group h-full cursor-pointer"
                             onclick="openPhotoModal(3)">
                             <img src="{{ $expedition['gallery'][3]['url'] }}"
-                                alt="{{ $expedition['gallery'][3]['caption'] ?? 'Dokumentasi' }}"
-                                loading="lazy" decoding="async"
+                                alt="{{ $expedition['gallery'][3]['caption'] ?? 'Dokumentasi' }}" loading="lazy"
+                                decoding="async"
                                 onerror="this.src='{{ $expedition['image'] ?? 'https://placehold.co/600x400/232526/ffffff?text=Ekspedisi' }}'"
                                 class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 brightness-95" />
                             <div class="absolute inset-0 bg-black/35 flex items-center justify-center p-2">
@@ -386,7 +390,7 @@
                     @endphp
                     <div id="overview-stats-grid"
                         class="grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-3.5 pt-1 sm:pt-2 transition-all duration-300">
-                        @if (! empty($currentStats))
+                        @if (!empty($currentStats))
                             @foreach ($currentStats as $stat)
                                 <div
                                     class="border border-hairline rounded-2xl p-3 sm:p-4 text-center bg-surface-card shadow-xs hover:border-primary/40 hover:shadow-sm transition-all duration-200">
@@ -418,7 +422,8 @@
                                             </svg>
                                         @endif
                                     </div>
-                                    <p class="text-[10px] sm:text-[11px] font-medium text-muted mb-0.5">{{ $stat['label'] }}</p>
+                                    <p class="text-[10px] sm:text-[11px] font-medium text-muted mb-0.5">
+                                        {{ $stat['label'] }}</p>
                                     <p class="text-xs sm:text-sm font-bold text-ink-heading">{{ $stat['value'] }}</p>
                                 </div>
                             @endforeach
@@ -428,194 +433,212 @@
 
                 <!-- SECTION 2: ELEVASI & RUTE PENDAKIAN (Dinamis sesuai jalur) -->
                 @php
-                    $currentElevProfile = $activeRoute['elevation_profile'] ?? ($expedition['elevation_profile'] ?? null);
+                    $currentElevProfile =
+                        $activeRoute['elevation_profile'] ?? ($expedition['elevation_profile'] ?? null);
                 @endphp
-                @if (! empty($currentElevProfile))
-                <section id="elevasi" class="space-y-3 sm:space-y-4 pt-2 scroll-mt-28">
-                    <h2 id="elevation-section-title"
-                        class="text-xl sm:text-2xl font-extrabold text-ink-heading tracking-tight transition-all duration-300">
-                        {{ $currentElevProfile['title'] ?? 'Elevasi & Rute Pendakian' }}
-                    </h2>
+                @if (!empty($currentElevProfile))
+                    <section id="elevasi" class="space-y-3 sm:space-y-4 pt-2 scroll-mt-28">
+                        <h2 id="elevation-section-title"
+                            class="text-xl sm:text-2xl font-extrabold text-ink-heading tracking-tight transition-all duration-300">
+                            {{ $currentElevProfile['title'] ?? 'Elevasi & Rute Pendakian' }}
+                        </h2>
 
-                    <div
-                        class="border border-hairline rounded-2xl sm:rounded-3xl p-4 sm:p-6 bg-surface-card shadow-xs transition-all duration-300">
-                        <!-- Elevation Graph Illustration (Responsive SVG) -->
-                        @php
-                            $svgWidth = $currentElevProfile['svg_width'] ?? 700;
-                            $svgViewBox = $currentElevProfile['view_box'] ?? '0 0 700 250';
-                            $isScrollable = !empty($currentElevProfile['is_scrollable']) || count($currentElevProfile['points'] ?? []) > 5;
-                        @endphp
-                        @if ($isScrollable)
-                            <div class="flex items-center justify-end pb-1 text-[11px] text-muted font-medium gap-1.5">
-                                <span class="hidden sm:inline">Geser horizontal untuk rute lengkap</span>
-                                <span class="sm:hidden">Geser grafik rute</span>
-                                <svg class="w-3.5 h-3.5 text-primary animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                        <div
+                            class="border border-hairline rounded-2xl sm:rounded-3xl p-4 sm:p-6 bg-surface-card shadow-xs transition-all duration-300">
+                            <!-- Elevation Graph Illustration (Responsive SVG) -->
+                            @php
+                                $svgWidth = $currentElevProfile['svg_width'] ?? 700;
+                                $svgViewBox = $currentElevProfile['view_box'] ?? '0 0 700 250';
+                                $isScrollable =
+                                    !empty($currentElevProfile['is_scrollable']) ||
+                                    count($currentElevProfile['points'] ?? []) > 5;
+                            @endphp
+                            @if ($isScrollable)
+                                <div
+                                    class="flex items-center justify-end pb-1 text-[11px] text-muted font-medium gap-1.5">
+                                    <span class="hidden sm:inline">Geser horizontal untuk rute lengkap</span>
+                                    <span class="sm:hidden">Geser grafik rute</span>
+                                    <svg class="w-3.5 h-3.5 text-primary animate-pulse" fill="none"
+                                        stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                                    </svg>
+                                </div>
+                            @endif
+                            <div
+                                class="w-full h-52 sm:h-64 py-2 relative flex items-center overflow-x-auto no-scrollbar scroll-smooth">
+                                <svg id="elevation-svg" viewBox="{{ $svgViewBox }}"
+                                    class="h-full overflow-visible"
+                                    style="min-width: {{ $svgWidth }}px; width: 100%;"
+                                    preserveAspectRatio="none">
+                                    <defs>
+                                        <linearGradient id="elevationLineGrad" x1="0" y1="0"
+                                            x2="1" y2="0">
+                                            <stop offset="0%" stop-color="#D97706" />
+                                            <stop offset="100%" stop-color="#A0401C" />
+                                        </linearGradient>
+                                        <linearGradient id="areaGrad" x1="0" y1="0" x2="0"
+                                            y2="1">
+                                            <stop offset="0%" stop-color="#A0401C" stop-opacity="0.25" />
+                                            <stop offset="100%" stop-color="#ffffff" stop-opacity="0.0" />
+                                        </linearGradient>
+                                    </defs>
+
+                                    <!-- Soft Mountain Silhouette Area -->
+                                    <path id="elevation-area-path" d="{{ $currentElevProfile['area'] }}"
+                                        fill="url(#areaGrad)" />
+
+                                    <!-- Elevation Line -->
+                                    <path id="elevation-line-path" d="{{ $currentElevProfile['path'] }}"
+                                        fill="none" stroke="url(#elevationLineGrad)" stroke-width="3.5"
+                                        stroke-linecap="round" stroke-linejoin="round" />
+
+                                    <!-- Points & Labels -->
+                                    <g id="elevation-points-group">
+                                        @foreach ($currentElevProfile['points'] as $index => $point)
+                                            @php
+                                                $isLast = $index === count($currentElevProfile['points']) - 1;
+                                                $yElev = $point['y_elev'] ?? $point['y'] - 12;
+                                                $yName = $point['y_name'] ?? $point['y'] + 18;
+                                            @endphp
+                                            <circle cx="{{ $point['x'] }}" cy="{{ $point['y'] }}"
+                                                r="{{ $isLast ? '6' : '4.5' }}"
+                                                fill="{{ $isLast ? '#A0401C' : '#FFFFFF' }}"
+                                                stroke="{{ $isLast ? '#FFFFFF' : '#A0401C' }}" stroke-width="2.5" />
+                                            <text x="{{ $point['x'] }}" y="{{ $yElev }}"
+                                                text-anchor="middle" class="text-[10px] font-bold fill-muted-soft">
+                                                {{ $point['elevation'] }}
+                                            </text>
+                                            <text x="{{ $point['x'] }}" y="{{ $yName }}"
+                                                text-anchor="middle"
+                                                class="text-[11px] font-semibold fill-body-strong">
+                                                {{ $point['name'] }}
+                                            </text>
+                                        @endforeach
+                                    </g>
                                 </svg>
                             </div>
-                        @endif
-                        <div class="w-full h-52 sm:h-64 py-2 relative flex items-center overflow-x-auto no-scrollbar scroll-smooth">
-                            <svg id="elevation-svg" viewBox="{{ $svgViewBox }}" class="h-full overflow-visible"
-                                style="min-width: {{ $svgWidth }}px; width: 100%;"
-                                preserveAspectRatio="none">
-                                <defs>
-                                    <linearGradient id="elevationLineGrad" x1="0" y1="0"
-                                        x2="1" y2="0">
-                                        <stop offset="0%" stop-color="#D97706" />
-                                        <stop offset="100%" stop-color="#A0401C" />
-                                    </linearGradient>
-                                    <linearGradient id="areaGrad" x1="0" y1="0" x2="0"
-                                        y2="1">
-                                        <stop offset="0%" stop-color="#A0401C" stop-opacity="0.25" />
-                                        <stop offset="100%" stop-color="#ffffff" stop-opacity="0.0" />
-                                    </linearGradient>
-                                </defs>
 
-                                <!-- Soft Mountain Silhouette Area -->
-                                <path id="elevation-area-path" d="{{ $currentElevProfile['area'] }}"
-                                    fill="url(#areaGrad)" />
-
-                                <!-- Elevation Line -->
-                                <path id="elevation-line-path" d="{{ $currentElevProfile['path'] }}" fill="none"
-                                    stroke="url(#elevationLineGrad)" stroke-width="3.5" stroke-linecap="round"
-                                    stroke-linejoin="round" />
-
-                                <!-- Points & Labels -->
-                                <g id="elevation-points-group">
-                                    @foreach ($currentElevProfile['points'] as $index => $point)
-                                        @php
-                                             $isLast = $index === count($currentElevProfile['points']) - 1;
-                                             $yElev = $point['y_elev'] ?? ($point['y'] - 12);
-                                             $yName = $point['y_name'] ?? ($point['y'] + 18);
-                                        @endphp
-                                        <circle cx="{{ $point['x'] }}" cy="{{ $point['y'] }}"
-                                            r="{{ $isLast ? '6' : '4.5' }}"
-                                            fill="{{ $isLast ? '#A0401C' : '#FFFFFF' }}"
-                                            stroke="{{ $isLast ? '#FFFFFF' : '#A0401C' }}" stroke-width="2.5" />
-                                        <text x="{{ $point['x'] }}" y="{{ $yElev }}" text-anchor="middle"
-                                            class="text-[10px] font-bold fill-muted-soft">
-                                            {{ $point['elevation'] }}
-                                        </text>
-                                        <text x="{{ $point['x'] }}" y="{{ $yName }}" text-anchor="middle"
-                                            class="text-[11px] font-semibold fill-body-strong">
-                                            {{ $point['name'] }}
-                                        </text>
-                                    @endforeach
-                                </g>
-                            </svg>
-                        </div>
-
-                        <!-- Route Notes & Warning Badges -->
-                        <div id="elevation-notes-container"
-                            class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2 sm:gap-2.5 pt-4 sm:pt-5 border-t border-hairline-soft text-xs transition-all duration-300">
-                            @foreach ($currentElevProfile['notes'] as $note)
-                                <div
-                                    class="flex items-center gap-2 sm:gap-2.5 {{ $note['badge_class'] }} border px-3 sm:px-3.5 py-2 sm:py-2.5 rounded-xl sm:rounded-2xl">
+                            <!-- Route Notes & Warning Badges -->
+                            <div id="elevation-notes-container"
+                                class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2 sm:gap-2.5 pt-4 sm:pt-5 border-t border-hairline-soft text-xs transition-all duration-300">
+                                @foreach ($currentElevProfile['notes'] as $note)
                                     <div
-                                        class="w-5 h-5 sm:w-6 sm:h-6 rounded-full {{ $note['icon_class'] }} flex items-center justify-center shrink-0">
-                                        @if ($note['type'] === 'water')
-                                            <svg class="w-3 h-3 sm:w-3.5 sm:h-3.5" fill="none" viewBox="0 0 24 24"
-                                                stroke="currentColor" stroke-width="2">
-                                                <path stroke-linecap="round" stroke-linejoin="round"
-                                                    d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" />
-                                            </svg>
-                                        @elseif($note['type'] === 'wind')
-                                            <svg class="w-3 h-3 sm:w-3.5 sm:h-3.5" fill="none" viewBox="0 0 24 24"
-                                                stroke="currentColor" stroke-width="2">
-                                                <path stroke-linecap="round" stroke-linejoin="round"
-                                                    d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-                                            </svg>
-                                        @else
-                                            <svg class="w-3 h-3 sm:w-3.5 sm:h-3.5" fill="none" viewBox="0 0 24 24"
-                                                stroke="currentColor" stroke-width="2">
-                                                <path stroke-linecap="round" stroke-linejoin="round"
-                                                    d="M8.111 16.404a5.5 5.5 0 017.778 0M12 20h.01m-7.08-7.071c3.904-3.905 10.236-3.905 14.141 0M1.394 9.393c5.857-5.857 15.355-5.857 21.213 0" />
-                                            </svg>
-                                        @endif
+                                        class="flex items-center gap-2 sm:gap-2.5 {{ $note['badge_class'] }} border px-3 sm:px-3.5 py-2 sm:py-2.5 rounded-xl sm:rounded-2xl">
+                                        <div
+                                            class="w-5 h-5 sm:w-6 sm:h-6 rounded-full {{ $note['icon_class'] }} flex items-center justify-center shrink-0">
+                                            @if ($note['type'] === 'water')
+                                                <svg class="w-3 h-3 sm:w-3.5 sm:h-3.5" fill="none"
+                                                    viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                                        d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" />
+                                                </svg>
+                                            @elseif($note['type'] === 'wind')
+                                                <svg class="w-3 h-3 sm:w-3.5 sm:h-3.5" fill="none"
+                                                    viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                                        d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                                                </svg>
+                                            @else
+                                                <svg class="w-3 h-3 sm:w-3.5 sm:h-3.5" fill="none"
+                                                    viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                                        d="M8.111 16.404a5.5 5.5 0 017.778 0M12 20h.01m-7.08-7.071c3.904-3.905 10.236-3.905 14.141 0M1.394 9.393c5.857-5.857 15.355-5.857 21.213 0" />
+                                                </svg>
+                                            @endif
+                                        </div>
+                                        <div class="text-[10.5px] sm:text-[11px] leading-tight">
+                                            <span class="font-bold block">{{ $note['title'] }}</span>
+                                            <span class="opacity-90">{{ $note['desc'] }}</span>
+                                        </div>
                                     </div>
-                                    <div class="text-[10.5px] sm:text-[11px] leading-tight">
-                                        <span class="font-bold block">{{ $note['title'] }}</span>
-                                        <span class="opacity-90">{{ $note['desc'] }}</span>
-                                    </div>
-                                </div>
-                            @endforeach
+                                @endforeach
+                            </div>
                         </div>
-                    </div>
-                </section>
+                    </section>
                 @endif
 
                 <!-- SECTION 3: ITINERARY 2D1N (Dinamis sesuai jalur) -->
                 @php
                     $currentItinerary = $activeRoute['itinerary'] ?? ($expedition['itinerary'] ?? null);
                 @endphp
-                @if (! empty($currentItinerary) && ! empty($currentItinerary['days']))
-                <section id="itinerary" class="space-y-3 sm:space-y-4 pt-2 scroll-mt-28">
-                    <h2 id="itinerary-section-title"
-                        class="text-xl sm:text-2xl font-extrabold text-ink-heading tracking-tight transition-all duration-300">
-                        {{ $currentItinerary['title'] ?? 'Itinerary Pendakian' }}
-                    </h2>
+                @if (!empty($currentItinerary) && !empty($currentItinerary['days']))
+                    <section id="itinerary" class="space-y-3 sm:space-y-4 pt-2 scroll-mt-28">
+                        <h2 id="itinerary-section-title"
+                            class="text-xl sm:text-2xl font-extrabold text-ink-heading tracking-tight transition-all duration-300">
+                            {{ $currentItinerary['title'] ?? 'Itinerary Pendakian' }}
+                        </h2>
 
-                    <div id="itinerary-days-container"
-                        class="relative pl-4 sm:pl-6 space-y-4 sm:space-y-6 before:content-[''] before:absolute before:top-4 before:bottom-4 before:left-[7px] sm:before:left-[11px] before:w-[2px] before:bg-hairline transition-all duration-300">
-                        @foreach ($currentItinerary['days'] as $dIndex => $day)
-                            <div class="relative group">
-                                <!-- Dot indicator -->
-                                <div
-                                    class="absolute -left-4 sm:-left-6 top-1.5 w-4 h-4 sm:w-[22px] sm:h-[22px] rounded-full {{ $dIndex === 0 ? 'bg-primary' : 'bg-surface-dark' }} border-2 sm:border-4 border-white shadow-sm flex items-center justify-center">
-                                </div>
-
-                                <!-- Card content -->
-                                <div class="bg-surface-card border border-hairline rounded-2xl sm:rounded-3xl p-4 sm:p-6 shadow-xs">
-                                    <div class="flex items-center justify-between gap-2 mb-2">
-                                        <h3 class="text-sm sm:text-base font-bold text-ink-heading">
-                                            {{ $day['title'] }}
-                                        </h3>
-                                        <span
-                                            class="px-2.5 sm:px-3 py-0.5 rounded-full bg-primary-subtle text-primary text-[10.5px] sm:text-xs font-bold shrink-0">
-                                            {{ $day['day'] }}
-                                        </span>
-                                    </div>
-                                    <p class="text-xs text-muted mb-3 sm:mb-4 leading-relaxed">
-                                        {{ $day['description'] }}
-                                    </p>
-
-                                    <!-- Schedule timeline items -->
+                        <div id="itinerary-days-container"
+                            class="relative pl-4 sm:pl-6 space-y-4 sm:space-y-6 before:content-[''] before:absolute before:top-4 before:bottom-4 before:left-[7px] sm:before:left-[11px] before:w-[2px] before:bg-hairline transition-all duration-300">
+                            @foreach ($currentItinerary['days'] as $dIndex => $day)
+                                <div class="relative group">
+                                    <!-- Dot indicator -->
                                     <div
-                                        class="space-y-2 sm:space-y-2.5 text-xs text-body-strong pt-2 border-t border-hairline-soft">
-                                        @foreach ($day['timeline'] as $item)
-                                            <div class="flex items-start sm:items-center gap-2 sm:gap-3 py-1 border-b border-hairline/30 last:border-b-0">
-                                                @if (!empty($item['time']) && $item['time'] !== '—')
-                                                    <div class="flex items-center gap-1.5 px-2.5 py-0.5 rounded-lg bg-canvas border border-hairline/80 text-ink-heading font-bold text-[11px] shrink-0 whitespace-nowrap shadow-2xs">
-                                                        <svg class="w-3.5 h-3.5 text-primary shrink-0" fill="none"
-                                                            viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                                            <path stroke-linecap="round" stroke-linejoin="round"
-                                                                d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                                        </svg>
-                                                        <span>{{ $item['time'] }}</span>
-                                                    </div>
-                                                @else
-                                                    <div class="flex items-center gap-1.5 px-2 py-0.5 rounded-lg bg-primary-subtle/50 text-primary font-semibold text-[11px] shrink-0 whitespace-nowrap">
-                                                        <span class="w-1.5 h-1.5 rounded-full bg-primary shrink-0"></span>
-                                                        <span>Aktivitas</span>
-                                                    </div>
-                                                @endif
-                                                <span class="text-body font-medium flex-1 text-xs leading-relaxed">{{ $item['activity'] }}</span>
-                                            </div>
-                                        @endforeach
+                                        class="absolute -left-4 sm:-left-6 top-1.5 w-4 h-4 sm:w-[22px] sm:h-[22px] rounded-full {{ $dIndex === 0 ? 'bg-primary' : 'bg-surface-dark' }} border-2 sm:border-4 border-white shadow-sm flex items-center justify-center">
+                                    </div>
+
+                                    <!-- Card content -->
+                                    <div
+                                        class="bg-surface-card border border-hairline rounded-2xl sm:rounded-3xl p-4 sm:p-6 shadow-xs">
+                                        <div class="flex items-center justify-between gap-2 mb-2">
+                                            <h3 class="text-sm sm:text-base font-bold text-ink-heading">
+                                                {{ $day['title'] }}
+                                            </h3>
+                                            <span
+                                                class="px-2.5 sm:px-3 py-0.5 rounded-full bg-primary-subtle text-primary text-[10.5px] sm:text-xs font-bold shrink-0">
+                                                {{ $day['day'] }}
+                                            </span>
+                                        </div>
+                                        <p class="text-xs text-muted mb-3 sm:mb-4 leading-relaxed">
+                                            {{ $day['description'] }}
+                                        </p>
+
+                                        <!-- Schedule timeline items -->
+                                        <div
+                                            class="space-y-2 sm:space-y-2.5 text-xs text-body-strong pt-2 border-t border-hairline-soft">
+                                            @foreach ($day['timeline'] as $item)
+                                                <div
+                                                    class="flex items-start sm:items-center gap-2 sm:gap-3 py-1 border-b border-hairline/30 last:border-b-0">
+                                                    @if (!empty($item['time']) && $item['time'] !== '—')
+                                                        <div
+                                                            class="flex items-center gap-1.5 px-2.5 py-0.5 rounded-lg bg-canvas border border-hairline/80 text-ink-heading font-bold text-[11px] shrink-0 whitespace-nowrap shadow-2xs">
+                                                            <svg class="w-3.5 h-3.5 text-primary shrink-0"
+                                                                fill="none" viewBox="0 0 24 24"
+                                                                stroke="currentColor" stroke-width="2">
+                                                                <path stroke-linecap="round" stroke-linejoin="round"
+                                                                    d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                                            </svg>
+                                                            <span>{{ $item['time'] }}</span>
+                                                        </div>
+                                                    @else
+                                                        <div
+                                                            class="flex items-center gap-1.5 px-2 py-0.5 rounded-lg bg-primary-subtle/50 text-primary font-semibold text-[11px] shrink-0 whitespace-nowrap">
+                                                            <span
+                                                                class="w-1.5 h-1.5 rounded-full bg-primary shrink-0"></span>
+                                                            <span>Aktivitas</span>
+                                                        </div>
+                                                    @endif
+                                                    <span
+                                                        class="text-body font-medium flex-1 text-xs leading-relaxed">{{ $item['activity'] }}</span>
+                                                </div>
+                                            @endforeach
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                        @endforeach
-                    </div>
-                </section>
+                            @endforeach
+                        </div>
+                    </section>
                 @endif
 
                 <!-- SECTION 4: FASILITAS TERMASUK & TIDAK TERMASUK -->
                 <section id="fasilitas" class="space-y-3 sm:space-y-4 pt-2 scroll-mt-28">
-                    <h2 class="text-xl sm:text-2xl font-extrabold text-ink-heading tracking-tight">Fasilitas Ekspedisi</h2>
+                    <h2 class="text-xl sm:text-2xl font-extrabold text-ink-heading tracking-tight">Fasilitas Ekspedisi
+                    </h2>
 
                     <!-- Termasuk (Included) Card -->
-                    <div class="border border-hairline rounded-2xl sm:rounded-3xl p-4 sm:p-6 bg-surface-card shadow-xs">
+                    <div
+                        class="border border-hairline rounded-2xl sm:rounded-3xl p-4 sm:p-6 bg-surface-card shadow-xs">
                         <div
                             class="flex items-center justify-center gap-1.5 text-xs font-bold text-emerald-800 bg-emerald-50 border border-emerald-200/60 rounded-full py-1.5 px-4 w-fit mx-auto mb-4 sm:mb-6">
                             <svg class="w-4 h-4 text-emerald-600" fill="none" viewBox="0 0 24 24"
@@ -626,10 +649,12 @@
                             <span>Termasuk (Included)</span>
                         </div>
 
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-y-4 sm:gap-y-6 gap-x-6 sm:gap-x-8 text-xs text-body">
+                        <div
+                            class="grid grid-cols-1 sm:grid-cols-2 gap-y-4 sm:gap-y-6 gap-x-6 sm:gap-x-8 text-xs text-body">
                             @foreach ($expedition['facilities']['included'] as $category => $items)
                                 <div>
-                                    <h4 class="font-bold text-ink-heading mb-2 sm:mb-2.5 flex items-center gap-2 text-xs sm:text-sm">
+                                    <h4
+                                        class="font-bold text-ink-heading mb-2 sm:mb-2.5 flex items-center gap-2 text-xs sm:text-sm">
                                         <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
                                         {{ $category }}
                                     </h4>
@@ -647,7 +672,8 @@
                     </div>
 
                     <!-- Tidak Termasuk (Exclude) Card -->
-                    <div class="border border-hairline rounded-2xl sm:rounded-3xl p-4 sm:p-6 bg-surface-card shadow-xs">
+                    <div
+                        class="border border-hairline rounded-2xl sm:rounded-3xl p-4 sm:p-6 bg-surface-card shadow-xs">
                         <div
                             class="flex items-center justify-center gap-1.5 text-xs font-bold text-red-700 bg-red-50 border border-red-200/60 rounded-full py-1.5 px-4 w-fit mx-auto mb-4 sm:mb-6">
                             <svg class="w-4 h-4 text-red-500" fill="none" viewBox="0 0 24 24"
@@ -658,10 +684,12 @@
                             <span>Tidak Termasuk (Exclude)</span>
                         </div>
 
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-y-4 sm:gap-y-6 gap-x-6 sm:gap-x-8 text-xs text-body">
+                        <div
+                            class="grid grid-cols-1 sm:grid-cols-2 gap-y-4 sm:gap-y-6 gap-x-6 sm:gap-x-8 text-xs text-body">
                             @foreach ($expedition['facilities']['excluded'] as $category => $items)
                                 <div>
-                                    <h4 class="font-bold text-ink-heading mb-2 sm:mb-2.5 flex items-center gap-2 text-xs sm:text-sm">
+                                    <h4
+                                        class="font-bold text-ink-heading mb-2 sm:mb-2.5 flex items-center gap-2 text-xs sm:text-sm">
                                         <span class="w-1.5 h-1.5 rounded-full bg-red-400"></span>
                                         {{ $category }}
                                     </h4>
@@ -749,7 +777,7 @@
                                         <span id="jalur-display-label"
                                             class="text-xs font-semibold text-body-strong block truncate">
                                             {{ $expedition['routes'][0]['name'] ?? 'Pilih Jalur' }}
-                                            @if (! empty($expedition['routes'][0]['badge']))
+                                            @if (!empty($expedition['routes'][0]['badge']))
                                                 ({{ $expedition['routes'][0]['badge'] }})
                                             @endif
                                         </span>
@@ -815,53 +843,91 @@
 
                             <!-- Open Trip Fixed Date Container -->
                             <div id="container-open-date" class="relative">
-                                @if (!empty($expedition['has_open_schedule']))
-                                    <input type="text" value="{{ $expedition['departure_date'] }}" readonly
-                                        class="w-full bg-white border border-hairline rounded-xl py-1.5 px-3 text-xs text-body-strong font-medium focus:outline-none cursor-default" />
-                                    <div
-                                        class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-muted-soft">
-                                        <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24"
-                                            stroke="currentColor" stroke-width="2">
-                                            <path stroke-linecap="round" stroke-linejoin="round"
-                                                d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                                        </svg>
-                                    </div>
-                                @else
-                                    <div
-                                        class="w-full bg-amber-50/80 border border-amber-200/90 rounded-xl py-2 px-3 text-xs text-amber-900 font-medium flex items-center justify-between">
-                                        <span class="flex items-center gap-1.5">
-                                            <svg class="w-3.5 h-3.5 text-amber-600 shrink-0" fill="none"
-                                                viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                                <path stroke-linecap="round" stroke-linejoin="round"
-                                                    d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                            </svg>
-                                            Belum Ada Jadwal
-                                        </span>
-                                        <span
-                                            class="text-[9.5px] bg-amber-200/70 text-amber-900 px-2 py-0.5 rounded-full font-bold">Segera
-                                            Hadir</span>
-                                    </div>
-                                @endif
+                                <!-- Camping Open Date -->
+                                <div id="open-date-camping">
+                                    @if (!empty($expedition['has_open_camping']))
+                                        <div class="relative">
+                                            <input type="text" value="{{ $expedition['open_camping_date'] }}" readonly
+                                                class="w-full bg-white border border-hairline rounded-xl py-1.5 px-3 text-xs text-body-strong font-medium focus:outline-none cursor-default" />
+                                            <div
+                                                class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-muted-soft">
+                                                <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24"
+                                                    stroke="currentColor" stroke-width="2">
+                                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                                        d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                                </svg>
+                                            </div>
+                                        </div>
+                                    @else
+                                        <div
+                                            class="w-full bg-amber-50/80 border border-amber-200/90 rounded-xl py-2 px-3 text-xs text-amber-900 font-medium flex items-center justify-between">
+                                            <span class="flex items-center gap-1.5">
+                                                <svg class="w-3.5 h-3.5 text-amber-600 shrink-0" fill="none"
+                                                    viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                                        d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                                </svg>
+                                                Belum Ada Jadwal Camping
+                                            </span>
+                                            <span
+                                                class="text-[9.5px] bg-amber-200/70 text-amber-900 px-2 py-0.5 rounded-full font-bold">Segera
+                                                Hadir</span>
+                                        </div>
+                                    @endif
+                                </div>
+
+                                <!-- Tek-tok Open Date -->
+                                <div id="open-date-tektok" class="hidden">
+                                    @if (!empty($expedition['has_open_tektok']))
+                                        <div class="relative">
+                                            <input type="text" value="{{ $expedition['open_tektok_date'] }}" readonly
+                                                class="w-full bg-white border border-hairline rounded-xl py-1.5 px-3 text-xs text-body-strong font-medium focus:outline-none cursor-default" />
+                                            <div
+                                                class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-muted-soft">
+                                                <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24"
+                                                    stroke="currentColor" stroke-width="2">
+                                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                                        d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                                </svg>
+                                            </div>
+                                        </div>
+                                    @else
+                                        <div
+                                            class="w-full bg-amber-50/80 border border-amber-200/90 rounded-xl py-2 px-3 text-xs text-amber-900 font-medium flex items-center justify-between">
+                                            <span class="flex items-center gap-1.5">
+                                                <svg class="w-3.5 h-3.5 text-amber-600 shrink-0" fill="none"
+                                                    viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                                        d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                                </svg>
+                                                Belum Ada Jadwal Tek-tok
+                                            </span>
+                                            <span
+                                                class="text-[9.5px] bg-amber-200/70 text-amber-900 px-2 py-0.5 rounded-full font-bold">Segera
+                                                Hadir</span>
+                                        </div>
+                                    @endif
+                                </div>
                             </div>
 
                             <!-- Private Trip Free Date Container (UI Kit Custom Calendar Dropdown) -->
-                            <div id="container-private-date" class="hidden space-y-1"
-                                x-data="sidebarCalendarComponent('{{ now()->addDays(7)->toDateString() }}', '{{ now()->addDays(1)->toDateString() }}')">
+                            <div id="container-private-date" class="hidden space-y-1" x-data="sidebarCalendarComponent('{{ now()->addDays(7)->toDateString() }}', '{{ now()->addDays(1)->toDateString() }}')">
                                 <div class="relative w-full">
                                     <!-- Trigger Kapsul / Pill UI Kit -->
                                     <div @click="calOpen = !calOpen"
                                         class="flex items-center justify-between gap-2 w-full bg-white border border-primary/60 hover:border-primary rounded-xl py-1.5 px-3 text-xs text-ink-heading font-semibold cursor-pointer shadow-2xs transition select-none">
                                         <div class="flex items-center gap-2 min-w-0">
-                                            <svg class="w-3.5 h-3.5 text-primary shrink-0" fill="none" viewBox="0 0 24 24"
-                                                stroke="currentColor" stroke-width="2">
+                                            <svg class="w-3.5 h-3.5 text-primary shrink-0" fill="none"
+                                                viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                                 <path stroke-linecap="round" stroke-linejoin="round"
                                                     d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                                             </svg>
-                                            <span x-text="formattedDisplay" class="block truncate">Pilih Tanggal</span>
+                                            <span x-text="formattedDisplay" class="block truncate">Pilih
+                                                Tanggal</span>
                                         </div>
                                         <svg class="w-3.5 h-3.5 text-muted transition-transform duration-200 shrink-0"
-                                            :class="calOpen ? 'rotate-180 text-primary' : ''"
-                                            fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            :class="calOpen ? 'rotate-180 text-primary' : ''" fill="none"
+                                            stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                                 d="M19 9l-7 7-7-7" />
                                         </svg>
@@ -870,30 +936,35 @@
                                     <input type="hidden" id="input-sidebar-private-date" x-model="selectedDate" />
 
                                     <!-- Elevated Calendar Dropdown Menu -->
-                                    <div x-show="calOpen" 
-                                        @click.outside="calOpen = false" 
+                                    <div x-show="calOpen" @click.outside="calOpen = false"
                                         x-transition:enter="transition ease-out duration-150"
                                         x-transition:enter-start="opacity-0 scale-95 -translate-y-1"
                                         x-transition:enter-end="opacity-100 scale-100 translate-y-0"
                                         x-transition:leave="transition ease-in duration-100"
                                         x-transition:leave-start="opacity-100 scale-100 translate-y-0"
-                                        x-transition:leave-end="opacity-0 scale-95 -translate-y-1"
-                                        x-cloak
+                                        x-transition:leave-end="opacity-0 scale-95 -translate-y-1" x-cloak
                                         class="absolute left-0 right-0 mt-2 w-full bg-white border border-hairline rounded-2xl shadow-2xl p-3 z-50 text-xs">
-                                        
+
                                         <!-- Header: Month Nav -->
-                                        <div class="flex items-center justify-between mb-2 pb-1.5 border-b border-hairline">
-                                            <button type="button" @click.stop="prevCalMonth()" 
+                                        <div
+                                            class="flex items-center justify-between mb-2 pb-1.5 border-b border-hairline">
+                                            <button type="button" @click.stop="prevCalMonth()"
                                                 class="w-6 h-6 rounded-full hover:bg-gray-100 flex items-center justify-center text-slate-600 hover:text-primary transition-colors cursor-pointer">
-                                                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                                                <svg class="w-3 h-3" fill="none" stroke="currentColor"
+                                                    viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                                        stroke-width="2" d="M15 19l-7-7 7-7" />
                                                 </svg>
                                             </button>
-                                            <span class="font-bold text-[11px] text-ink-heading uppercase tracking-wider" x-text="calMonthName"></span>
-                                            <button type="button" @click.stop="nextCalMonth()" 
+                                            <span
+                                                class="font-bold text-[11px] text-ink-heading uppercase tracking-wider"
+                                                x-text="calMonthName"></span>
+                                            <button type="button" @click.stop="nextCalMonth()"
                                                 class="w-6 h-6 rounded-full hover:bg-gray-100 flex items-center justify-center text-slate-600 hover:text-primary transition-colors cursor-pointer">
-                                                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                                                <svg class="w-3 h-3" fill="none" stroke="currentColor"
+                                                    viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                                        stroke-width="2" d="M9 5l7 7-7 7" />
                                                 </svg>
                                             </button>
                                         </div>
@@ -917,13 +988,15 @@
                                                         <div class="w-full h-6"></div>
                                                     </template>
                                                     <template x-if="d.day !== null">
-                                                        <button type="button" 
+                                                        <button type="button"
                                                             @click.stop="d.isSelectable ? selectDate(d.dateStr) : null"
                                                             :disabled="!d.isSelectable"
                                                             class="w-full h-6 rounded-lg flex items-center justify-center text-[11px] font-semibold transition-all"
                                                             :class="{
-                                                                'bg-primary text-white font-bold shadow-2xs': d.isSelected,
-                                                                'hover:bg-primary-subtle hover:text-primary text-slate-700 cursor-pointer': d.isSelectable && !d.isSelected,
+                                                                'bg-primary text-white font-bold shadow-2xs': d
+                                                                    .isSelected,
+                                                                'hover:bg-primary-subtle hover:text-primary text-slate-700 cursor-pointer': d
+                                                                    .isSelectable && !d.isSelected,
                                                                 'text-slate-300 cursor-not-allowed': !d.isSelectable
                                                             }"
                                                             x-text="d.day">
@@ -942,32 +1015,69 @@
 
                         <!-- Target Kuota Peserta (Hanya untuk Open Trip) -->
                         <div id="container-open-quota" class="space-y-1 pt-0.5">
-                            @if (!empty($expedition['has_open_schedule']))
-                                <div class="flex justify-between text-[10.5px] font-bold">
-                                    <span class="text-ink-heading">Peserta saat ini</span>
-                                    <span class="text-primary">{{ $expedition['quota_current'] }} dari {{ $expedition['quota_max'] }} peserta</span>
-                                </div>
-                                <!-- Progress Bar -->
-                                <div class="w-full bg-gray-100 rounded-full h-1.5 overflow-hidden">
-                                    @php
-                                        $quotaPercent = min(
-                                            100,
-                                            round(
-                                                ($expedition['quota_current'] / max(1, $expedition['quota_max'])) * 100,
-                                            ),
-                                        );
-                                    @endphp
-                                    <div class="bg-primary h-1.5 rounded-full transition-all duration-500"
-                                        style="width: {{ $quotaPercent }}%"></div>
-                                </div>
-                                <p class="text-[10px] text-right text-muted-soft">
-                                    Tersisa {{ max(0, $expedition['quota_max'] - $expedition['quota_current']) }} slot lagi untuk keberangkatan
-                                </p>
-                            @else
-                                <p class="text-[10.5px] text-muted-soft italic py-1">
-                                    Slot kuota tiket open trip belum dibuka oleh operator.
-                                </p>
-                            @endif
+                            <!-- Quota Camping -->
+                            <div id="open-quota-camping">
+                                @if (!empty($expedition['has_open_camping']))
+                                    <div class="flex justify-between text-[10.5px] font-bold">
+                                        <span class="text-ink-heading">Peserta saat ini (Camping)</span>
+                                        <span class="text-primary">{{ $expedition['open_camping_quota_current'] }} dari
+                                            {{ $expedition['open_camping_quota_max'] }} peserta</span>
+                                    </div>
+                                    <!-- Progress Bar -->
+                                    <div class="w-full bg-gray-100 rounded-full h-1.5 overflow-hidden">
+                                        @php
+                                            $quotaCampingPercent = min(
+                                                100,
+                                                round(
+                                                    ($expedition['open_camping_quota_current'] / max(1, $expedition['open_camping_quota_max'])) * 100,
+                                                ),
+                                            );
+                                        @endphp
+                                        <div class="bg-primary h-1.5 rounded-full transition-all duration-500"
+                                            style="width: {{ $quotaCampingPercent }}%"></div>
+                                    </div>
+                                    <p class="text-[10px] text-right text-muted-soft">
+                                        Tersisa {{ max(0, $expedition['open_camping_quota_max'] - $expedition['open_camping_quota_current']) }} slot
+                                        lagi untuk keberangkatan
+                                    </p>
+                                @else
+                                    <p class="text-[10px] text-amber-700 bg-amber-50/70 border border-amber-200/60 rounded-xl p-2 text-center font-medium">
+                                        Batch Open Trip Camping belum dibuka oleh admin.
+                                    </p>
+                                @endif
+                            </div>
+
+                            <!-- Quota Tek-tok -->
+                            <div id="open-quota-tektok" class="hidden">
+                                @if (!empty($expedition['has_open_tektok']))
+                                    <div class="flex justify-between text-[10.5px] font-bold">
+                                        <span class="text-ink-heading">Peserta saat ini (Tek-tok)</span>
+                                        <span class="text-primary">{{ $expedition['open_tektok_quota_current'] }} dari
+                                            {{ $expedition['open_tektok_quota_max'] }} peserta</span>
+                                    </div>
+                                    <!-- Progress Bar -->
+                                    <div class="w-full bg-gray-100 rounded-full h-1.5 overflow-hidden">
+                                        @php
+                                            $quotaTektokPercent = min(
+                                                100,
+                                                round(
+                                                    ($expedition['open_tektok_quota_current'] / max(1, $expedition['open_tektok_quota_max'])) * 100,
+                                                ),
+                                            );
+                                        @endphp
+                                        <div class="bg-primary h-1.5 rounded-full transition-all duration-500"
+                                            style="width: {{ $quotaTektokPercent }}%"></div>
+                                    </div>
+                                    <p class="text-[10px] text-right text-muted-soft">
+                                        Tersisa {{ max(0, $expedition['open_tektok_quota_max'] - $expedition['open_tektok_quota_current']) }} slot
+                                        lagi untuk keberangkatan
+                                    </p>
+                                @else
+                                    <p class="text-[10px] text-amber-700 bg-amber-50/70 border border-amber-200/60 rounded-xl p-2 text-center font-medium">
+                                        Batch Open Trip Tek-tok belum dibuka oleh admin.
+                                    </p>
+                                @endif
+                            </div>
                         </div>
 
                         <!-- Private Trip Exclusive Info (Hanya untuk Private Trip) -->
@@ -1038,7 +1148,7 @@
                 {{ $expedition['price_formatted'] }}
             </span>
         </div>
-        <button type="button" onclick="handleBookingClick()"
+        <button id="btn-booking-mobile" type="button" onclick="handleBookingClick()"
             class="bg-primary hover:bg-primary-hover active:bg-primary-active text-white text-xs font-bold px-5 py-2.5 rounded-full shadow-md flex items-center gap-1.5 cursor-pointer shrink-0">
             <span>Booking Sekarang</span>
             <span>→</span>
@@ -1085,8 +1195,12 @@
                                 <h4 class="font-bold text-slate-900 text-xs">Details</h4>
                                 <template x-if="tripType === 'open'">
                                     <span class="text-[10px] font-bold px-2 py-0.5 rounded-full"
-                                        :class="availableQuota > 0 ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : 'bg-rose-50 text-rose-700 border border-rose-200'"
-                                        x-text="availableQuota > 0 ? 'Sisa Kuota: ' + availableQuota + ' Kursi' : 'Kuota Penuh'">
+                                        :class="!isCurrentOpenScheduleAvailable ?
+                                            'bg-amber-50 text-amber-700 border border-amber-200' :
+                                            (availableQuota > 0 ?
+                                                'bg-emerald-50 text-emerald-700 border border-emerald-200' :
+                                                'bg-rose-50 text-rose-700 border border-rose-200')"
+                                        x-text="!isCurrentOpenScheduleAvailable ? 'Jadwal Belum Dibuka' : (availableQuota > 0 ? 'Sisa Kuota: ' + availableQuota + ' Kursi' : 'Kuota Penuh')">
                                     </span>
                                 </template>
                             </div>
@@ -1199,41 +1313,46 @@
                                             <path stroke-linecap="round" stroke-linejoin="round"
                                                 d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                                         </svg>
-                                        <span x-text="currentDepartureDateFull" class="block truncate">Pilih Tanggal</span>
+                                        <span x-text="currentDepartureDateFull" class="block truncate">Pilih
+                                            Tanggal</span>
                                     </div>
                                     <svg class="w-3.5 h-3.5 text-muted transition-transform duration-200 shrink-0"
-                                        :class="calOpen ? 'rotate-180 text-primary' : ''"
-                                        fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        :class="calOpen ? 'rotate-180 text-primary' : ''" fill="none"
+                                        stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                             d="M19 9l-7 7-7-7" />
                                     </svg>
                                 </div>
 
                                 <!-- Elevated Calendar Dropdown Menu -->
-                                <div x-show="calOpen" 
-                                    @click.outside="calOpen = false" 
+                                <div x-show="calOpen" @click.outside="calOpen = false"
                                     x-transition:enter="transition ease-out duration-150"
                                     x-transition:enter-start="opacity-0 scale-95 -translate-y-1"
                                     x-transition:enter-end="opacity-100 scale-100 translate-y-0"
                                     x-transition:leave="transition ease-in duration-100"
                                     x-transition:leave-start="opacity-100 scale-100 translate-y-0"
-                                    x-transition:leave-end="opacity-0 scale-95 -translate-y-1"
-                                    x-cloak
+                                    x-transition:leave-end="opacity-0 scale-95 -translate-y-1" x-cloak
                                     class="absolute left-0 right-0 sm:left-auto sm:right-0 w-full sm:w-72 mt-2 bg-white border border-hairline rounded-2xl shadow-2xl p-3 z-50 text-xs">
-                                    
+
                                     <!-- Header: Month Nav -->
-                                    <div class="flex items-center justify-between mb-2 pb-1.5 border-b border-hairline">
-                                        <button type="button" @click.stop="prevCalMonth()" 
+                                    <div
+                                        class="flex items-center justify-between mb-2 pb-1.5 border-b border-hairline">
+                                        <button type="button" @click.stop="prevCalMonth()"
                                             class="w-7 h-7 rounded-full hover:bg-gray-100 flex items-center justify-center text-slate-600 hover:text-primary transition-colors cursor-pointer">
-                                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor"
+                                                viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M15 19l-7-7 7-7" />
                                             </svg>
                                         </button>
-                                        <span class="font-bold text-xs text-ink-heading uppercase tracking-wide" x-text="calMonthName"></span>
-                                        <button type="button" @click.stop="nextCalMonth()" 
+                                        <span class="font-bold text-xs text-ink-heading uppercase tracking-wide"
+                                            x-text="calMonthName"></span>
+                                        <button type="button" @click.stop="nextCalMonth()"
                                             class="w-7 h-7 rounded-full hover:bg-gray-100 flex items-center justify-center text-slate-600 hover:text-primary transition-colors cursor-pointer">
-                                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor"
+                                                viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M9 5l7 7-7 7" />
                                             </svg>
                                         </button>
                                     </div>
@@ -1257,13 +1376,14 @@
                                                     <div class="w-full h-7"></div>
                                                 </template>
                                                 <template x-if="d.day !== null">
-                                                    <button type="button" 
+                                                    <button type="button"
                                                         @click.stop="d.isSelectable ? selectDate(d.dateStr) : null"
                                                         :disabled="!d.isSelectable"
                                                         class="w-full h-7 rounded-xl flex items-center justify-center text-xs font-semibold transition-all"
                                                         :class="{
                                                             'bg-primary text-white font-bold shadow-2xs': d.isSelected,
-                                                            'hover:bg-primary-subtle hover:text-primary text-slate-700 cursor-pointer': d.isSelectable && !d.isSelected,
+                                                            'hover:bg-primary-subtle hover:text-primary text-slate-700 cursor-pointer': d
+                                                                .isSelectable && !d.isSelected,
                                                             'text-slate-300 cursor-not-allowed': !d.isSelectable
                                                         }"
                                                         x-text="d.day">
@@ -1275,7 +1395,8 @@
                                 </div>
 
                                 <p class="text-[10px] text-emerald-600 font-medium flex items-center gap-1">
-                                    <svg class="w-3 h-3 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <svg class="w-3 h-3 shrink-0" fill="none" viewBox="0 0 24 24"
+                                        stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                             d="M5 13l4 4L19 7" />
                                     </svg>
@@ -1374,9 +1495,10 @@
                     <!-- Action Buttons -->
                     <div class="space-y-2 pt-2">
                         <!-- Bayar Sekarang -->
-                        <button type="button" @click="submitBooking()" :disabled="isSubmitting"
-                            class="w-full bg-primary hover:bg-primary-hover active:scale-[0.99] text-white py-2.5 px-4 rounded-xl font-bold text-xs shadow-sm transition-all text-center block disabled:opacity-50 cursor-pointer">
-                            <span x-show="!isSubmitting">Bayar Sekarang</span>
+                        <button type="button" @click="submitBooking()" :disabled="isSubmitting || (tripType === 'open' && !isCurrentOpenScheduleAvailable)"
+                            class="w-full bg-primary hover:bg-primary-hover active:scale-[0.99] text-white py-2.5 px-4 rounded-xl font-bold text-xs shadow-sm transition-all text-center block disabled:opacity-50 cursor-pointer disabled:cursor-not-allowed">
+                            <span x-show="!isSubmitting && (tripType !== 'open' || isCurrentOpenScheduleAvailable)">Bayar Sekarang</span>
+                            <span x-show="!isSubmitting && tripType === 'open' && !isCurrentOpenScheduleAvailable">Jadwal Open Trip Belum Dibuka</span>
                             <span x-show="isSubmitting" class="flex items-center justify-center gap-1.5">
                                 <svg class="animate-spin h-3.5 w-3.5 text-white" fill="none" viewBox="0 0 24 24">
                                     <circle class="opacity-25" cx="12" cy="12" r="10"
@@ -1418,7 +1540,8 @@
                 ✕ Tutup
             </button>
             <!-- Large Image Container -->
-            <div class="w-full max-h-[70vh] sm:max-h-[75vh] flex items-center justify-center overflow-hidden rounded-2xl">
+            <div
+                class="w-full max-h-[70vh] sm:max-h-[75vh] flex items-center justify-center overflow-hidden rounded-2xl">
                 <img id="lightbox-image" src="" alt="Foto preview" decoding="async"
                     class="max-h-[70vh] sm:max-h-[75vh] w-auto object-contain rounded-2xl shadow-2xl">
             </div>
@@ -1449,6 +1572,12 @@
             difficulty_badge: "{{ $expedition['difficulty_badge'] ?? '' }}",
             grade: "{{ $expedition['grade'] ?? 'Grade A' }}",
             grade_label: "{{ $expedition['grade_label'] ?? 'Grade A' }}",
+            has_open_schedule: {{ !empty($expedition['has_open_schedule']) ? 'true' : 'false' }},
+            has_open_camping: {{ !empty($expedition['has_open_camping']) ? 'true' : 'false' }},
+            has_open_tektok: {{ !empty($expedition['has_open_tektok']) ? 'true' : 'false' }},
+            default_hiking_type: "{{ $expedition['default_hiking_type'] ?? 'camping' }}",
+            open_camping_date: "{{ $expedition['open_camping_date'] ?? '' }}",
+            open_tektok_date: "{{ $expedition['open_tektok_date'] ?? '' }}",
             price_camping_open: {{ $expedition['price'] }},
             price_tektok_open: {{ $expedition['price_tektok'] ?? $expedition['price'] * 0.8 }},
             price_camping_private: {{ $expedition['price_private'] ?? $expedition['price'] * 1.5 }},
@@ -1460,7 +1589,9 @@
             defaultItinerary: @json($expedition['itinerary'] ?? [])
         };
 
-        let selectedHikeType = 'camping'; // 'camping' or 'tektok'
+        let selectedHikeType = (window.bookingModalConfig && window.bookingModalConfig.defaultHikingType) ?
+            window.bookingModalConfig.defaultHikingType :
+            (expeditionData.default_hiking_type || 'camping'); // 'camping' or 'tektok'
         let selectedPackage = 'open'; // 'open' or 'private'
         let currentPhotoIndex = 0;
         let selectedRouteId = expeditionData.routes.length > 0 ? expeditionData.routes[0].id : null;
@@ -1481,13 +1612,17 @@
         function calculateCurrentPrice() {
             const currentRoute = getActiveRoute();
             if (selectedHikeType === 'camping' && selectedPackage === 'open') {
-                return (currentRoute && currentRoute.price_camping_open) ? currentRoute.price_camping_open : expeditionData.price_camping_open;
+                return (currentRoute && currentRoute.price_camping_open) ? currentRoute.price_camping_open : expeditionData
+                    .price_camping_open;
             } else if (selectedHikeType === 'tektok' && selectedPackage === 'open') {
-                return (currentRoute && currentRoute.price_tektok_open) ? currentRoute.price_tektok_open : expeditionData.price_tektok_open;
+                return (currentRoute && currentRoute.price_tektok_open) ? currentRoute.price_tektok_open : expeditionData
+                    .price_tektok_open;
             } else if (selectedHikeType === 'camping' && selectedPackage === 'private') {
-                return (currentRoute && currentRoute.price_camping_private) ? currentRoute.price_camping_private : expeditionData.price_camping_private;
+                return (currentRoute && currentRoute.price_camping_private) ? currentRoute.price_camping_private :
+                    expeditionData.price_camping_private;
             } else {
-                return (currentRoute && currentRoute.price_tektok_private) ? currentRoute.price_tektok_private : expeditionData.price_tektok_private;
+                return (currentRoute && currentRoute.price_tektok_private) ? currentRoute.price_tektok_private :
+                    expeditionData.price_tektok_private;
             }
         }
 
@@ -1498,6 +1633,108 @@
             if (displayEl) displayEl.innerText = formatted;
             const mobileDisplayEl = document.getElementById('mobile-display-price');
             if (mobileDisplayEl) mobileDisplayEl.innerText = formatted;
+        }
+
+        function updateScheduleAndButtonUI() {
+            const containerOpenDate = document.getElementById('container-open-date');
+            const containerPrivateDate = document.getElementById('container-private-date');
+            const containerOpenQuota = document.getElementById('container-open-quota');
+            const containerPrivateInfo = document.getElementById('container-private-info');
+            const labelDeparture = document.getElementById('label-departure-section');
+            const badgePrivateNotice = document.getElementById('badge-private-date-notice');
+
+            const dateCamping = document.getElementById('open-date-camping');
+            const dateTektok = document.getElementById('open-date-tektok');
+            const quotaCamping = document.getElementById('open-quota-camping');
+            const quotaTektok = document.getElementById('open-quota-tektok');
+
+            if (selectedPackage === 'open') {
+                if (labelDeparture) labelDeparture.innerText = '4. Tanggal Terdekat';
+                if (badgePrivateNotice) badgePrivateNotice.classList.add('hidden');
+                if (containerOpenDate) containerOpenDate.classList.remove('hidden');
+                if (containerPrivateDate) containerPrivateDate.classList.add('hidden');
+                if (containerOpenQuota) containerOpenQuota.classList.remove('hidden');
+                if (containerPrivateInfo) containerPrivateInfo.classList.add('hidden');
+
+                if (selectedHikeType === 'camping') {
+                    if (dateCamping) dateCamping.classList.remove('hidden');
+                    if (dateTektok) dateTektok.classList.add('hidden');
+                    if (quotaCamping) quotaCamping.classList.remove('hidden');
+                    if (quotaTektok) quotaTektok.classList.add('hidden');
+                } else {
+                    if (dateCamping) dateCamping.classList.add('hidden');
+                    if (dateTektok) dateTektok.classList.remove('hidden');
+                    if (quotaCamping) quotaCamping.classList.add('hidden');
+                    if (quotaTektok) quotaTektok.classList.remove('hidden');
+                }
+            } else {
+                if (labelDeparture) labelDeparture.innerText = '4. Tanggal Pendakian';
+                if (badgePrivateNotice) badgePrivateNotice.classList.remove('hidden');
+                if (containerOpenDate) containerOpenDate.classList.add('hidden');
+                if (containerPrivateDate) containerPrivateDate.classList.remove('hidden');
+                if (containerOpenQuota) containerOpenQuota.classList.add('hidden');
+                if (containerPrivateInfo) containerPrivateInfo.classList.remove('hidden');
+            }
+
+            // Update status tombol CTA Booking
+            const btnBooking = document.getElementById('btn-booking');
+            const btnBookingMobile = document.getElementById('btn-booking-mobile');
+
+            const hasCampingOpen = window.bookingModalConfig ? window.bookingModalConfig.hasOpenCampingSchedule : expeditionData.has_open_camping;
+            const hasTektokOpen = window.bookingModalConfig ? window.bookingModalConfig.hasOpenTektokSchedule : expeditionData.has_open_tektok;
+            const isCurrentOpenAvailable = selectedHikeType === 'tektok' ? hasTektokOpen : hasCampingOpen;
+
+            if (selectedPackage === 'open') {
+                if (!isCurrentOpenAvailable) {
+                    const unavailableText = selectedHikeType === 'tektok' ? 'Jadwal Tek-tok Belum Dibuka' : 'Jadwal Camping Belum Dibuka';
+                    if (btnBooking) {
+                        btnBooking.className =
+                            'w-full bg-slate-100 text-slate-400 py-2.5 px-4 rounded-full font-bold text-xs shadow-xs flex items-center justify-center gap-1.5 cursor-not-allowed border border-slate-200';
+                        btnBooking.innerHTML = `<span>${unavailableText}</span>`;
+                    }
+                    if (btnBookingMobile) {
+                        btnBookingMobile.className =
+                            'bg-slate-100 text-slate-400 text-xs font-bold px-5 py-2.5 rounded-full shadow-xs flex items-center gap-1.5 cursor-not-allowed border border-slate-200 shrink-0';
+                        btnBookingMobile.innerHTML = `<span>${unavailableText}</span>`;
+                    }
+                } else {
+                    if (btnBooking) {
+                        btnBooking.className =
+                            'w-full bg-primary hover:bg-primary-hover active:bg-primary-active active:scale-[0.99] transition-all text-white py-2.5 px-4 rounded-full font-bold text-sm shadow-md hover:shadow-lg flex items-center justify-center gap-2 cursor-pointer';
+                        btnBooking.innerHTML = '<span>Booking Sekarang</span><span class="text-base">→</span>';
+                    }
+                    if (btnBookingMobile) {
+                        btnBookingMobile.className =
+                            'bg-primary hover:bg-primary-hover active:bg-primary-active text-white text-xs font-bold px-5 py-2.5 rounded-full shadow-md flex items-center gap-1.5 cursor-pointer shrink-0';
+                        btnBookingMobile.innerHTML = '<span>Booking Sekarang</span><span>→</span>';
+                    }
+                }
+            } else {
+                const hasPrivateTrip = window.bookingModalConfig ? window.bookingModalConfig.hasPrivateTrip : true;
+                if (!hasPrivateTrip) {
+                    if (btnBooking) {
+                        btnBooking.className =
+                            'w-full bg-slate-100 text-slate-400 py-2.5 px-4 rounded-full font-bold text-xs shadow-xs flex items-center justify-center gap-1.5 cursor-not-allowed border border-slate-200';
+                        btnBooking.innerHTML = '<span>Layanan Private Trip Tidak Tersedia</span>';
+                    }
+                    if (btnBookingMobile) {
+                        btnBookingMobile.className =
+                            'bg-slate-100 text-slate-400 text-xs font-bold px-5 py-2.5 rounded-full shadow-xs flex items-center gap-1.5 cursor-not-allowed border border-slate-200 shrink-0';
+                        btnBookingMobile.innerHTML = '<span>Tidak Tersedia</span>';
+                    }
+                } else {
+                    if (btnBooking) {
+                        btnBooking.className =
+                            'w-full bg-primary hover:bg-primary-hover active:bg-primary-active active:scale-[0.99] transition-all text-white py-2.5 px-4 rounded-full font-bold text-sm shadow-md hover:shadow-lg flex items-center justify-center gap-2 cursor-pointer';
+                        btnBooking.innerHTML = '<span>Booking Sekarang</span><span class="text-base">→</span>';
+                    }
+                    if (btnBookingMobile) {
+                        btnBookingMobile.className =
+                            'bg-primary hover:bg-primary-hover active:bg-primary-active text-white text-xs font-bold px-5 py-2.5 rounded-full shadow-md flex items-center gap-1.5 cursor-pointer shrink-0';
+                        btnBookingMobile.innerHTML = '<span>Booking Sekarang</span><span>→</span>';
+                    }
+                }
+            }
         }
 
         function setHikeType(type) {
@@ -1535,6 +1772,7 @@
                 renderItinerary(activeItin);
             }
 
+            updateScheduleAndButtonUI();
             updatePriceDisplay();
         }
 
@@ -1554,50 +1792,7 @@
                 if (btnOpen) btnOpen.className = 'text-muted hover:text-ink-heading py-1 transition cursor-pointer text-xs';
             }
 
-            // Update Kontrol Tanggal & Kuota vs Info Privat di Sidebar
-            const labelDeparture = document.getElementById('label-departure-section');
-            const badgePrivateNotice = document.getElementById('badge-private-date-notice');
-            const containerOpenDate = document.getElementById('container-open-date');
-            const containerPrivateDate = document.getElementById('container-private-date');
-            const containerOpenQuota = document.getElementById('container-open-quota');
-            const containerPrivateInfo = document.getElementById('container-private-info');
-
-            if (type === 'open') {
-                if (labelDeparture) labelDeparture.innerText = '4. Tanggal Terdekat';
-                if (badgePrivateNotice) badgePrivateNotice.classList.add('hidden');
-                if (containerOpenDate) containerOpenDate.classList.remove('hidden');
-                if (containerPrivateDate) containerPrivateDate.classList.add('hidden');
-                if (containerOpenQuota) containerOpenQuota.classList.remove('hidden');
-                if (containerPrivateInfo) containerPrivateInfo.classList.add('hidden');
-            } else {
-                if (labelDeparture) labelDeparture.innerText = '4. Tanggal Pendakian';
-                if (badgePrivateNotice) badgePrivateNotice.classList.remove('hidden');
-                if (containerOpenDate) containerOpenDate.classList.add('hidden');
-                if (containerPrivateDate) containerPrivateDate.classList.remove('hidden');
-                if (containerOpenQuota) containerOpenQuota.classList.add('hidden');
-                if (containerPrivateInfo) containerPrivateInfo.classList.remove('hidden');
-            }
-
-            // Update status tombol CTA Booking
-            const btnBooking = document.getElementById('btn-booking');
-            const hasOpenSchedule = window.bookingModalConfig ? window.bookingModalConfig.hasOpenSchedule : true;
-
-            if (btnBooking) {
-                if (type === 'open' && !hasOpenSchedule) {
-                    btnBooking.className =
-                        'w-full bg-slate-100 text-slate-400 py-2.5 px-4 rounded-full font-bold text-xs shadow-xs flex items-center justify-center gap-1.5 cursor-not-allowed border border-slate-200';
-                    btnBooking.innerHTML = '<span>Jadwal Open Trip Belum Tersedia</span>';
-                } else if (type === 'private' && window.bookingModalConfig && !window.bookingModalConfig.hasPrivateTrip) {
-                    btnBooking.className =
-                        'w-full bg-slate-100 text-slate-400 py-2.5 px-4 rounded-full font-bold text-xs shadow-xs flex items-center justify-center gap-1.5 cursor-not-allowed border border-slate-200';
-                    btnBooking.innerHTML = '<span>Layanan Private Trip Tidak Tersedia</span>';
-                } else {
-                    btnBooking.className =
-                        'w-full bg-primary hover:bg-primary-hover active:bg-primary-active active:scale-[0.99] transition-all text-white py-2.5 px-4 rounded-full font-bold text-sm shadow-md hover:shadow-lg flex items-center justify-center gap-2 cursor-pointer';
-                    btnBooking.innerHTML = '<span>Booking Sekarang</span><span class="text-base">→</span>';
-                }
-            }
-
+            updateScheduleAndButtonUI();
             updatePriceDisplay();
         }
 
@@ -1847,14 +2042,14 @@
                     const markerColor = dIndex === 0 ? 'bg-primary' : 'bg-surface-dark';
                     const timelineHtml = (day.timeline || []).map(item => {
                         const hasTime = item.time && item.time !== '—';
-                        const badgeHtml = hasTime
-                            ? `<div class="flex items-center gap-1.5 px-2.5 py-0.5 rounded-lg bg-canvas border border-hairline/80 text-ink-heading font-bold text-[11px] shrink-0 whitespace-nowrap shadow-2xs">
+                        const badgeHtml = hasTime ?
+                            `<div class="flex items-center gap-1.5 px-2.5 py-0.5 rounded-lg bg-canvas border border-hairline/80 text-ink-heading font-bold text-[11px] shrink-0 whitespace-nowrap shadow-2xs">
                                 <svg class="w-3.5 h-3.5 text-primary shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                                 </svg>
                                 <span>${item.time}</span>
-                            </div>`
-                            : `<div class="flex items-center gap-1.5 px-2 py-0.5 rounded-lg bg-primary-subtle/50 text-primary font-semibold text-[11px] shrink-0 whitespace-nowrap">
+                            </div>` :
+                            `<div class="flex items-center gap-1.5 px-2 py-0.5 rounded-lg bg-primary-subtle/50 text-primary font-semibold text-[11px] shrink-0 whitespace-nowrap">
                                 <span class="w-1.5 h-1.5 rounded-full bg-primary shrink-0"></span>
                                 <span>Aktivitas</span>
                             </div>`;
@@ -1906,6 +2101,10 @@
                 tripType: config.defaultTripType || 'open',
                 hikingType: config.defaultHikingType || 'camping',
                 openExpeditionId: config.openExpeditionId,
+                openCampingExpeditionId: config.openCampingExpeditionId || null,
+                openTektokExpeditionId: config.openTektokExpeditionId || null,
+                hasOpenCampingSchedule: config.hasOpenCampingSchedule !== undefined ? config.hasOpenCampingSchedule : false,
+                hasOpenTektokSchedule: config.hasOpenTektokSchedule !== undefined ? config.hasOpenTektokSchedule : false,
                 privateExpeditionId: config.privateExpeditionId,
                 routeId: config.routeId,
                 routes: config.routes || [],
@@ -1919,7 +2118,8 @@
                 pricePrivateTektok: config.pricePrivateTektok || (config.pricePrivate ? Math.round(config.pricePrivate *
                     0.8) : 600000),
                 maxQuota: config.maxQuota || 10,
-                availableQuota: config.availableQuota !== undefined ? parseInt(config.availableQuota, 10) : 10,
+                availableCampingQuota: config.availableCampingQuota !== undefined ? parseInt(config.availableCampingQuota, 10) : 10,
+                availableTektokQuota: config.availableTektokQuota !== undefined ? parseInt(config.availableTektokQuota, 10) : 10,
                 durationNights: config.durationNights || 1,
                 minPrivateDate: config.minPrivateDate || new Date().toISOString().split('T')[0],
                 customDepartureDate: config.defaultPrivateDate || new Date(Date.now() + 7 * 86400000).toISOString().split(
@@ -1927,9 +2127,12 @@
                 calOpen: false,
                 calCurrentMonth: (new Date(Date.now() + 7 * 86400000)).getMonth(),
                 calCurrentYear: (new Date(Date.now() + 7 * 86400000)).getFullYear(),
-                departureDateOpenShort: config.departureDateOpenShort || '15/08/2026',
-                departureDateOpenFull: config.departureDateOpenFull || '15 Agustus 2026',
-                returnDateOpenFull: config.returnDateOpenFull || '16 Agustus 2026',
+                departureDateCampingOpenShort: config.departureDateCampingOpenShort || config.departureDateOpenShort || 'Belum ada jadwal',
+                departureDateCampingOpenFull: config.departureDateCampingOpenFull || config.departureDateOpenFull || 'Belum ada jadwal',
+                returnDateCampingOpenFull: config.returnDateCampingOpenFull || config.returnDateOpenFull || 'Belum ada jadwal',
+                departureDateTektokOpenShort: config.departureDateTektokOpenShort || config.departureDateOpenShort || 'Belum ada jadwal',
+                departureDateTektokOpenFull: config.departureDateTektokOpenFull || config.departureDateOpenFull || 'Belum ada jadwal',
+                returnDateTektokOpenFull: config.returnDateTektokOpenFull || config.returnDateOpenFull || 'Belum ada jadwal',
                 departureDatePrivateShort: config.departureDatePrivateShort || '15/08/2026',
                 departureDatePrivateFull: config.departureDatePrivateFull || '15 Agustus 2026',
                 returnDatePrivateFull: config.returnDatePrivateFull || '16 Agustus 2026',
@@ -2001,8 +2204,20 @@
                     });
                 },
 
+                get isCurrentOpenScheduleAvailable() {
+                    if (this.tripType !== 'open') return true;
+                    return this.hikingType === 'tektok' ? this.hasOpenTektokSchedule : this.hasOpenCampingSchedule;
+                },
+
+                get availableQuota() {
+                    if (this.tripType !== 'open') return 10;
+                    return this.hikingType === 'tektok' ? this.availableTektokQuota : this.availableCampingQuota;
+                },
+
                 get calMonthName() {
-                    const months = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
+                    const months = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus',
+                        'September', 'Oktober', 'November', 'Desember'
+                    ];
                     return months[this.calCurrentMonth] + ' ' + this.calCurrentYear;
                 },
 
@@ -2011,12 +2226,16 @@
                     const month = this.calCurrentMonth;
                     const firstDayIndex = new Date(year, month, 1).getDay();
                     const totalDays = new Date(year, month + 1, 0).getDate();
-                    
+
                     const days = [];
                     for (let i = 0; i < firstDayIndex; i++) {
-                        days.push({ day: null, dateStr: null, isSelectable: false });
+                        days.push({
+                            day: null,
+                            dateStr: null,
+                            isSelectable: false
+                        });
                     }
-                    
+
                     const minD = this.minPrivateDate || new Date().toISOString().split('T')[0];
                     for (let d = 1; d <= totalDays; d++) {
                         const mStr = String(month + 1).padStart(2, '0');
@@ -2073,7 +2292,9 @@
                         sidebarDateInput.value = this.customDepartureDate;
                     }
                     window.dispatchEvent(new CustomEvent('modal-date-changed', {
-                        detail: { date: this.customDepartureDate }
+                        detail: {
+                            date: this.customDepartureDate
+                        }
                     }));
                 },
 
@@ -2082,14 +2303,20 @@
                         const parts = this.customDepartureDate.split('-');
                         if (parts.length === 3) return `${parts[2]}/${parts[1]}/${parts[0]}`;
                     }
-                    return this.tripType === 'open' ? this.departureDateOpenShort : this.departureDatePrivateShort;
+                    if (this.tripType === 'open') {
+                        return this.hikingType === 'tektok' ? this.departureDateTektokOpenShort : this.departureDateCampingOpenShort;
+                    }
+                    return this.departureDatePrivateShort;
                 },
 
                 get currentDepartureDateFull() {
                     if (this.tripType === 'private' && this.customDepartureDate) {
                         return this.formatDateIndonesian(this.customDepartureDate);
                     }
-                    return this.tripType === 'open' ? this.departureDateOpenFull : this.departureDatePrivateFull;
+                    if (this.tripType === 'open') {
+                        return this.hikingType === 'tektok' ? this.departureDateTektokOpenFull : this.departureDateCampingOpenFull;
+                    }
+                    return this.departureDatePrivateFull;
                 },
 
                 get currentReturnDateFull() {
@@ -2101,7 +2328,7 @@
                         d.setDate(d.getDate() + (this.durationNights || 1));
                         return this.formatDateIndonesian(d);
                     }
-                    return this.tripType === 'open' ? this.returnDateOpenFull : this.returnDatePrivateFull;
+                    return this.returnDateCampingOpenFull || this.returnDateOpenFull;
                 },
 
                 get selectedRouteName() {
@@ -2209,16 +2436,18 @@
                 },
 
                 currentPricePerPax() {
-                    const currentRoute = (this.routes && this.routes.length > 0)
-                        ? (this.routes.find(r => String(r.id) === String(this.routeId) || r.name === this.routeId) || this.routes[0])
-                        : null;
+                    const currentRoute = (this.routes && this.routes.length > 0) ?
+                        (this.routes.find(r => String(r.id) === String(this.routeId) || r.name === this.routeId) || this
+                            .routes[0]) :
+                        null;
 
                     if (this.tripType === 'private') {
                         if (this.hikingType === 'tektok') {
                             if (currentRoute && currentRoute.price_tektok_private) {
                                 return parseInt(currentRoute.price_tektok_private, 10);
                             }
-                            return this.pricePrivateTektok || (this.pricePrivate ? Math.round(this.pricePrivate * 0.85) : 650000);
+                            return this.pricePrivateTektok || (this.pricePrivate ? Math.round(this.pricePrivate * 0.85) :
+                                650000);
                         }
                         if (currentRoute && currentRoute.price_camping_private) {
                             return parseInt(currentRoute.price_camping_private, 10);
@@ -2230,9 +2459,9 @@
                         if (currentRoute && currentRoute.price_tektok_open) {
                             return parseInt(currentRoute.price_tektok_open, 10);
                         }
-                        const campingPrice = (currentRoute && currentRoute.price_camping_open)
-                            ? parseInt(currentRoute.price_camping_open, 10)
-                            : this.getTierPrice(this.paxCount);
+                        const campingPrice = (currentRoute && currentRoute.price_camping_open) ?
+                            parseInt(currentRoute.price_camping_open, 10) :
+                            this.getTierPrice(this.paxCount);
                         if (this.basePrice > 0 && this.priceTektok > 0) {
                             const ratio = this.priceTektok / this.basePrice;
                             return Math.round(campingPrice * ratio);
@@ -2275,6 +2504,12 @@
                         return;
                     }
 
+                    if (this.tripType === 'open' && !this.isCurrentOpenScheduleAvailable) {
+                        const typeLabel = this.hikingType === 'tektok' ? 'Tek-tok' : 'Camping';
+                        this.errorMessage = `Batch Open Trip ${typeLabel} belum dibuka oleh admin.`;
+                        return;
+                    }
+
                     const customerName = (this.authCustomer.name || '').trim();
                     const customerEmail = (this.authCustomer.email || '').trim();
                     const customerPhone = (this.authCustomer.phone || '').trim();
@@ -2296,7 +2531,9 @@
 
                     const expeditionId = this.tripType === 'private' ?
                         (this.privateExpeditionId ? parseInt(this.privateExpeditionId, 10) : null) :
-                        (this.openExpeditionId ? parseInt(this.openExpeditionId, 10) : null);
+                        (this.hikingType === 'tektok' ?
+                            (this.openTektokExpeditionId ? parseInt(this.openTektokExpeditionId, 10) : null) :
+                            (this.openCampingExpeditionId ? parseInt(this.openCampingExpeditionId, 10) : null));
 
                     const finalRouteId = this.routeId ?
                         parseInt(this.routeId, 10) :
@@ -2308,7 +2545,8 @@
                         meeting_point_id: this.meetingPointId ? parseInt(this.meetingPointId, 10) : null,
                         trip_type: this.tripType,
                         hiking_type: this.hikingType,
-                        departure_date: this.tripType === 'private' ? (this.customDepartureDate || '{{ now()->addDays(7)->toDateString() }}') : null,
+                        departure_date: this.tripType === 'private' ? (this.customDepartureDate ||
+                            '{{ now()->addDays(7)->toDateString() }}') : null,
                         customer_name: customerName,
                         customer_email: customerEmail,
                         customer_phone: customerPhone,
@@ -2387,11 +2625,15 @@
                     const d = new Date(this.selectedDate + 'T00:00:00');
                     if (isNaN(d.getTime())) return this.selectedDate;
                     const days = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
-                    const months = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
+                    const months = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus',
+                        'September', 'Oktober', 'November', 'Desember'
+                    ];
                     return `${days[d.getDay()]}, ${d.getDate()} ${months[d.getMonth()]} ${d.getFullYear()}`;
                 },
                 get calMonthName() {
-                    const months = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
+                    const months = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus',
+                        'September', 'Oktober', 'November', 'Desember'
+                    ];
                     return months[this.calMonth] + ' ' + this.calYear;
                 },
                 get calDays() {
@@ -2401,7 +2643,11 @@
                     const totalDays = new Date(year, month + 1, 0).getDate();
                     const days = [];
                     for (let i = 0; i < firstDayIndex; i++) {
-                        days.push({ day: null, dateStr: null, isSelectable: false });
+                        days.push({
+                            day: null,
+                            dateStr: null,
+                            isSelectable: false
+                        });
                     }
                     const minD = this.minDate;
                     for (let d = 1; d <= totalDays; d++) {
@@ -2459,13 +2705,24 @@
         let modalPaxCount = 1;
 
         function handleBookingClick() {
-            const hasOpenSchedule = window.bookingModalConfig ? window.bookingModalConfig.hasOpenSchedule : true;
+            if (selectedPackage === 'open') {
+                const hasCampingOpen = window.bookingModalConfig ? window.bookingModalConfig.hasOpenCampingSchedule : expeditionData.has_open_camping;
+                const hasTektokOpen = window.bookingModalConfig ? window.bookingModalConfig.hasOpenTektokSchedule : expeditionData.has_open_tektok;
+                const isCurrentOpenAvailable = selectedHikeType === 'tektok' ? hasTektokOpen : hasCampingOpen;
 
-            if (selectedPackage === 'open' && !hasOpenSchedule) {
-                if (window.bookingModalConfig && window.bookingModalConfig.hasPrivateTrip) {
-                    setPackageType('private');
+                if (!isCurrentOpenAvailable) {
+                    const typeLabel = selectedHikeType === 'tektok' ? 'Tek-tok' : 'Camping';
+                    if (typeof Swal !== 'undefined') {
+                        Swal.fire({
+                            icon: 'info',
+                            title: `Batch ${typeLabel} Belum Dibuka`,
+                            text: `Batch Open Trip untuk ${typeLabel} belum dibuka oleh admin. Silakan pilih jenis paket lain atau Private Trip.`,
+                            confirmButtonColor: '#A0401C'
+                        });
+                    }
                     return;
                 }
+            } else if (selectedPackage === 'private' && window.bookingModalConfig && !window.bookingModalConfig.hasPrivateTrip) {
                 return;
             }
 
@@ -2540,12 +2797,17 @@
 
         // Modal backdrop click and Escape key listeners
         document.addEventListener('DOMContentLoaded', () => {
+            if (expeditionData.default_hiking_type) {
+                setHikeType(expeditionData.default_hiking_type);
+            }
             if (window.bookingModalConfig && !window.bookingModalConfig.hasOpenSchedule) {
                 if (window.bookingModalConfig.hasPrivateTrip) {
                     setPackageType('private');
                 } else {
-                    updatePackageUI('open');
+                    setPackageType('open');
                 }
+            } else {
+                updateScheduleAndButtonUI();
             }
             const bookingModal = document.getElementById('bookingModal');
             if (bookingModal) {

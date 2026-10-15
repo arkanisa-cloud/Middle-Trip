@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Models\Expedition;
 use App\Rules\ValidEmailAddress;
 use App\Rules\ValidNik;
 use App\Rules\ValidWhatsAppNumber;
@@ -19,6 +20,32 @@ class StoreBookingRequest extends FormRequest
     }
 
     /**
+     * Prepare the data for validation.
+     */
+    protected function prepareForValidation(): void
+    {
+        $user = $this->user();
+        if ($user) {
+            $merge = [];
+            if (! $this->filled('customer_name') && $user->name) {
+                $merge['customer_name'] = $user->name;
+            }
+            if (! $this->filled('customer_email') && $user->email) {
+                $merge['customer_email'] = $user->email;
+            }
+            if (! $this->filled('customer_phone') && $user->phone) {
+                $merge['customer_phone'] = $user->phone;
+            }
+            if (! $this->filled('customer_nik') && $user->nik) {
+                $merge['customer_nik'] = $user->nik;
+            }
+            if (! empty($merge)) {
+                $this->merge($merge);
+            }
+        }
+    }
+
+    /**
      * Get the validation rules that apply to the request.
      *
      * @return array<string, ValidationRule|array<mixed>|string>
@@ -31,11 +58,37 @@ class StoreBookingRequest extends FormRequest
                 'exists:expeditions,id',
                 'required_if:trip_type,open',
                 'required_without:trip_type',
+                function ($attribute, $value, $fail) {
+                    if ($value) {
+                        $exp = Expedition::find($value);
+                        if ($exp && $exp->status === 'price_locked') {
+                            $fail('Pendaftaran untuk batch ekspedisi ini sudah ditutup karena harga telah dikunci (Price Locked).');
+                        } elseif ($exp && $exp->status !== 'open') {
+                            $fail('Pendaftaran untuk batch ekspedisi ini sudah tidak aktif atau ditutup.');
+                        }
+                    }
+                },
             ],
             'route_id' => ['required', 'exists:routes,id'],
             'meeting_point_id' => ['nullable', 'exists:meeting_points,id'],
             'trip_type' => ['nullable', 'string', 'in:open,private'],
-            'hiking_type' => ['nullable', 'string', 'in:camping,tektok'],
+            'hiking_type' => [
+                'nullable',
+                'string',
+                'in:camping,tektok',
+                function ($attribute, $value, $fail) {
+                    $tripType = $this->input('trip_type', 'open');
+                    $expeditionId = $this->input('expedition_id');
+                    if ($tripType !== 'private' && $expeditionId && $value) {
+                        $exp = Expedition::find($expeditionId);
+                        if ($exp && $exp->hiking_type && $exp->hiking_type !== $value) {
+                            $batchTypeLabel = $exp->hiking_type === 'camping' ? 'Camping' : 'Tek-tok';
+                            $requestedTypeLabel = $value === 'camping' ? 'Camping' : 'Tek-tok';
+                            $fail("Batch jadwal ekspedisi yang dipilih bertipe {$batchTypeLabel}, tidak dapat mendaftar untuk tipe {$requestedTypeLabel}.");
+                        }
+                    }
+                },
+            ],
             'departure_date' => ['nullable', 'date', 'after_or_equal:today'],
             'customer_name' => ['required', 'string', 'min:3', 'max:150'],
             'customer_email' => ['required', 'string', 'max:150', new ValidEmailAddress],

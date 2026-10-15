@@ -144,6 +144,10 @@
                                     PRIVATE TRIP
                                 </span>
                                 <span
+                                    class="inline-block px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200 tracking-wide">
+                                    Tanpa DP (100% Lunas)
+                                </span>
+                                <span
                                     class="text-[11px] font-mono font-medium text-muted">#{{ $booking->booking_code }}</span>
                             </div>
 
@@ -198,6 +202,16 @@
                     </div>
 
                     <!-- Card: Data Pemesan (Kontak Utama) -->
+                    @php
+                        $authUser = auth()->user();
+                        $defaultCustName = old('customer_name', $booking->customer_name ?: ($authUser?->name ?? ''));
+                        $defaultCustPhone = old('customer_phone', $booking->customer_phone ?: ($authUser?->phone ?? ''));
+                        $defaultCustNik = old('customer_nik', $booking->customer_nik ?: ($authUser?->nik ?? ''));
+                        $defaultCustEmail = old('customer_email', $booking->customer_email ?: ($authUser?->email ?? ''));
+                        $leaderParticipant = $booking->participants->firstWhere('is_leader', true) ?? $booking->participants->first();
+                        $defaultLeaderName = old('participants.0.full_name', $leaderParticipant?->full_name ?: $defaultCustName);
+                        $defaultLeaderNik = old('participants.0.nik', $leaderParticipant?->nik ?: $defaultCustNik);
+                    @endphp
                     <div class="bg-white rounded-2xl border border-hairline p-5 sm:p-6 shadow-sm">
                         <div class="flex items-center justify-between mb-4">
                             <div class="flex items-center gap-2">
@@ -218,7 +232,7 @@
                                 <label class="block text-muted font-medium mb-1">Nama Lengkap Pemesan <span
                                         class="text-rose-500">*</span></label>
                                 <input type="text" name="customer_name" id="input_customer_name"
-                                    value="{{ old('customer_name') }}" required minlength="3" maxlength="150"
+                                    value="{{ $defaultCustName }}" required minlength="3" maxlength="150"
                                     class="w-full px-3.5 py-2.5 border border-slate-200 focus:border-primary focus:ring-1 focus:ring-primary rounded-lg bg-white text-slate-800 font-outfit text-sm font-normal transition placeholder:text-slate-400"
                                     placeholder="Nama sesuai KTP">
                                 @error('customer_name')
@@ -264,7 +278,7 @@
                                                 this.message = '';
                                             });
                                     }
-                                }">
+                                }" x-init="if (phone && phone.replace(/[\s\-]/g, '').length >= 10) checkPhone()">
                                     <label class="block text-muted font-medium mb-1">Nomor WhatsApp Aktif <span
                                             class="text-rose-500">*</span></label>
                                     <input type="tel" name="customer_phone" id="input_customer_phone"
@@ -308,7 +322,7 @@
                                         <p class="text-rose-600 text-[11px] mt-1">{{ $message }}</p>
                                     @enderror
                                 </div>
-                                <div x-data="nikValidator('{{ old('customer_nik', $booking->customer_nik ?? '') }}')" x-init="if (nik.length === 16) checkNik()">
+                                <div x-data="nikValidator('{{ $defaultCustNik }}')" x-init="if (nik && nik.length === 16) checkNik()">
                                     <label class="block text-muted font-medium mb-1">NIK Pemesan (16 Digit) <span
                                             class="text-rose-500">*</span></label>
                                     <input type="text" name="customer_nik" id="input_customer_nik" x-model="nik"
@@ -360,7 +374,7 @@
                                 <label class="block text-muted font-medium mb-1">Email <span
                                         class="text-rose-500">*</span></label>
                                 <input type="email" name="customer_email" id="input_customer_email"
-                                    value="{{ old('customer_email') }}" required maxlength="150"
+                                    value="{{ $defaultCustEmail }}" required maxlength="150"
                                     class="w-full sm:w-1/2 px-3.5 py-2.5 border border-slate-200 focus:border-primary focus:ring-1 focus:ring-primary rounded-lg bg-white text-slate-800 font-outfit text-sm font-normal transition placeholder:text-slate-400"
                                     placeholder="alamat@email.com">
                                 @error('customer_email')
@@ -419,7 +433,7 @@
                                                 Nama Lengkap Ketua <span class="text-rose-500">*</span>
                                             </label>
                                             <input type="text" name="participants[0][full_name]"
-                                                id="participant_name_0" value="{{ old('participants.0.full_name') }}"
+                                                id="participant_name_0" value="{{ $defaultLeaderName }}"
                                                 required minlength="3" maxlength="150"
                                                 class="w-full px-3.5 py-2.5 border border-slate-200 focus:border-primary focus:ring-1 focus:ring-primary rounded-lg bg-white text-slate-800 font-outfit text-sm font-normal transition placeholder:text-slate-400"
                                                 placeholder="Nama lengkap sesuai KTP">
@@ -427,7 +441,7 @@
                                                 <p class="text-rose-600 text-[11px] mt-1">{{ $message }}</p>
                                             @enderror
                                         </div>
-                                        <div x-data="nikValidator('{{ old('participants.0.nik') }}')" x-init="if (nik.length === 16) checkNik()">
+                                        <div x-data="nikValidator('{{ $defaultLeaderNik }}')" x-init="if (nik && nik.length === 16) checkNik()">
                                             <label class="block text-slate-600 font-medium mb-1">
                                                 NIK KTP (16 Digit) <span class="text-rose-500">*</span>
                                             </label>
@@ -480,7 +494,7 @@
                                 </div>
                             @else
                                 {{-- Dropdown Accordion List Saat Peserta > 1 (Sesuai Referensi payment_open_trip_1.html) --}}
-                                @for ($i = 0; $i < $booking->pax_count; $i++)
+                                 @for ($i = 0; $i < $booking->pax_count; $i++)
                                     @php
                                         $isLeader = $i === 0;
                                         $hasError =
@@ -488,6 +502,9 @@
                                             $errors->has("participants.{$i}.nik");
                                         $isOpen = $isLeader || $hasError;
                                         $itemTitle = $isLeader ? 'Ketua' : 'Anggota ' . $i;
+                                        $currParticipant = $booking->participants[$i] ?? null;
+                                        $partDefName = old("participants.{$i}.full_name", $currParticipant?->full_name ?: ($isLeader ? $defaultCustName : ''));
+                                        $partDefNik = old("participants.{$i}.nik", $currParticipant?->nik ?: ($isLeader ? $defaultCustNik : ''));
                                     @endphp
                                     <div class="border border-[#ECEAE4] rounded-xl overflow-hidden shadow-2xs">
                                         <button type="button"
@@ -524,7 +541,7 @@
                                                     <input type="text"
                                                         name="participants[{{ $i }}][full_name]"
                                                         id="participant_name_{{ $i }}"
-                                                        value="{{ old("participants.{$i}.full_name") }}" required
+                                                        value="{{ $partDefName }}" required
                                                         minlength="3" maxlength="150"
                                                         class="w-full px-3.5 py-2.5 border border-slate-200 focus:border-primary focus:ring-1 focus:ring-primary rounded-lg bg-white text-slate-800 font-outfit text-sm font-normal transition placeholder:text-slate-400"
                                                         placeholder="Nama lengkap sesuai KTP">
@@ -532,7 +549,7 @@
                                                         <p class="text-rose-600 text-[11px] mt-1">{{ $message }}</p>
                                                     @enderror
                                                 </div>
-                                                <div x-data="nikValidator('{{ old("participants.{$i}.nik") }}')" x-init="if (nik.length === 16) checkNik()">
+                                                <div x-data="nikValidator('{{ $partDefNik }}')" x-init="if (nik && nik.length === 16) checkNik()">
                                                     <label class="block text-slate-600 font-medium mb-1">
                                                         NIK (16 Digit) <span class="text-rose-500">*</span>
                                                     </label>

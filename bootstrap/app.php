@@ -17,6 +17,11 @@ return Application::configure(basePath: dirname(__DIR__))
             'admin' => EnsureUserIsAdmin::class,
         ]);
 
+        $middleware->redirectTo(
+            guests: '/login',
+            users: fn () => auth()->user()?->isAdmin() ? route('admin.dashboard') : route('home')
+        );
+
         $middleware->validateCsrfTokens(except: [
             'midtrans/notification',
         ]);

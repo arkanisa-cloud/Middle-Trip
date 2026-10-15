@@ -65,13 +65,17 @@ class MidtransNotificationController extends Controller
 
                         $availableQuota = $expedition ? max(0, $expedition->quota_max - $expedition->quota_booked) : 0;
 
-                        if (! $isPrivate && $expedition && $availableQuota < $booking->pax_count) {
-                            // Skenario Kalah Cepat: Pembayaran berhasil saat kuota sudah habis terisi
+                        if (! $isPrivate && $expedition && ($expedition->status === 'price_locked' || $availableQuota < $booking->pax_count)) {
+                            // Skenario Kalah Cepat / Price Lock: Pembayaran berhasil saat kuota sudah habis atau harga sudah dikunci
+                            $cancelReason = $expedition->status === 'price_locked'
+                                ? 'Pembayaran DP diterima saat harga batch ekspedisi telah dikunci (Price Locked). Menunggu proses refund dana 100%.'
+                                : 'Pembayaran DP diterima tetapi kuota batch ekspedisi telah terisi penuh oleh pendaki lain (Overbooked). Menunggu proses refund dana 100%.';
+
                             $booking->update([
                                 'status' => 'cancelled',
-                                'notes' => 'Pembayaran DP diterima tetapi kuota batch ekspedisi telah terisi penuh oleh pendaki lain (Overbooked). Menunggu proses refund dana 100%.',
+                                'notes' => $cancelReason,
                             ]);
-                            Log::warning("OVERBOOKING REFUND REQUIRED: Booking {$booking->booking_code} (ID: {$booking->id}) paid Rp {$transaction->amount} but quota for expedition {$expedition->id} was already full.");
+                            Log::warning("REFUND REQUIRED: Booking {$booking->booking_code} (ID: {$booking->id}) paid Rp {$transaction->amount} but expedition was price locked or full.");
                         } else {
                             $booking->update(['status' => 'reserved']);
                             $expedition?->syncQuotaBooked();

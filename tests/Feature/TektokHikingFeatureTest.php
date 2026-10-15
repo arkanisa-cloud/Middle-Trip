@@ -72,6 +72,7 @@ class TektokHikingFeatureTest extends TestCase
     {
         $user = User::factory()->create();
         $expedition = Expedition::where('type', 'open')->first();
+        $expedition->update(['hiking_type' => 'tektok']);
         $mountain = $expedition->mountain;
         $mountain->update([
             'base_price' => 500000,

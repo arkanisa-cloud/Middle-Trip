@@ -554,7 +554,7 @@
 
                         <div
                             class="flex flex-col xs:flex-row sm:flex-row items-stretch sm:items-center gap-2 w-full sm:w-auto">
-                            @if (in_array($booking->status, ['reserved', 'price_locked', 'paid']))
+                            @if ($booking->status === 'paid')
                                 <a href="{{ route('bookings.print', $booking->booking_code) }}" target="_blank"
                                     class="w-full sm:w-auto bg-white hover:bg-slate-50 text-ink border border-hairline hover:border-slate-300 font-bold text-xs sm:text-sm px-4 py-2.5 rounded-xl sm:rounded-full transition-all inline-flex items-center justify-center gap-1.5 shadow-2xs hover:shadow-xs cursor-pointer"
                                     title="Cetak E-Tiket / Invoice">

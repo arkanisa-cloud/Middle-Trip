@@ -5,9 +5,9 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Expedition;
 use App\Models\Mountain;
+use App\Services\BookingService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
 
 class ExpeditionScheduleController extends Controller
@@ -107,7 +107,12 @@ class ExpeditionScheduleController extends Controller
 
         $validated['type'] = $validated['type'] ?? 'open';
         $validated['price_lock_days_before_departure'] = $validated['price_lock_days_before_departure'] ?? ($expedition->price_lock_days_before_departure ?? 3);
+        $previousStatus = $expedition->status;
         $expedition->update($validated);
+
+        if ($validated['status'] === 'price_locked' && $previousStatus !== 'price_locked') {
+            app(BookingService::class)->executePriceLock($expedition);
+        }
 
         return redirect()->route('admin.expeditions.index')->with('success', 'Batch jadwal ekspedisi berhasil diperbarui.');
     }
@@ -121,34 +126,9 @@ class ExpeditionScheduleController extends Controller
             return back()->with('error', 'Hanya batch berstatus Open yang dapat dikunci harganya.');
         }
 
-        DB::transaction(function () use ($expedition) {
-            $lockedPrice = $expedition->mountain->getTierPriceForPax($expedition->quota_booked);
+        app(BookingService::class)->executePriceLock($expedition);
 
-            $expedition->update([
-                'current_locked_price' => $lockedPrice,
-                'status' => 'price_locked',
-            ]);
-
-            // Update all reserved bookings in this expedition
-            $deadline = now()->addHours(48);
-            foreach ($expedition->bookings()->where('status', 'reserved')->get() as $booking) {
-                $shuttleTotal = $booking->shuttle_fee_total;
-                $addonsTotal = $booking->addons_fee_total;
-                $paxTotal = $booking->pax_count * $lockedPrice;
-                $grandTotal = $paxTotal + $shuttleTotal + $addonsTotal;
-                $remaining = max(0, $grandTotal - $booking->total_booking_fee);
-
-                $booking->update([
-                    'locked_price_per_pax' => $lockedPrice,
-                    'grand_total' => $grandTotal,
-                    'remaining_payment_total' => $remaining,
-                    'payment_deadline' => $deadline,
-                    'status' => 'price_locked',
-                ]);
-            }
-        });
-
-        return back()->with('success', 'Price Lock berhasil dieksekusi! Tarif final telah dikunci dan tagihan pelunasan diterbitkan.');
+        return back()->with('success', 'Price Lock berhasil dieksekusi! Tarif final telah dikunci, pesanan belum bayar DP telah dibatalkan, dan tagihan pelunasan diterbitkan.');
     }
 
     /**

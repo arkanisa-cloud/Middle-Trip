@@ -93,3 +93,38 @@ test('google authentication error redirects back to login with error', function 
     $response->assertRedirect(route('login'));
     $response->assertSessionHasErrors(['email']);
 });
+
+test('google login after visiting register page does not redirect to dashboard or register', function () {
+    // 1. Visit register page
+    $this->get(route('register'))->assertStatus(200);
+
+    // 2. Click "Masuk ke Akun" (navigating to login page with referer = register)
+    $this->from(route('register'))->get(route('login'))->assertStatus(200);
+
+    // 3. Mock Google user callback
+    $abstractUser = Mockery::mock(SocialiteUser::class, function (MockInterface $mock) {
+        $mock->shouldReceive('getId')->andReturn('google-flow-test-123');
+        $mock->shouldReceive('getName')->andReturn('Pendaki Flow Test');
+        $mock->shouldReceive('getEmail')->andReturn('flowtest@example.com');
+        $mock->shouldReceive('getAvatar')->andReturn(null);
+        $mock->shouldReceive('getNickname')->andReturn(null);
+    });
+
+    Socialite::shouldReceive('driver->stateless->user')->andReturn($abstractUser);
+
+    // 4. Hit callback
+    $response = $this->get(route('auth.google.callback'));
+
+    $this->assertAuthenticated();
+    $response->assertRedirect(route('home', absolute: false));
+    $this->assertNotEquals(route('dashboard'), $response->getTargetUrl());
+    $this->assertNotEquals(route('register'), $response->getTargetUrl());
+});
+
+test('regular customer visiting dashboard is redirected to home', function () {
+    $user = User::factory()->create(['is_admin' => false]);
+
+    $response = $this->actingAs($user)->get('/dashboard');
+
+    $response->assertRedirect(route('home'));
+});

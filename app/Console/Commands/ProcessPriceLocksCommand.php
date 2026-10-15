@@ -3,9 +3,9 @@
 namespace App\Console\Commands;
 
 use App\Models\Expedition;
+use App\Services\BookingService;
 use Carbon\Carbon;
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\DB;
 
 class ProcessPriceLocksCommand extends Command
 {
@@ -51,35 +51,8 @@ class ProcessPriceLocksCommand extends Command
 
             // Jika hari ini sudah mencapai atau melewati tanggal threshold price lock
             if ($today->gte($lockThresholdDate)) {
-                DB::transaction(function () use ($expedition, $mountain, &$processedCount) {
-                    $paxCount = max(1, (int) $expedition->quota_booked);
-                    $lockedPricePerPax = $mountain->getTierPriceForPax($paxCount);
-
-                    $expedition->update([
-                        'status' => 'price_locked',
-                        'current_locked_price' => $lockedPricePerPax,
-                    ]);
-
-                    $paymentDeadline = Carbon::now()->addHours(48);
-
-                    foreach ($expedition->bookings as $booking) {
-                        $ticketTotal = $booking->pax_count * $lockedPricePerPax;
-                        $shuttleTotal = (int) ($booking->shuttle_fee_total ?? 0);
-                        $addonsTotal = (int) ($booking->addons_fee_total ?? 0);
-                        $grandTotal = $ticketTotal + $shuttleTotal + $addonsTotal;
-                        $remaining = max(0, $grandTotal - (int) $booking->total_booking_fee);
-
-                        $booking->update([
-                            'status' => 'price_locked',
-                            'locked_price_per_pax' => $lockedPricePerPax,
-                            'grand_total' => $grandTotal,
-                            'remaining_payment_total' => $remaining,
-                            'payment_deadline' => $paymentDeadline,
-                        ]);
-                    }
-
-                    $processedCount++;
-                });
+                app(BookingService::class)->executePriceLock($expedition);
+                $processedCount++;
             }
         }
 

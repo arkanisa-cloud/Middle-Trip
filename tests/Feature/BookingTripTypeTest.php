@@ -22,6 +22,13 @@ class BookingTripTypeTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
+        Http::fake([
+            'https://api.fonnte.com/*' => Http::response([
+                'status' => true,
+                'registered' => ['6281298765432', '628198765432'],
+                'not_registered' => [],
+            ], 200),
+        ]);
         $this->seed(ExpeditionSubsystemSeeder::class);
     }
 
@@ -38,13 +45,13 @@ class BookingTripTypeTest extends TestCase
             'meeting_point_id' => $meetingPoint->id,
             'trip_type' => 'open',
             'customer_name' => 'Arkan Isa Alvaro',
-            'customer_email' => 'arkan@example.com',
-            'customer_phone' => '081234567890',
-            'customer_nik' => '3301234567890001',
+            'customer_email' => 'arkan@gmail.com',
+            'customer_phone' => '081298765432',
+            'customer_nik' => '3301011508950001',
             'pax_count' => 2,
             'participants' => [
-                ['full_name' => 'Arkan Isa Alvaro', 'nik' => '3301234567890001', 'is_leader' => true],
-                ['full_name' => 'Budi Santoso', 'nik' => '3301234567890002', 'is_leader' => false],
+                ['full_name' => 'Arkan Isa Alvaro', 'nik' => '3301011508950001', 'is_leader' => true],
+                ['full_name' => 'Budi Santoso', 'nik' => '3301011608950002', 'is_leader' => false],
             ],
         ];
 
@@ -77,15 +84,15 @@ class BookingTripTypeTest extends TestCase
             'meeting_point_id' => $meetingPoint->id,
             'trip_type' => 'private',
             'customer_name' => 'Bambang Pamungkas',
-            'customer_email' => 'bambang@example.com',
-            'customer_phone' => '081987654321',
-            'customer_nik' => '3301234567890010',
+            'customer_email' => 'bambang@gmail.com',
+            'customer_phone' => '081298765432',
+            'customer_nik' => '3301011508950001',
             'pax_count' => $pax,
             'participants' => [
-                ['full_name' => 'Bambang Pamungkas', 'nik' => '3301234567890010', 'is_leader' => true],
-                ['full_name' => 'Peserta Dua', 'nik' => '3301234567890011', 'is_leader' => false],
-                ['full_name' => 'Peserta Tiga', 'nik' => '3301234567890012', 'is_leader' => false],
-                ['full_name' => 'Peserta Empat', 'nik' => '3301234567890013', 'is_leader' => false],
+                ['full_name' => 'Bambang Pamungkas', 'nik' => '3301011508950001', 'is_leader' => true],
+                ['full_name' => 'Peserta Dua', 'nik' => '3301011608950002', 'is_leader' => false],
+                ['full_name' => 'Peserta Tiga', 'nik' => '3301011708950003', 'is_leader' => false],
+                ['full_name' => 'Peserta Empat', 'nik' => '3301011808950004', 'is_leader' => false],
             ],
             'addons' => [
                 ['id' => $addon->id, 'quantity' => 2],
@@ -170,13 +177,13 @@ class BookingTripTypeTest extends TestCase
             'trip_type' => 'private',
             'departure_date' => $customDeparture,
             'customer_name' => 'Pendaki Privat',
-            'customer_email' => 'privat@example.com',
-            'customer_phone' => '081234567890',
-            'customer_nik' => '3301234567890001',
+            'customer_email' => 'privat@gmail.com',
+            'customer_phone' => '081298765432',
+            'customer_nik' => '3301011508950001',
             'pax_count' => 2,
             'participants' => [
-                ['full_name' => 'Pendaki Privat', 'nik' => '3301234567890001', 'is_leader' => true],
-                ['full_name' => 'Rekan Privat', 'nik' => '3301234567890002', 'is_leader' => false],
+                ['full_name' => 'Pendaki Privat', 'nik' => '3301011508950001', 'is_leader' => true],
+                ['full_name' => 'Rekan Privat', 'nik' => '3301011608950002', 'is_leader' => false],
             ],
         ];
 
@@ -239,13 +246,13 @@ class BookingTripTypeTest extends TestCase
             'hiking_type' => 'camping',
             'departure_date' => $customDate,
             'customer_name' => 'Pendaki Tanpa Batch',
-            'customer_email' => 'nobatch@example.com',
-            'customer_phone' => '081234567899',
-            'customer_nik' => '3301234567899999',
+            'customer_email' => 'nobatch@gmail.com',
+            'customer_phone' => '081298765432',
+            'customer_nik' => '3301011508950001',
             'pax_count' => 2,
             'participants' => [
-                ['full_name' => 'Pendaki Tanpa Batch', 'nik' => '3301234567899999', 'is_leader' => true],
-                ['full_name' => 'Peserta Dua', 'nik' => '3301234567899998', 'is_leader' => false],
+                ['full_name' => 'Pendaki Tanpa Batch', 'nik' => '3301011508950001', 'is_leader' => true],
+                ['full_name' => 'Peserta Dua', 'nik' => '3301011608950002', 'is_leader' => false],
             ],
         ];
 
@@ -290,14 +297,14 @@ class BookingTripTypeTest extends TestCase
             'hiking_type' => 'camping',
             'departure_date' => $customDate,
             'customer_name' => 'Pendaki Private Mandiri',
-            'customer_email' => 'mandiri@example.com',
-            'customer_phone' => '081234567891',
-            'customer_nik' => '3301234567890005',
+            'customer_email' => 'mandiri@gmail.com',
+            'customer_phone' => '081298765432',
+            'customer_nik' => '3301011508950001',
             'pax_count' => 3,
             'participants' => [
-                ['full_name' => 'Pendaki Private Mandiri', 'nik' => '3301234567890005', 'is_leader' => true],
-                ['full_name' => 'Peserta Dua', 'nik' => '3301234567890006', 'is_leader' => false],
-                ['full_name' => 'Peserta Tiga', 'nik' => '3301234567890007', 'is_leader' => false],
+                ['full_name' => 'Pendaki Private Mandiri', 'nik' => '3301011508950001', 'is_leader' => true],
+                ['full_name' => 'Peserta Dua', 'nik' => '3301011608950002', 'is_leader' => false],
+                ['full_name' => 'Peserta Tiga', 'nik' => '3301011708950003', 'is_leader' => false],
             ],
         ];
 
@@ -334,9 +341,9 @@ class BookingTripTypeTest extends TestCase
         $payResponse = $this->actingAs($user)->postJson(route('checkout.pay_private', $bookingCode), [
             'payment_method' => 'bca_va',
             'customer_name' => 'Pendaki Private Mandiri',
-            'customer_phone' => '081234567891',
-            'customer_email' => 'mandiri@example.com',
-            'customer_nik' => '3301234567890005',
+            'customer_phone' => '081298765432',
+            'customer_email' => 'mandiri@gmail.com',
+            'customer_nik' => '3301011508950001',
             'participants' => $payload['participants'],
         ]);
 
@@ -344,4 +351,3 @@ class BookingTripTypeTest extends TestCase
         $this->assertEquals('mock-snap-token-12345', $payResponse->json('snap_token'));
     }
 }
-

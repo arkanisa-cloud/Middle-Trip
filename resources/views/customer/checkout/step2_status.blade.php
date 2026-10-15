@@ -658,16 +658,6 @@
                                 DP Lunas: <span class="font-bold text-ink-heading">Rp
                                     {{ number_format($booking->total_booking_fee, 0, ',', '.') }}</span>
                             </div>
-
-                            <a href="{{ route('bookings.print', $booking->booking_code) }}" target="_blank"
-                                class="w-full py-2.5 px-3 bg-white hover:bg-emerald-50/80 text-ink-heading hover:text-emerald-800 border-2 border-slate-200 hover:border-emerald-500 text-xs font-extrabold rounded-xl transition-all duration-200 flex items-center justify-center gap-2 shadow-2xs hover:shadow-md active:scale-[0.99] text-center group">
-                                <svg class="w-4 h-4 text-emerald-600 group-hover:text-emerald-700 group-hover:scale-110 transition-all duration-200"
-                                    fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2"
-                                        d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
-                                </svg>
-                                <span>Cetak Invoice / Bukti Reservasi (PDF)</span>
-                            </a>
                         </div>
                     @elseif($booking->status === 'price_locked')
                         <div class="flex items-center gap-2 pb-3 border-b border-hairline">
@@ -675,7 +665,6 @@
                             <h3 class="text-xs font-bold text-ink-heading uppercase tracking-wider">Menunggu Pelunasan
                             </h3>
                         </div>
-
                         <div class="space-y-4">
                             <h3 class="text-sm font-bold text-ink-heading uppercase tracking-wider">Rincian Pelunasan
                             </h3>
@@ -811,7 +800,9 @@
                                     window.location.href = data.redirect_url;
                                 });
                             } else {
-                                alert('Gagal memuat modul pembayaran Midtrans. Mengalihkan ke halaman pembayaran...');
+                                alert(
+                                    'Gagal memuat modul pembayaran Midtrans. Mengalihkan ke halaman pembayaran...'
+                                );
                                 window.location.href = data.redirect_url;
                             }
                             return;
