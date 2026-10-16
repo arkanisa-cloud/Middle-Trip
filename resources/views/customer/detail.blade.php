@@ -2423,16 +2423,45 @@
                     return '+Rp ' + amount.toLocaleString('id-ID');
                 },
 
-                getTierPrice(pax) {
-                    if (!this.priceTiers || this.priceTiers.length === 0) {
-                        return this.basePrice;
-                    }
-                    for (let tier of this.priceTiers) {
-                        if (pax >= tier.min_pax && (tier.max_pax === null || pax <= tier.max_pax)) {
-                            return parseInt(tier.price_per_pax, 10);
+                getTierPrice(pax, hikingType = 'camping', route = null) {
+                    if (route && route.price_tiers && route.price_tiers.length > 0) {
+                        const sorted = [...route.price_tiers].sort((a, b) => b.min_pax - a.min_pax);
+                        const match = sorted.find(t => pax >= t.min_pax) || sorted[sorted.length - 1];
+                        if (match) {
+                            if (hikingType === 'tektok') {
+                                if (match.price_per_pax_tektok) return parseInt(match.price_per_pax_tektok, 10);
+                                if (match.price_per_pax) return Math.round(parseInt(match.price_per_pax, 10) * 0.8);
+                            }
+                            if (match.price_per_pax) return parseInt(match.price_per_pax, 10);
                         }
                     }
-                    return parseInt(this.priceTiers[this.priceTiers.length - 1].price_per_pax, 10);
+
+                    if (!this.priceTiers || this.priceTiers.length === 0) {
+                        const baseFallback = (hikingType === 'tektok') ? (this.priceTektok || Math.round(this.basePrice * 0.8)) : this.basePrice;
+                        return baseFallback || 500000;
+                    }
+                    const sorted = [...this.priceTiers].sort((a, b) => b.min_pax - a.min_pax);
+                    const match = sorted.find(t => pax >= t.min_pax) || sorted[sorted.length - 1];
+                    let campingPrice = match ? parseInt(match.price_per_pax, 10) : this.basePrice;
+                    let tektokPrice = (match && match.price_per_pax_tektok) ? parseInt(match.price_per_pax_tektok, 10) : null;
+
+                    if (route) {
+                        if (hikingType === 'tektok') {
+                            const baseTektok = this.priceTektok || Math.round(this.basePrice * 0.8);
+                            const routeTektok = route.price_tektok_open ? parseInt(route.price_tektok_open, 10) : (route.price_camping_open ? Math.round(parseInt(route.price_camping_open, 10) * 0.8) : baseTektok);
+                            const delta = routeTektok - baseTektok;
+                            const effectiveTektok = tektokPrice || Math.round(campingPrice * 0.8);
+                            return Math.max(0, effectiveTektok + delta);
+                        }
+                        const routeCamping = route.price_camping_open ? parseInt(route.price_camping_open, 10) : this.basePrice;
+                        const delta = routeCamping - this.basePrice;
+                        return Math.max(0, campingPrice + delta);
+                    }
+
+                    if (hikingType === 'tektok') {
+                        return tektokPrice || Math.round(campingPrice * 0.8);
+                    }
+                    return campingPrice;
                 },
 
                 currentPricePerPax() {
@@ -2455,17 +2484,9 @@
                         return this.pricePrivate || 750000;
                     }
 
-                    if (this.hikingType === 'tektok') {
-                        if (currentRoute && currentRoute.price_tektok_open) {
-                            return parseInt(currentRoute.price_tektok_open, 10);
-                        }
-                        return this.priceTektok || (this.basePrice ? Math.round(this.basePrice * 0.8) : 380000);
-                    }
-
-                    if (currentRoute && currentRoute.price_camping_open) {
-                        return parseInt(currentRoute.price_camping_open, 10);
-                    }
-                    return this.basePrice || 500000;
+                    // Open Trip: hitung tangga kuota dinamis dengan memperhitungkan rute
+                    const currentBooked = (this.hikingType === 'tektok') ? (this.openTektokQuotaBooked || 0) : (this.openCampingQuotaBooked || 0);
+                    return this.getTierPrice(currentBooked, this.hikingType, currentRoute);
                 },
 
                 ticketTotal() {

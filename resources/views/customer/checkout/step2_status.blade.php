@@ -145,22 +145,26 @@
             $currentPricePerPax =
                 $booking->locked_price_per_pax ??
                 ($mountain
-                    ? $mountain->getTierPriceForPax($currentBooked, $hikingType)
-                    : $mountain?->base_price ?? 500000);
+                    ? $mountain->getTierPriceForPax($currentBooked, $hikingType, $booking->route)
+                    : ($booking->route?->effective_price_camping_open ?? $mountain?->base_price ?? 500000));
 
             $nextTier = null;
             $nextTierPrice = null;
             $nextTierPax = null;
+            $routeTiers = $booking->route?->price_tiers;
+            $activeTiers = (! empty($routeTiers) && is_array($routeTiers))
+                ? collect($routeTiers)
+                : ($mountain?->priceTiers ?? collect());
+
             if (
-                $mountain &&
-                $mountain->priceTiers &&
+                $activeTiers->isNotEmpty() &&
                 $booking->status !== 'price_locked' &&
                 $booking->status !== 'paid'
             ) {
-                $nextTier = $mountain->priceTiers->where('min_pax', '>', $currentBooked)->sortBy('min_pax')->first();
+                $nextTier = $activeTiers->where('min_pax', '>', $currentBooked)->sortBy('min_pax')->first();
                 if ($nextTier) {
-                    $nextTierPax = $nextTier->min_pax;
-                    $nextTierPrice = $mountain->getTierPriceForPax($nextTierPax, $hikingType);
+                    $nextTierPax = is_array($nextTier) ? $nextTier['min_pax'] : $nextTier->min_pax;
+                    $nextTierPrice = $mountain ? $mountain->getTierPriceForPax($nextTierPax, $hikingType, $booking->route) : null;
                 }
             }
         @endphp

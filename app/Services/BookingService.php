@@ -148,7 +148,10 @@ class BookingService
                 $bookingFeePerPax = $route->effective_booking_fee_per_pax;
                 $totalBookingFee = $bookingFeePerPax * $paxCount;
 
-                if ($hikingType === 'tektok') {
+                $currentBooked = $expedition?->quota_booked ?? 0;
+                if ($mountain && ($mountain->priceTiers()->exists() || ! empty($route->price_tiers))) {
+                    $baseOpenPrice = $mountain->getTierPriceForPax($currentBooked, $hikingType, $route);
+                } elseif ($hikingType === 'tektok') {
                     $baseOpenPrice = $route->price_tektok_open
                         ?? ($route->price_camping_open ? (int) round($route->price_camping_open * 0.8) : null)
                         ?? $mountain->effective_price_tektok;

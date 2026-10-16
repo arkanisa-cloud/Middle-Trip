@@ -66,7 +66,7 @@ class Expedition extends Model
      */
     public function calculatePriceLockPrice(): int
     {
-        return $this->mountain->getTierPriceForPax(max(1, (int) $this->quota_booked), $this->hiking_type ?? 'camping');
+        return $this->mountain->getTierPriceForPax(max(1, (int) $this->quota_booked), $this->hiking_type ?? 'camping', $this->route);
     }
 
     /**

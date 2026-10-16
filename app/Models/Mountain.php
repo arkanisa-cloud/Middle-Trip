@@ -99,17 +99,41 @@ class Mountain extends Model
     }
 
     /**
-     * Mendapatkan harga per pax berdasarkan jumlah peserta akumulasi dari tier matriks.
+     * Mendapatkan harga per pax berdasarkan jumlah peserta akumulasi dari tier matriks (dengan dukungan penyesuaian rute).
      */
-    public function getTierPriceForPax(int $pax, string $hikingType = 'camping'): int
+    public function getTierPriceForPax(int $pax, string $hikingType = 'camping', ?Route $route = null): int
     {
-        $tiers = $this->priceTiers()->get();
+        // 1. Jika rute memiliki custom price_tiers tersimpan
+        if ($route && ! empty($route->price_tiers) && is_array($route->price_tiers)) {
+            $routeTiers = collect($route->price_tiers);
+            $matchingTier = $routeTiers->where('min_pax', '<=', $pax)->sortByDesc('min_pax')->first();
+            if (! $matchingTier) {
+                $matchingTier = $routeTiers->sortBy('min_pax')->first();
+            }
 
+            if ($matchingTier) {
+                if ($hikingType === 'tektok') {
+                    $tektok = $matchingTier['price_per_pax_tektok'] ?? null;
+                    if ($tektok !== null && (int) $tektok > 0) {
+                        return (int) $tektok;
+                    }
+                    $camp = (int) ($matchingTier['price_per_pax'] ?? $route->effective_price_camping_open);
+
+                    return (int) round($camp * 0.8);
+                }
+
+                if (! empty($matchingTier['price_per_pax'])) {
+                    return (int) $matchingTier['price_per_pax'];
+                }
+            }
+        }
+
+        // 2. Ambil tier induk gunung
+        $tiers = $this->priceTiers()->get();
         $campingPrice = $this->base_price;
         $tektokPrice = null;
 
         if ($tiers->isNotEmpty()) {
-            // Cari tier dengan min_pax tertinggi yang memenuhi kuota pax
             $matchingTier = $tiers->where('min_pax', '<=', $pax)->sortByDesc('min_pax')->first();
 
             if ($matchingTier) {
@@ -122,6 +146,27 @@ class Mountain extends Model
             }
         }
 
+        // 3. Jika ada rute spesifik, hitung selisih harga rute terhadap base price gunung
+        if ($route) {
+            if ($hikingType === 'tektok') {
+                $baseTektok = $this->effective_price_tektok;
+                $routeTektok = $route->price_tektok_open !== null ? (int) $route->price_tektok_open : $baseTektok;
+                $deltaTektok = $routeTektok - $baseTektok;
+
+                $effectiveTektokTier = ($tektokPrice !== null && $tektokPrice > 0)
+                    ? (int) $tektokPrice
+                    : (int) round($campingPrice * ($this->base_price > 0 && $this->price_tektok ? ($this->price_tektok / $this->base_price) : 0.8));
+
+                return max(0, $effectiveTektokTier + $deltaTektok);
+            }
+
+            $routeCamping = $route->price_camping_open !== null ? (int) $route->price_camping_open : $this->base_price;
+            $deltaCamping = $routeCamping - $this->base_price;
+
+            return max(0, $campingPrice + $deltaCamping);
+        }
+
+        // Standar tanpa rute spesifik (mengacu ke base gunung)
         if ($hikingType === 'tektok') {
             if ($tektokPrice !== null && $tektokPrice > 0) {
                 return (int) $tektokPrice;

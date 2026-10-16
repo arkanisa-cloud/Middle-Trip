@@ -390,6 +390,7 @@ class ExpeditionController extends Controller
                     'price_tektok_open' => $r->effective_price_tektok_open,
                     'price_camping_private' => $r->effective_price_camping_private,
                     'price_tektok_private' => $r->effective_price_tektok_private,
+                    'price_tiers' => $r->price_tiers ?? [],
                     'stats' => [
                         ['label' => 'Jarak Total', 'value' => ($r->distance_km ? $r->distance_km.' km' : '— km'), 'icon' => 'milestone'],
                         ['label' => 'Durasi Waktu', 'value' => ($r->duration_hours ?? '— Jam'), 'icon' => 'clock'],

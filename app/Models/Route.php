@@ -30,6 +30,7 @@ class Route extends Model
             'price_camping_private' => 'integer',
             'price_tektok_private' => 'integer',
             'booking_fee_per_pax' => 'integer',
+            'price_tiers' => 'array',
         ];
     }
 
@@ -54,7 +55,15 @@ class Route extends Model
      */
     public function getEffectivePriceTektokOpenAttribute(): int
     {
-        return $this->price_tektok_open ?? (int) round($this->effective_price_camping_open * 0.8);
+        if ($this->price_tektok_open !== null) {
+            return (int) $this->price_tektok_open;
+        }
+
+        if ($this->mountain?->price_tektok !== null) {
+            return (int) $this->mountain->price_tektok;
+        }
+
+        return (int) round($this->effective_price_camping_open * 0.8);
     }
 
     /**

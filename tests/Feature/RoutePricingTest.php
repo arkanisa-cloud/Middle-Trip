@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Models\Expedition;
+use App\Models\ExpeditionPriceTier;
 use App\Models\Mountain;
 use App\Models\Route;
 use App\Models\User;
@@ -244,7 +245,10 @@ class RoutePricingTest extends TestCase
             'province' => 'Jawa Tengah',
             'grade' => 'Grade A',
             'cover_image' => 'mountains/merbabu.jpg',
-            'base_price' => 500000,
+            'base_price' => 520000,
+            'price_tektok' => 410000,
+            'price_private' => 750000,
+            'price_private_tektok' => 630000,
             'booking_fee_per_pax' => 150000,
             'price_lock_days_before_departure' => 3,
             'has_open_trip' => 1,
@@ -256,10 +260,6 @@ class RoutePricingTest extends TestCase
                     'distance_km' => 10.5,
                     'duration_hours' => '6 Jam',
                     'is_primary' => 1,
-                    'price_camping_open' => 520000,
-                    'price_tektok_open' => 410000,
-                    'price_camping_private' => 750000,
-                    'price_tektok_private' => 630000,
                 ],
                 [
                     'name' => 'Via Suwanting',
@@ -267,10 +267,6 @@ class RoutePricingTest extends TestCase
                     'distance_km' => 12.0,
                     'duration_hours' => '8 Jam',
                     'is_primary' => 0,
-                    'price_camping_open' => 580000,
-                    'price_tektok_open' => 470000,
-                    'price_camping_private' => 820000,
-                    'price_tektok_private' => 710000,
                 ],
             ],
         ];
@@ -288,10 +284,10 @@ class RoutePricingTest extends TestCase
         $this->assertEquals(630000, $selo->price_tektok_private);
 
         $suwanting = $mountain->routes()->where('name', 'Via Suwanting')->first();
-        $this->assertEquals(580000, $suwanting->price_camping_open);
-        $this->assertEquals(470000, $suwanting->price_tektok_open);
+        $this->assertEquals(520000, $suwanting->price_camping_open);
+        $this->assertEquals(410000, $suwanting->price_tektok_open);
 
-        // Opsi A check: effective starting price should be 520.000
+        // Effective starting price should be 520.000
         $this->assertEquals(520000, $mountain->effective_starting_price);
     }
 
@@ -299,26 +295,26 @@ class RoutePricingTest extends TestCase
     {
         $admin = User::factory()->create(['is_admin' => true]);
 
-        // Attempting to set booking fee (300.000) > 50% of price_camping_open (500.000 -> max 250.000)
+        // Attempting to set booking fee (300.000) > 50% of base_price (500.000 -> max 250.000)
         $payload = [
             'name' => 'Gunung Lawu Invalid DP',
             'elevation' => 3265,
             'province' => 'Jawa Tengah',
             'grade' => 'Grade A',
             'cover_image' => 'mountains/lawu.jpg',
+            'base_price' => 500000,
+            'booking_fee_per_pax' => 300000, // Invalid: exceeds 250.000
             'routes' => [
                 [
                     'name' => 'Via Candi Cetho',
                     'grade' => 'Grade A',
                     'is_primary' => 1,
-                    'price_camping_open' => 500000,
-                    'booking_fee_per_pax' => 300000, // Invalid: exceeds 250.000
                 ],
             ],
         ];
 
         $response = $this->actingAs($admin)->post(route('admin.mountains.store'), $payload);
-        $response->assertSessionHasErrors('routes.0.booking_fee_per_pax');
+        $response->assertSessionHasErrors('booking_fee_per_pax');
     }
 
     public function test_booking_service_uses_route_specific_booking_fee_for_open_trip(): void
@@ -381,5 +377,105 @@ class RoutePricingTest extends TestCase
         // Price Lock on expedition should be 4 days
         $this->assertEquals(4, $expedition->effective_price_lock_days);
     }
-}
 
+    public function test_mountain_calculates_per_person_ladder_price_with_route_delta_for_camping_and_tektok(): void
+    {
+        $mountain = Mountain::create([
+            'name' => 'Gunung Merbabu Ladder',
+            'slug' => 'gunung-merbabu-ladder',
+            'elevation' => 3142,
+            'province' => 'Jawa Tengah',
+            'cover_image' => 'mountain.jpg',
+            'base_price' => 500000,
+            'price_tektok' => 380000,
+        ]);
+
+        // Mountain master tiers: 1, 2, 3 Orang
+        ExpeditionPriceTier::create([
+            'mountain_id' => $mountain->id,
+            'min_pax' => 1,
+            'price_per_pax' => 650000,
+            'price_per_pax_tektok' => 380000,
+        ]);
+        ExpeditionPriceTier::create([
+            'mountain_id' => $mountain->id,
+            'min_pax' => 2,
+            'price_per_pax' => 600000,
+            'price_per_pax_tektok' => 350000,
+        ]);
+        ExpeditionPriceTier::create([
+            'mountain_id' => $mountain->id,
+            'min_pax' => 3,
+            'price_per_pax' => 550000,
+            'price_per_pax_tektok' => 320000,
+        ]);
+
+        // Route with +50k camping delta and +40k tektok delta
+        $route = Route::create([
+            'mountain_id' => $mountain->id,
+            'name' => 'Via Suwanting Premium',
+            'slug' => 'via-suwanting-premium',
+            'grade' => 'Grade B',
+            'price_camping_open' => 550000,
+            'price_tektok_open' => 420000,
+        ]);
+
+        // 1 Orang Camping: 650.000 + 50.000 = 700.000
+        $this->assertEquals(700000, $mountain->getTierPriceForPax(1, 'camping', $route));
+        // 1 Orang Tek-tok: 380.000 + 40.000 = 420.000
+        $this->assertEquals(420000, $mountain->getTierPriceForPax(1, 'tektok', $route));
+
+        // 3 Orang Camping: 550.000 + 50.000 = 600.000
+        $this->assertEquals(600000, $mountain->getTierPriceForPax(3, 'camping', $route));
+        // 3 Orang Tek-tok: 320.000 + 40.000 = 360.000
+        $this->assertEquals(360000, $mountain->getTierPriceForPax(3, 'tektok', $route));
+    }
+
+    public function test_mountain_uses_route_custom_price_tiers_when_defined(): void
+    {
+        $mountain = Mountain::create([
+            'name' => 'Gunung Lawu Custom Tiers',
+            'slug' => 'gunung-lawu-custom-tiers',
+            'elevation' => 3265,
+            'province' => 'Jawa Timur',
+            'cover_image' => 'mountain.jpg',
+            'base_price' => 500000,
+            'price_tektok' => 380000,
+        ]);
+
+        ExpeditionPriceTier::create([
+            'mountain_id' => $mountain->id,
+            'min_pax' => 1,
+            'price_per_pax' => 650000,
+            'price_per_pax_tektok' => 380000,
+        ]);
+
+        // Route with explicit custom tiers override
+        $route = Route::create([
+            'mountain_id' => $mountain->id,
+            'name' => 'Via Candi Cetho',
+            'slug' => 'via-candi-cetho',
+            'grade' => 'Grade B',
+            'price_camping_open' => 550000,
+            'price_tektok_open' => 420000,
+            'price_tiers' => [
+                [
+                    'min_pax' => 1,
+                    'price_per_pax' => 750000,
+                    'price_per_pax_tektok' => 490000,
+                ],
+                [
+                    'min_pax' => 2,
+                    'price_per_pax' => 690000,
+                    'price_per_pax_tektok' => 440000,
+                ],
+            ],
+        ]);
+
+        // Custom route tiers take priority
+        $this->assertEquals(750000, $mountain->getTierPriceForPax(1, 'camping', $route));
+        $this->assertEquals(490000, $mountain->getTierPriceForPax(1, 'tektok', $route));
+        $this->assertEquals(690000, $mountain->getTierPriceForPax(2, 'camping', $route));
+        $this->assertEquals(440000, $mountain->getTierPriceForPax(2, 'tektok', $route));
+    }
+}

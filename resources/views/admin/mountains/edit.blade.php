@@ -523,7 +523,8 @@
                         <h3 class="text-base font-extrabold text-ink-heading">2. Jalur Pendakian Resmi, Profil Elevasi &
                             Itinerary (Per Rute)</h3>
                         <p class="text-xs text-muted">Setiap jalur memiliki pos elevasi (MDPL), mitigasi air/angin, dan
-                            jadwal timeline 2D1N mandiri</p>
+                            jadwal timeline mandiri. Seluruh jalur di gunung ini menggunakan tarif seragam (dipukul rata)
+                            yang diatur pada Bagian 3.</p>
                     </div>
                     <button type="button" @click="addRoute()"
                         class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-primary-subtle text-primary text-xs font-bold hover:bg-primary hover:text-white transition-colors shrink-0">
@@ -699,113 +700,13 @@
                                         class="w-full text-xs rounded-xl border border-hairline bg-surface-card p-2.5 text-ink focus:border-primary">
                                 </div>
 
-                                <!-- Route Pricing Section (Open & Private, Camping & Tektok + Booking Fee DP) -->
-                                <div
-                                    class="sm:col-span-2 lg:col-span-5 p-4 rounded-2xl bg-surface-card border border-hairline/80 mt-1 space-y-3">
-                                    <div class="flex items-center justify-between border-b border-hairline/60 pb-2">
-                                        <div class="flex items-center gap-2">
-                                            <svg class="w-4 h-4 text-primary" fill="none" stroke="currentColor"
-                                                viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                    d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                            </svg>
-                                            <span class="text-xs font-bold text-ink-heading">Tarif & Booking Fee Jalur Ini
-                                                (Per Via)</span>
-                                        </div>
-                                        <span class="text-[10px] text-muted">Pengaturan harga trip dan DP per pax untuk via
-                                            ini</span>
-                                    </div>
-                                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3"
-                                        :class="{
-                                            'lg:grid-cols-5': has_open_trip && has_private_trip,
-                                            'lg:grid-cols-3': (has_open_trip && !has_private_trip) || (!has_open_trip &&
-                                                has_private_trip),
-                                            'lg:grid-cols-1': !has_open_trip && !has_private_trip
-                                        }">
-                                        <!-- Open Trip Pricing (Camping & Tektok) -->
-                                        <div x-show="has_open_trip" x-transition>
-                                            <label class="block text-[11px] font-semibold text-muted mb-1">Open Trip -
-                                                Camping (Rp) <span class="text-rose-500">*</span></label>
-                                            <input type="text" inputmode="numeric"
-                                                :name="`routes[${index}][price_camping_open]`"
-                                                :value="formatPrice(r.price_camping_open)"
-                                                @input="r.price_camping_open = handlePriceInput($event, r, 'price_camping_open'); onPriceCampingChange(r)"
-                                                placeholder="500.000"
-                                                class="w-full text-xs rounded-xl border border-hairline bg-canvas p-2.5 text-ink focus:border-primary font-semibold"
-                                                :required="has_open_trip">
-                                        </div>
-                                        <div x-show="has_open_trip" x-transition>
-                                            <label class="block text-[11px] font-semibold text-muted mb-1">Open Trip -
-                                                Tektok (Rp)</label>
-                                            <input type="text" inputmode="numeric"
-                                                :name="`routes[${index}][price_tektok_open]`"
-                                                :value="formatPrice(r.price_tektok_open)"
-                                                @input="r.price_tektok_open = handlePriceInput($event, r, 'price_tektok_open')"
-                                                placeholder="400.000"
-                                                class="w-full text-xs rounded-xl border border-hairline bg-canvas p-2.5 text-ink focus:border-primary">
-                                        </div>
-
-                                        <!-- Private Trip Pricing (Camping & Tektok) -->
-                                        <div x-show="has_private_trip" x-transition>
-                                            <label class="block text-[11px] font-semibold text-muted mb-1">Private Trip -
-                                                Camping (Rp)</label>
-                                            <input type="text" inputmode="numeric"
-                                                :name="`routes[${index}][price_camping_private]`"
-                                                :value="formatPrice(r.price_camping_private)"
-                                                @input="r.price_camping_private = handlePriceInput($event, r, 'price_camping_private')"
-                                                placeholder="750.000"
-                                                class="w-full text-xs rounded-xl border border-hairline bg-canvas p-2.5 text-ink focus:border-primary">
-                                        </div>
-                                        <div x-show="has_private_trip" x-transition>
-                                            <label class="block text-[11px] font-semibold text-muted mb-1">Private Trip -
-                                                Tektok (Rp)</label>
-                                            <input type="text" inputmode="numeric"
-                                                :name="`routes[${index}][price_tektok_private]`"
-                                                :value="formatPrice(r.price_tektok_private)"
-                                                @input="r.price_tektok_private = handlePriceInput($event, r, 'price_tektok_private')"
-                                                placeholder="650.000"
-                                                class="w-full text-xs rounded-xl border border-hairline bg-canvas p-2.5 text-ink focus:border-primary">
-                                        </div>
-
-                                        <!-- Booking Fee DP per Pax -->
-                                        <div x-show="has_open_trip || has_private_trip" x-transition>
-                                            <label class="block text-[11px] font-semibold text-muted mb-1">Booking Fee DP /
-                                                Pax (Rp) <span class="text-rose-500">*</span></label>
-                                            <input type="text" inputmode="numeric"
-                                                :name="`routes[${index}][booking_fee_per_pax]`"
-                                                :value="formatPrice(r.booking_fee_per_pax)"
-                                                @input="handleBookingFeeInput($event, r)" placeholder="150.000"
-                                                class="w-full text-xs rounded-xl border border-hairline bg-canvas p-2.5 text-ink focus:border-primary font-semibold"
-                                                :required="has_open_trip">
-                                            <template x-if="has_open_trip && r.price_camping_open">
-                                                <span class="text-[10px] text-amber-600 font-medium mt-1 block">
-                                                    Maks. 50%: Rp <span
-                                                        x-text="new Intl.NumberFormat('id-ID').format(Math.floor((Number(r.price_camping_open) || 0) / 2))"></span>
-                                                </span>
-                                            </template>
-                                        </div>
-
-                                        <!-- Notice when neither is checked -->
-                                        <div x-show="!has_open_trip && !has_private_trip"
-                                            class="sm:col-span-2 lg:col-span-5 p-3 rounded-xl bg-amber-50 border border-amber-200 text-amber-800 text-xs flex items-center gap-2">
-                                            <svg class="w-4 h-4 text-amber-600 shrink-0" fill="none"
-                                                viewBox="0 0 24 24" stroke="currentColor">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                    d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-                                            </svg>
-                                            <span>Centang <strong>Open Trip</strong> atau <strong>Private Trip</strong> di
-                                                Section 1 agar kolom input tarif pada jalur ini aktif.</span>
-                                        </div>
-                                    </div>
-                                </div>
-
                                 <!-- Primary Toggle -->
                                 <div class="sm:col-span-2 lg:col-span-5 pt-1">
                                     <label
                                         class="inline-flex items-center gap-2 cursor-pointer text-xs font-semibold text-ink-heading">
                                         <input type="checkbox" :name="`routes[${index}][is_primary]`" value="1"
                                             x-model="r.is_primary"
-                                            @change="if (r.is_primary) routes.forEach((other, i) => { if (i !== index) other.is_primary = false; })"
+                                            @change="if (r.is_primary) { routes.forEach((other, i) => { if (i !== index) other.is_primary = false; }); }"
                                             class="rounded border-hairline text-primary focus:ring-primary">
                                         <span>Jadikan sebagai Jalur Utama (Rekomendasi)</span>
                                     </label>
@@ -1181,89 +1082,266 @@
             </div>
     </div>
 
-    <!-- Section 3: Matriks Harga Bertingkat Kuota -->
-    <div x-show="has_open_trip" x-transition
-        class="bg-surface-card border border-hairline rounded-3xl p-6 md:p-8 shadow-xs space-y-6">
-        <div class="flex items-center justify-between border-b border-hairline pb-4">
-            <div>
-                <h3 class="text-base font-extrabold text-ink-heading">3. Matriks Harga Bertingkat Kuota (Dynamic Tiering)
-                </h3>
-                <p class="text-xs text-muted">Tetapkan harga otomatis berdasarkan batas minimal kuota peserta yang
-                    terkumpul (Khusus Open Trip)</p>
-            </div>
-            <button type="button" @click="addTier()"
-                class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-primary-subtle text-primary text-xs font-bold hover:bg-primary hover:text-white transition-colors">
-                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-                </svg>
-                <span>Tambah Tier</span>
-            </button>
+    <!-- Section 3: Tarif Ekspedisi & Daftar Harga Peserta -->
+    <div x-show="has_open_trip || has_private_trip" x-transition
+        class="bg-surface-card border border-hairline rounded-3xl p-6 md:p-8 shadow-xs space-y-8">
+
+        <!-- Header Section 3 -->
+        <div class="border-b border-hairline pb-4">
+            <h3 class="text-base font-extrabold text-ink-heading">3. Tarif & Harga Rombongan</h3>
+            <p class="text-xs text-muted">Tarif ini berlaku sama untuk semua via pendakian di gunung ini.</p>
         </div>
 
-        <div class="space-y-3">
-            <!-- Desktop Table Header -->
-            <div class="hidden sm:grid sm:grid-cols-12 gap-3 px-4 py-1 text-[11px] font-bold text-muted uppercase tracking-wider">
-                <div class="sm:col-span-3">Minimal Kuota (Pax)</div>
-                <div class="sm:col-span-4">Harga Camping / Pax (Rp)</div>
-                <div class="sm:col-span-4">Harga Tek-tok / Pax (Rp)</div>
-                <div class="sm:col-span-1 text-center">Aksi</div>
+        <!-- Bagian A: Tarif Dasar (1 Orang) & DP -->
+        <div class="space-y-4">
+            <div class="flex items-center gap-2">
+                <span class="w-2.5 h-2.5 rounded-full bg-primary"></span>
+                <h4 class="text-xs font-bold text-ink-heading uppercase tracking-wider">A. Tarif Dasar (1 Orang) & Uang
+                    Muka (DP)</h4>
             </div>
 
-            <template x-for="(t, index) in priceTiers" :key="index">
-                <div
-                    class="p-3.5 sm:p-4 rounded-2xl bg-canvas border border-hairline grid grid-cols-1 sm:grid-cols-12 gap-3 items-center hover:border-primary/30 transition-colors shadow-2xs">
-                    <input type="hidden" :name="`price_tiers[${index}][id]`" :value="t.id">
-
-                    <!-- Min Pax -->
-                    <div class="sm:col-span-3">
-                        <label class="block sm:hidden text-[11px] font-bold text-muted mb-1">Minimal Peserta (Pax)</label>
-                        <div class="relative flex items-center">
-                            <input type="number" :name="`price_tiers[${index}][min_pax]`" x-model="t.min_pax"
-                                min="1" :required="has_open_trip" placeholder="1, 4, 7..."
-                                class="w-full text-xs font-semibold rounded-xl border border-hairline bg-surface-card py-2.5 px-3 pr-12 text-ink focus:border-primary focus:ring-1 focus:ring-primary shadow-2xs">
-                            <span class="absolute right-3 text-[11px] font-bold text-muted pointer-events-none">Pax</span>
-                        </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                <!-- Open Trip - Camping -->
+                <div x-show="has_open_trip" x-transition>
+                    <label class="block text-xs font-bold text-ink-heading mb-1.5">
+                        Open Trip - Camping / Orang (Rp) <span class="text-rose-500">*</span>
+                    </label>
+                    <div class="relative flex items-center">
+                        <span class="absolute left-3 text-xs font-bold text-muted pointer-events-none">Rp</span>
+                        <input type="text" inputmode="numeric" name="base_price" :value="formatPrice(base_price)"
+                            @input="base_price = handlePriceInput($event, $data, 'base_price'); onBasePriceChange()"
+                            :required="has_open_trip" placeholder="500.000"
+                            class="w-full text-xs font-bold rounded-xl border border-hairline bg-canvas py-2.5 pl-9 pr-3 text-ink focus:border-primary focus:ring-1 focus:ring-primary shadow-2xs">
                     </div>
-
-                    <!-- Price Camping per Pax -->
-                    <div class="sm:col-span-4">
-                        <label class="block sm:hidden text-[11px] font-bold text-muted mb-1">Harga Camping / Pax</label>
-                        <div class="relative flex items-center">
-                            <span class="absolute left-3 text-xs font-bold text-muted-soft pointer-events-none">Rp</span>
-                            <input type="text" inputmode="numeric" :name="`price_tiers[${index}][price_per_pax]`"
-                                :value="formatPrice(t.price_per_pax)"
-                                @input="t.price_per_pax = handlePriceInput($event, t, 'price_per_pax')"
-                                :required="has_open_trip" placeholder="550.000"
-                                class="w-full text-xs font-bold rounded-xl border border-hairline bg-surface-card py-2.5 pl-9 pr-3 text-ink focus:border-primary focus:ring-1 focus:ring-primary shadow-2xs">
-                        </div>
-                    </div>
-
-                    <!-- Price Tektok per Pax -->
-                    <div class="sm:col-span-4">
-                        <label class="block sm:hidden text-[11px] font-bold text-muted mb-1">Harga Tek-tok / Pax</label>
-                        <div class="relative flex items-center">
-                            <span class="absolute left-3 text-xs font-bold text-muted-soft pointer-events-none">Rp</span>
-                            <input type="text" inputmode="numeric" :name="`price_tiers[${index}][price_per_pax_tektok]`"
-                                :value="formatPrice(t.price_per_pax_tektok)"
-                                @input="t.price_per_pax_tektok = handlePriceInput($event, t, 'price_per_pax_tektok')"
-                                placeholder="380.000"
-                                class="w-full text-xs font-bold rounded-xl border border-hairline bg-surface-card py-2.5 pl-9 pr-3 text-ink focus:border-primary focus:ring-1 focus:ring-primary shadow-2xs">
-                        </div>
-                    </div>
-
-                    <!-- Remove Button -->
-                    <div class="sm:col-span-1 flex items-center justify-end sm:justify-center pt-1 sm:pt-0">
-                        <button type="button" @click="removeTier(index)"
-                            class="w-9 h-9 flex items-center justify-center rounded-xl border border-hairline bg-surface-card text-muted hover:text-rose-600 hover:border-rose-300 hover:bg-rose-50 transition-colors shadow-2xs cursor-pointer"
-                            title="Hapus Tier">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                            </svg>
-                        </button>
-                    </div>
+                    <span class="text-[10.5px] text-muted mt-1 block">Harga normal camping untuk 1 peserta</span>
                 </div>
-            </template>
+
+                <!-- Open Trip - Tek-tok -->
+                <div x-show="has_open_trip" x-transition>
+                    <label class="block text-xs font-bold text-ink-heading mb-1.5">
+                        Open Trip - Tek-tok / Orang (Rp)
+                    </label>
+                    <div class="relative flex items-center">
+                        <span class="absolute left-3 text-xs font-bold text-muted pointer-events-none">Rp</span>
+                        <input type="text" inputmode="numeric" name="price_tektok" :value="formatPrice(price_tektok)"
+                            @input="price_tektok = handlePriceInput($event, $data, 'price_tektok'); onPriceTektokChange()"
+                            placeholder="400.000"
+                            class="w-full text-xs font-bold rounded-xl border border-hairline bg-canvas py-2.5 pl-9 pr-3 text-ink focus:border-primary focus:ring-1 focus:ring-primary shadow-2xs">
+                    </div>
+                    <span class="text-[10.5px] text-muted mt-1 block">Harga pendakian 1 hari (tanpa menginap)</span>
+                </div>
+
+                <!-- Booking Fee (DP) per Pax -->
+                <div x-show="has_open_trip || has_private_trip" x-transition>
+                    <label class="block text-xs font-bold text-ink-heading mb-1.5">
+                        Uang Muka (DP) / Orang (Rp) <span class="text-rose-500">*</span>
+                    </label>
+                    <div class="relative flex items-center">
+                        <span class="absolute left-3 text-xs font-bold text-muted pointer-events-none">Rp</span>
+                        <input type="text" inputmode="numeric" name="booking_fee_per_pax"
+                            :value="formatPrice(booking_fee_per_pax)" @input="handleBookingFeeInput($event, $data)"
+                            :required="has_open_trip" placeholder="150.000"
+                            class="w-full text-xs font-bold rounded-xl border border-hairline bg-canvas py-2.5 pl-9 pr-3 text-ink focus:border-primary focus:ring-1 focus:ring-primary shadow-2xs">
+                    </div>
+                    <template x-if="base_price">
+                        <span class="text-[10.5px] text-amber-600 font-medium mt-1 block">
+                            Maks. 50%: Rp <span x-text="formatPrice(Math.floor(Number(base_price) / 2))"></span>
+                        </span>
+                    </template>
+                </div>
+
+                <!-- Private Trip - Camping -->
+                <div x-show="has_private_trip" x-transition>
+                    <label class="block text-xs font-bold text-ink-heading mb-1.5">
+                        Private Trip - Camping / Orang (Rp)
+                    </label>
+                    <div class="relative flex items-center">
+                        <span class="absolute left-3 text-xs font-bold text-muted pointer-events-none">Rp</span>
+                        <input type="text" inputmode="numeric" name="price_private"
+                            :value="formatPrice(price_private)"
+                            @input="price_private = handlePriceInput($event, $data, 'price_private')"
+                            placeholder="750.000"
+                            class="w-full text-xs font-bold rounded-xl border border-hairline bg-canvas py-2.5 pl-9 pr-3 text-ink focus:border-primary focus:ring-1 focus:ring-primary shadow-2xs">
+                    </div>
+                    <span class="text-[10.5px] text-muted mt-1 block">Tarif privat camping per orang</span>
+                </div>
+
+                <!-- Private Trip - Tek-tok -->
+                <div x-show="has_private_trip" x-transition>
+                    <label class="block text-xs font-bold text-ink-heading mb-1.5">
+                        Private Trip - Tek-tok / Orang (Rp)
+                    </label>
+                    <div class="relative flex items-center">
+                        <span class="absolute left-3 text-xs font-bold text-muted pointer-events-none">Rp</span>
+                        <input type="text" inputmode="numeric" name="price_private_tektok"
+                            :value="formatPrice(price_private_tektok)"
+                            @input="price_private_tektok = handlePriceInput($event, $data, 'price_private_tektok')"
+                            placeholder="600.000"
+                            class="w-full text-xs font-bold rounded-xl border border-hairline bg-canvas py-2.5 pl-9 pr-3 text-ink focus:border-primary focus:ring-1 focus:ring-primary shadow-2xs">
+                    </div>
+                    <span class="text-[10.5px] text-muted mt-1 block">Tarif privat tektok per orang</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bagian B: Daftar Harga Berdasarkan Jumlah Peserta (Dynamic Payment) -->
+        <div x-show="has_open_trip" x-transition class="space-y-4 pt-4 border-t border-hairline">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h4 class="text-xs font-bold text-ink-heading uppercase tracking-wider">B. Harga Rombongan Open Trip
+                    </h4>
+                    <p class="text-[11px] text-muted">Makin ramai peserta yang ikut, tarif per orang bisa dibuat lebih
+                        murah.</p>
+                </div>
+                <button type="button" @click="addTier()"
+                    class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-primary-subtle text-primary text-xs font-bold hover:bg-primary hover:text-white transition-colors cursor-pointer">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                    </svg>
+                    <span>Tambah Jumlah Peserta</span>
+                </button>
+            </div>
+
+            <div class="space-y-3">
+                <!-- Desktop Table Header -->
+                <div
+                    class="hidden sm:grid sm:grid-cols-12 gap-3 px-4 py-1 text-[11px] font-bold text-muted uppercase tracking-wider">
+                    <div class="sm:col-span-3">Jumlah Peserta</div>
+                    <div class="sm:col-span-4">Harga Camping / Orang (Rp)</div>
+                    <div class="sm:col-span-4">Harga Tek-tok / Orang (Rp)</div>
+                    <div class="sm:col-span-1 text-center">Aksi</div>
+                </div>
+
+                <template x-for="(t, index) in priceTiers" :key="index">
+                    <div
+                        class="p-3.5 sm:p-4 rounded-2xl bg-canvas border border-hairline grid grid-cols-1 sm:grid-cols-12 gap-3 items-center hover:border-primary/30 transition-colors shadow-2xs">
+                        <input type="hidden" :name="`price_tiers[${index}][id]`" :value="t.id">
+
+                        <!-- Min Pax -->
+                        <div class="sm:col-span-3">
+                            <label class="block sm:hidden text-[11px] font-bold text-muted mb-1">Jumlah Peserta</label>
+                            <template x-if="t.min_pax == 1">
+                                <div class="relative flex items-center">
+                                    <input type="number" readonly :name="`price_tiers[${index}][min_pax]`"
+                                        :value="1"
+                                        class="w-full text-xs font-bold rounded-xl border border-hairline bg-surface-card/80 py-2.5 px-3 pr-14 text-ink-heading cursor-not-allowed shadow-2xs select-none">
+                                    <span
+                                        class="absolute right-3 text-[11px] font-bold text-muted pointer-events-none">Orang
+                                        (Dasar)</span>
+                                </div>
+                            </template>
+                            <template x-if="t.min_pax > 1">
+                                <div class="relative flex items-center">
+                                    <input type="number" :name="`price_tiers[${index}][min_pax]`" x-model="t.min_pax"
+                                        min="2" :required="has_open_trip" placeholder="2"
+                                        class="w-full text-xs font-semibold rounded-xl border border-hairline bg-surface-card py-2.5 px-3 pr-14 text-ink focus:border-primary focus:ring-1 focus:ring-primary shadow-2xs">
+                                    <span
+                                        class="absolute right-3 text-[11px] font-bold text-muted pointer-events-none">Orang</span>
+                                </div>
+                            </template>
+                        </div>
+
+                        <!-- Price Camping per Pax -->
+                        <div class="sm:col-span-4">
+                            <label class="block sm:hidden text-[11px] font-bold text-muted mb-1">Harga Camping /
+                                Orang</label>
+                            <template x-if="t.min_pax == 1">
+                                <div class="space-y-1">
+                                    <div class="relative flex items-center">
+                                        <span
+                                            class="absolute left-3 text-xs font-bold text-muted pointer-events-none">Rp</span>
+                                        <input type="text" readonly :name="`price_tiers[${index}][price_per_pax]`"
+                                            :value="formatPrice(base_price)"
+                                            class="w-full text-xs font-bold rounded-xl border border-hairline bg-surface-card/80 py-2.5 pl-9 pr-3 text-ink-heading cursor-not-allowed shadow-2xs select-none">
+                                    </div>
+                                    <span class="text-[10px] text-muted block">Otomatis mengikuti tarif 1 orang di
+                                        atas</span>
+                                </div>
+                            </template>
+                            <template x-if="t.min_pax > 1">
+                                <div class="space-y-1">
+                                    <div class="relative flex items-center">
+                                        <span
+                                            class="absolute left-3 text-xs font-bold text-muted-soft pointer-events-none">Rp</span>
+                                        <input type="text" inputmode="numeric"
+                                            :name="`price_tiers[${index}][price_per_pax]`"
+                                            :value="formatPrice(t.price_per_pax)"
+                                            @input="t.price_per_pax = handlePriceInput($event, t, 'price_per_pax')"
+                                            :required="has_open_trip" placeholder="0"
+                                            class="w-full text-xs font-bold rounded-xl border border-hairline bg-surface-card py-2.5 pl-9 pr-3 text-ink focus:border-primary focus:ring-1 focus:ring-primary shadow-2xs"
+                                            :class="{ 'border-rose-400': Number(t.price_per_pax) > Number(base_price) && Number(
+                                                    base_price) > 0 }">
+                                    </div>
+                                    <span class="text-[10px] text-rose-500 font-medium block"
+                                        x-show="Number(t.price_per_pax) > Number(base_price) && Number(base_price) > 0">
+                                        Maks. Rp <span x-text="formatPrice(base_price)"></span> (tidak boleh lebih mahal
+                                        dari 1 orang)
+                                    </span>
+                                </div>
+                            </template>
+                        </div>
+
+                        <!-- Price Tektok per Pax -->
+                        <div class="sm:col-span-4">
+                            <label class="block sm:hidden text-[11px] font-bold text-muted mb-1">Harga Tek-tok /
+                                Orang</label>
+                            <template x-if="t.min_pax == 1">
+                                <div class="space-y-1">
+                                    <div class="relative flex items-center">
+                                        <span
+                                            class="absolute left-3 text-xs font-bold text-muted pointer-events-none">Rp</span>
+                                        <input type="text" readonly
+                                            :name="`price_tiers[${index}][price_per_pax_tektok]`"
+                                            :value="formatPrice(price_tektok)"
+                                            class="w-full text-xs font-bold rounded-xl border border-hairline bg-surface-card/80 py-2.5 pl-9 pr-3 text-ink-heading cursor-not-allowed shadow-2xs select-none">
+                                    </div>
+                                    <span class="text-[10px] text-muted block">Otomatis mengikuti tarif 1 orang di
+                                        atas</span>
+                                </div>
+                            </template>
+                            <template x-if="t.min_pax > 1">
+                                <div class="space-y-1">
+                                    <div class="relative flex items-center">
+                                        <span
+                                            class="absolute left-3 text-xs font-bold text-muted-soft pointer-events-none">Rp</span>
+                                        <input type="text" inputmode="numeric"
+                                            :name="`price_tiers[${index}][price_per_pax_tektok]`"
+                                            :value="formatPrice(t.price_per_pax_tektok)"
+                                            @input="t.price_per_pax_tektok = handlePriceInput($event, t, 'price_per_pax_tektok')"
+                                            placeholder="0"
+                                            class="w-full text-xs font-bold rounded-xl border border-hairline bg-surface-card py-2.5 pl-9 pr-3 text-ink focus:border-primary focus:ring-1 focus:ring-primary shadow-2xs"
+                                            :class="{ 'border-rose-400': Number(t.price_per_pax_tektok) > Number(
+                                                    price_tektok) && Number(price_tektok) > 0 }">
+                                    </div>
+                                    <span class="text-[10px] text-rose-500 font-medium block"
+                                        x-show="Number(t.price_per_pax_tektok) > Number(price_tektok) && Number(price_tektok) > 0">
+                                        Maks. Rp <span x-text="formatPrice(price_tektok)"></span> (tidak boleh lebih mahal
+                                        dari 1 orang)
+                                    </span>
+                                </div>
+                            </template>
+                        </div>
+
+                        <!-- Remove Button -->
+                        <div class="sm:col-span-1 flex items-center justify-end sm:justify-center pt-1 sm:pt-0">
+                            <template x-if="t.min_pax > 1">
+                                <button type="button" @click="removeTier(index)"
+                                    class="w-9 h-9 flex items-center justify-center rounded-xl border border-hairline bg-surface-card text-muted hover:text-rose-600 hover:border-rose-300 hover:bg-rose-50 transition-colors shadow-2xs cursor-pointer"
+                                    title="Hapus Baris">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                    </svg>
+                                </button>
+                            </template>
+                            <template x-if="t.min_pax == 1">
+                                <span
+                                    class="text-[10px] font-bold text-muted bg-surface-card/60 px-2.5 py-1 rounded-lg border border-hairline select-none">Dasar</span>
+                            </template>
+                        </div>
+                    </div>
+                </template>
+            </div>
         </div>
     </div>
 
@@ -1398,10 +1476,21 @@
             return {
                 has_open_trip: @js(old('has_open_trip', $mountain->has_open_trip ? '1' : '0') == '1'),
                 has_private_trip: @js(old('has_private_trip', $mountain->has_private_trip ? '1' : '0') == '1'),
+                base_price: @js(old('base_price', $mountain->base_price ?? '')),
+                price_tektok: @js(old('price_tektok', $mountain->price_tektok ?? '')),
+                price_private: @js(old('price_private', $mountain->price_private ?? '')),
+                price_private_tektok: @js(old('price_private_tektok', $mountain->price_private_tektok ?? '')),
+                booking_fee_per_pax: @js(old('booking_fee_per_pax', $mountain->booking_fee_per_pax ?? '')),
                 routes: @js($routesData),
                 priceTiers: @js($priceTiersData),
                 facilitiesIncluded: @js($facilitiesIncluded),
                 facilitiesExcluded: @js($facilitiesExcluded),
+                init() {
+                    if (this.priceTiers.length > 0 && this.priceTiers[0].min_pax == 1) {
+                        if (this.base_price) this.priceTiers[0].price_per_pax = this.base_price;
+                        if (this.price_tektok) this.priceTiers[0].price_per_pax_tektok = this.price_tektok;
+                    }
+                },
                 addRoute() {
                     this.routes.push({
                         id: null,
@@ -1410,11 +1499,6 @@
                         duration_hours: '',
                         grade: 'Grade A',
                         is_primary: false,
-                        price_camping_open: '',
-                        price_tektok_open: '',
-                        price_camping_private: '',
-                        price_tektok_private: '',
-                        booking_fee_per_pax: '',
                         isOpen: true,
                         activeSubTab: 'elevation',
                         checkpoints: [{
@@ -1525,12 +1609,12 @@
                 },
                 addTier() {
                     let lastTier = this.priceTiers[this.priceTiers.length - 1];
-                    let nextMin = lastTier ? parseInt(lastTier.min_pax) + 3 : 1;
+                    let nextMin = lastTier ? parseInt(lastTier.min_pax) + 1 : 1;
                     this.priceTiers.push({
                         id: null,
                         min_pax: nextMin,
-                        price_per_pax: '',
-                        price_per_pax_tektok: ''
+                        price_per_pax: 0,
+                        price_per_pax_tektok: 0
                     });
                 },
                 removeTier(index) {
@@ -1569,17 +1653,25 @@
                     event.target.value = clean ? new Intl.NumberFormat('id-ID').format(clean) : '';
                     return num;
                 },
-                onPriceCampingChange(r) {
-                    let maxFee = Math.floor((Number(r.price_camping_open) || 0) / 2);
-                    if (Number(r.booking_fee_per_pax) > maxFee && maxFee > 0) {
-                        r.booking_fee_per_pax = maxFee;
+                onBasePriceChange() {
+                    let maxFee = Math.floor((Number(this.base_price) || 0) / 2);
+                    if (Number(this.booking_fee_per_pax) > maxFee && maxFee > 0) {
+                        this.booking_fee_per_pax = maxFee;
+                    }
+                    if (this.priceTiers.length > 0 && this.priceTiers[0].min_pax == 1) {
+                        this.priceTiers[0].price_per_pax = this.base_price || 0;
                     }
                 },
-                handleBookingFeeInput(event, r) {
-                    let num = this.handlePriceInput(event, r, 'booking_fee_per_pax');
-                    let maxFee = Math.floor((Number(r.price_camping_open) || 0) / 2);
+                onPriceTektokChange() {
+                    if (this.priceTiers.length > 0 && this.priceTiers[0].min_pax == 1) {
+                        this.priceTiers[0].price_per_pax_tektok = this.price_tektok || 0;
+                    }
+                },
+                handleBookingFeeInput(event, obj) {
+                    let num = this.handlePriceInput(event, obj, 'booking_fee_per_pax');
+                    let maxFee = Math.floor((Number(this.base_price) || 0) / 2);
                     if (maxFee > 0 && num > maxFee) {
-                        r.booking_fee_per_pax = maxFee;
+                        obj.booking_fee_per_pax = maxFee;
                         event.target.value = this.formatPrice(maxFee);
                     }
                 },
@@ -1603,6 +1695,12 @@
                                 activity: line
                             };
                         });
+                },
+                getBaseCampingPrice() {
+                    return Number(this.base_price) || 0;
+                },
+                getBaseTektokPrice() {
+                    return Number(this.price_tektok) || 0;
                 }
             };
         }
