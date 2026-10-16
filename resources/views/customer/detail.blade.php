@@ -2428,7 +2428,7 @@
                         return this.basePrice;
                     }
                     for (let tier of this.priceTiers) {
-                        if (pax >= tier.min_pax && pax <= tier.max_pax) {
+                        if (pax >= tier.min_pax && (tier.max_pax === null || pax <= tier.max_pax)) {
                             return parseInt(tier.price_per_pax, 10);
                         }
                     }
@@ -2447,7 +2447,7 @@
                                 return parseInt(currentRoute.price_tektok_private, 10);
                             }
                             return this.pricePrivateTektok || (this.pricePrivate ? Math.round(this.pricePrivate * 0.85) :
-                                650000);
+                                600000);
                         }
                         if (currentRoute && currentRoute.price_camping_private) {
                             return parseInt(currentRoute.price_camping_private, 10);
@@ -2459,20 +2459,13 @@
                         if (currentRoute && currentRoute.price_tektok_open) {
                             return parseInt(currentRoute.price_tektok_open, 10);
                         }
-                        const campingPrice = (currentRoute && currentRoute.price_camping_open) ?
-                            parseInt(currentRoute.price_camping_open, 10) :
-                            this.getTierPrice(this.paxCount);
-                        if (this.basePrice > 0 && this.priceTektok > 0) {
-                            const ratio = this.priceTektok / this.basePrice;
-                            return Math.round(campingPrice * ratio);
-                        }
-                        return this.priceTektok || campingPrice;
+                        return this.priceTektok || (this.basePrice ? Math.round(this.basePrice * 0.8) : 380000);
                     }
 
                     if (currentRoute && currentRoute.price_camping_open) {
                         return parseInt(currentRoute.price_camping_open, 10);
                     }
-                    return this.getTierPrice(this.paxCount);
+                    return this.basePrice || 500000;
                 },
 
                 ticketTotal() {

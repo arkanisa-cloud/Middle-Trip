@@ -106,6 +106,7 @@ class Mountain extends Model
         $tiers = $this->priceTiers()->get();
 
         $campingPrice = $this->base_price;
+        $tektokPrice = null;
 
         if ($tiers->isNotEmpty()) {
             // Cari tier dengan min_pax tertinggi yang memenuhi kuota pax
@@ -113,13 +114,19 @@ class Mountain extends Model
 
             if ($matchingTier) {
                 $campingPrice = $matchingTier->price_per_pax;
+                $tektokPrice = $matchingTier->price_per_pax_tektok;
             } else {
                 $lowestTier = $tiers->sortBy('min_pax')->first();
                 $campingPrice = $lowestTier?->price_per_pax ?? $this->base_price;
+                $tektokPrice = $lowestTier?->price_per_pax_tektok;
             }
         }
 
         if ($hikingType === 'tektok') {
+            if ($tektokPrice !== null && $tektokPrice > 0) {
+                return (int) $tektokPrice;
+            }
+
             if ($this->price_tektok !== null && $this->base_price > 0) {
                 $ratio = $this->price_tektok / $this->base_price;
 

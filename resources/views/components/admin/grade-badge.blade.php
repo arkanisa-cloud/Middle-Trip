@@ -1,22 +1,22 @@
-@props(['grade'])
+@props(['grade', 'short' => false])
 
 @php
     $normalized = trim($grade ?? '');
     $config = match(true) {
         str_contains($normalized, 'Grade A') => [
-            'bg' => 'bg-grade-a-bg text-grade-a-text border-grade-a-dot/20',
-            'dot' => 'bg-grade-a-dot',
-            'label' => 'Grade A (Pemula)'
+            'bg' => 'bg-emerald-50 text-emerald-800 border-emerald-200',
+            'dot' => 'bg-emerald-500',
+            'label' => $short ? 'Grade A' : 'Grade A • Pemula'
         ],
         str_contains($normalized, 'Grade B') => [
-            'bg' => 'bg-grade-b-bg text-grade-b-text border-grade-b-dot/20',
-            'dot' => 'bg-grade-b-dot',
-            'label' => 'Grade B (Menengah)'
+            'bg' => 'bg-amber-50 text-amber-800 border-amber-200',
+            'dot' => 'bg-amber-500',
+            'label' => $short ? 'Grade B' : 'Grade B • Menengah'
         ],
         str_contains($normalized, 'Grade C') => [
-            'bg' => 'bg-grade-c-bg text-grade-c-text border-grade-c-dot/20',
-            'dot' => 'bg-grade-c-dot',
-            'label' => 'Grade C (Ahli)'
+            'bg' => 'bg-rose-50 text-rose-800 border-rose-200',
+            'dot' => 'bg-rose-500',
+            'label' => $short ? 'Grade C' : 'Grade C • Ahli'
         ],
         default => [
             'bg' => 'bg-gray-100 text-gray-700 border-gray-200',
@@ -26,7 +26,7 @@
     };
 @endphp
 
-<span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold font-outfit border {{ $config['bg'] }}">
-    <span class="w-1.5 h-1.5 rounded-full {{ $config['dot'] }}"></span>
-    {{ $config['label'] }}
+<span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-bold font-outfit border whitespace-nowrap shadow-2xs {{ $config['bg'] }}">
+    <span class="w-1.5 h-1.5 rounded-full shrink-0 {{ $config['dot'] }}"></span>
+    <span>{{ $config['label'] }}</span>
 </span>

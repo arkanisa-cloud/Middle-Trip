@@ -82,7 +82,7 @@
                                         <div class="font-bold text-sm text-ink-heading">
                                             {{ $exp->mountain->name ?? 'Gunung' }}
                                         </div>
-                                        <div class="flex items-center gap-2 mt-1">
+                                        <div class="flex flex-wrap items-center gap-1.5 mt-1">
                                             <span class="text-xs text-muted">{{ $exp->route->name ?? 'Jalur' }}</span>
                                             @if ($exp->route)
                                                 <x-admin.grade-badge :grade="$exp->route->grade->value ?? $exp->route->grade" />
@@ -91,7 +91,7 @@
                                     </td>
 
                                     <!-- Type -->
-                                    <td class="py-4 px-5">
+                                    <td class="py-4 px-5 whitespace-nowrap">
                                         <span
                                             class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-bold {{ $exp->type === 'open' ? 'bg-primary-subtle text-primary border border-primary/20' : 'bg-purple-50 text-purple-700 border border-purple-200' }}">
                                             {{ strtoupper($exp->type) }} TRIP
@@ -103,7 +103,7 @@
 
                                     <!-- Dates -->
                                     <td class="py-4 px-5">
-                                        <div class="inline-flex flex-col bg-canvas px-3 py-1.5 rounded-xl border border-hairline">
+                                        <div class="inline-flex flex-col bg-canvas px-3 py-1.5 rounded-xl border border-hairline whitespace-nowrap shadow-2xs">
                                             <span class="font-bold text-ink-heading block text-xs">
                                                 {{ \Carbon\Carbon::parse($exp->departure_date)->format('d M Y') }}
                                             </span>
@@ -127,20 +127,25 @@
                                     </td>
 
                                     <!-- Price Lock Info -->
-                                    <td class="py-4 px-5 font-bold">
+                                    <td class="py-4 px-5 font-bold whitespace-nowrap">
                                         @if ($exp->status === 'price_locked' || $exp->current_locked_price)
-                                            <span class="text-emerald-700 font-mono text-sm block">
+                                            <span class="text-emerald-700 font-mono text-sm block font-extrabold">
                                                 Rp {{ number_format($exp->current_locked_price, 0, ',', '.') }}
                                             </span>
-                                            <span class="text-[10px] text-muted font-normal">Harga Terkunci</span>
+                                            <span class="text-[10px] text-muted font-normal block">Harga Terkunci</span>
                                         @else
-                                            <span class="text-muted text-xs italic">Menunggu H-X</span>
+                                            <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-semibold text-muted bg-canvas border border-hairline">
+                                                <svg class="w-3 h-3 text-muted-soft" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                                </svg>
+                                                Menunggu H-X
+                                            </span>
                                         @endif
                                     </td>
 
                                     <!-- Status Badge -->
-                                    <td class="py-4 px-5">
-                                        <x-admin.status-badge :status="$exp->status" />
+                                    <td class="py-4 px-5 whitespace-nowrap">
+                                        <x-admin.status-badge :status="$exp->status" context="expedition" />
                                     </td>
 
                                     <!-- Actions -->

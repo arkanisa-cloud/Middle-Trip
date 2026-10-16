@@ -18,28 +18,34 @@
 
             <!-- Draft Notification Banner -->
             <template x-if="hasDraft && !isRestored">
-                <div class="p-4 sm:p-5 rounded-3xl bg-amber-50/90 border border-amber-200 text-amber-900 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4 transition-all">
+                <div
+                    class="p-4 sm:p-5 rounded-3xl bg-amber-50/90 border border-amber-200 text-amber-900 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4 transition-all">
                     <div class="flex items-start gap-3.5">
                         <div class="p-2 rounded-2xl bg-amber-100 text-amber-700 shrink-0 mt-0.5">
                             <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                             </svg>
                         </div>
                         <div>
                             <h4 class="font-bold text-sm text-amber-950">Ditemukan Draf Data Gunung Belum Tersimpan</h4>
                             <p class="text-xs text-amber-800/90 mt-0.5">
-                                Tersimpan otomatis pada <span class="font-semibold" x-text="draftSavedAt"></span>. Ingin memulihkan seluruh data yang Anda ketik sebelumnya?
+                                Tersimpan otomatis pada <span class="font-semibold" x-text="draftSavedAt"></span>. Ingin
+                                memulihkan seluruh data yang Anda ketik sebelumnya?
                             </p>
                         </div>
                     </div>
                     <div class="flex items-center gap-2 shrink-0 self-end sm:self-center">
-                        <button type="button" @click="restoreDraft()" class="px-4 py-2 rounded-xl bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold transition shadow-xs cursor-pointer flex items-center gap-1.5">
+                        <button type="button" @click="restoreDraft()"
+                            class="px-4 py-2 rounded-xl bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold transition shadow-xs cursor-pointer flex items-center gap-1.5">
                             <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
                             </svg>
                             <span>Pulihkan Draf</span>
                         </button>
-                        <button type="button" @click="discardDraft()" class="px-3.5 py-2 rounded-xl border border-amber-300 hover:bg-amber-100 text-amber-900 text-xs font-semibold transition cursor-pointer">
+                        <button type="button" @click="discardDraft()"
+                            class="px-3.5 py-2 rounded-xl border border-amber-300 hover:bg-amber-100 text-amber-900 text-xs font-semibold transition cursor-pointer">
                             Buang Draf
                         </button>
                     </div>
@@ -47,14 +53,17 @@
             </template>
 
             <template x-if="isRestored">
-                <div class="p-3.5 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-900 text-xs shadow-xs flex items-center justify-between gap-3">
+                <div
+                    class="p-3.5 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-900 text-xs shadow-xs flex items-center justify-between gap-3">
                     <div class="flex items-center gap-2.5 font-medium">
-                        <svg class="w-4 h-4 text-emerald-600 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <svg class="w-4 h-4 text-emerald-600 shrink-0" fill="none" viewBox="0 0 24 24"
+                            stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
                         </svg>
                         <span>Draf data berhasil dipulihkan ke form!</span>
                     </div>
-                    <button type="button" @click="isRestored = false" class="text-emerald-700 hover:text-emerald-900 text-[11px] font-bold cursor-pointer">
+                    <button type="button" @click="isRestored = false"
+                        class="text-emerald-700 hover:text-emerald-900 text-[11px] font-bold cursor-pointer">
                         Tutup
                     </button>
                 </div>
@@ -101,8 +110,8 @@
                             Ketinggian (MDPL) <span class="text-rose-500">*</span>
                         </label>
                         <input type="text" inputmode="numeric" name="elevation" x-model="form.elevation"
-                            @input="form.elevation = (form.elevation || '').toString().replace(/[^0-9]/g, '')"
-                            required placeholder="3142"
+                            @input="form.elevation = (form.elevation || '').toString().replace(/[^0-9]/g, '')" required
+                            placeholder="3142"
                             class="w-full text-xs rounded-xl border border-hairline bg-canvas p-3 text-ink focus:border-primary focus:ring-1 focus:ring-primary shadow-xs">
                     </div>
 
@@ -111,8 +120,7 @@
                         <label class="block text-xs font-bold text-ink-heading uppercase tracking-wider mb-2">
                             Provinsi / Wilayah <span class="text-rose-500">*</span>
                         </label>
-                        <input type="text" name="province" x-model="form.province" required
-                            placeholder="Jawa Tengah"
+                        <input type="text" name="province" x-model="form.province" required placeholder="Jawa Tengah"
                             class="w-full text-xs rounded-xl border border-hairline bg-canvas p-3 text-ink focus:border-primary focus:ring-1 focus:ring-primary shadow-xs">
                     </div>
 
@@ -126,12 +134,16 @@
                         <button type="button" @click="openGrade = !openGrade"
                             class="w-full text-xs rounded-xl border border-hairline bg-canvas p-3 text-ink flex items-center justify-between cursor-pointer focus:border-primary shadow-xs font-semibold transition select-none">
                             <span class="flex items-center gap-2">
-                                <span class="w-2 h-2 rounded-full" :class="gradeLabels[form.grade]?.dot || 'bg-emerald-500'"></span>
-                                <span x-text="gradeLabels[form.grade]?.label || 'Grade A – Pemula'" class="text-ink-heading"></span>
+                                <span class="w-2 h-2 rounded-full"
+                                    :class="gradeLabels[form.grade]?.dot || 'bg-emerald-500'"></span>
+                                <span x-text="gradeLabels[form.grade]?.label || 'Grade A – Pemula'"
+                                    class="text-ink-heading"></span>
                             </span>
                             <svg class="w-4 h-4 text-muted transition-transform duration-200 shrink-0"
-                                :class="openGrade ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                                :class="openGrade ? 'rotate-180' : ''" fill="none" stroke="currentColor"
+                                viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M19 9l-7 7-7-7" />
                             </svg>
                         </button>
 
@@ -143,22 +155,19 @@
                                 class="px-3 py-1.5 text-[10px] uppercase font-bold text-muted-soft tracking-wider border-b border-hairline/60 mb-1">
                                 Tingkat Kesulitan
                             </div>
-                            <button type="button"
-                                @click="form.grade = 'Grade A'; openGrade = false;"
+                            <button type="button" @click="form.grade = 'Grade A'; openGrade = false;"
                                 class="w-full text-left px-4 py-2 hover:bg-gray-50 text-body-strong font-medium flex items-center justify-between cursor-pointer"
                                 :class="form.grade === 'Grade A' ? 'bg-primary-subtle/50 font-bold' : ''">
                                 <span class="text-emerald-700">Grade A – Pemula</span>
                                 <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
                             </button>
-                            <button type="button"
-                                @click="form.grade = 'Grade B'; openGrade = false;"
+                            <button type="button" @click="form.grade = 'Grade B'; openGrade = false;"
                                 class="w-full text-left px-4 py-2 hover:bg-gray-50 text-body-strong font-medium flex items-center justify-between cursor-pointer"
                                 :class="form.grade === 'Grade B' ? 'bg-primary-subtle/50 font-bold' : ''">
                                 <span class="text-amber-700">Grade B – Menengah</span>
                                 <span class="w-2 h-2 rounded-full bg-amber-500"></span>
                             </button>
-                            <button type="button"
-                                @click="form.grade = 'Grade C'; openGrade = false;"
+                            <button type="button" @click="form.grade = 'Grade C'; openGrade = false;"
                                 class="w-full text-left px-4 py-2 hover:bg-gray-50 text-body-strong font-medium flex items-center justify-between cursor-pointer"
                                 :class="form.grade === 'Grade C' ? 'bg-primary-subtle/50 font-bold' : ''">
                                 <span class="text-rose-700">Grade C – Ahli</span>
@@ -263,7 +272,7 @@
                         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-3">
                             <div>
                                 <label class="block text-xs font-bold text-ink-heading uppercase tracking-wider">
-                                    Galeri Foto Ekspedisi (Opsional, Bento Grid & Lightbox)
+                                    Galeri Foto Ekspedisi
                                 </label>
                                 <p class="text-[11px] text-muted">Upload hingga 10 foto pendukung (pos pendakian, camp
                                     area,
@@ -334,7 +343,8 @@
                                 <span>Open Trip</span>
                             </label>
                             <label class="flex items-center gap-2.5 cursor-pointer text-xs font-semibold text-ink-heading">
-                                <input type="checkbox" name="has_private_trip" value="1" x-model="form.has_private_trip"
+                                <input type="checkbox" name="has_private_trip" value="1"
+                                    x-model="form.has_private_trip"
                                     class="rounded border-hairline text-primary focus:ring-primary">
                                 <span>Private Trip</span>
                             </label>
@@ -364,7 +374,8 @@
                                     class="flex items-center justify-between gap-3 min-w-[210px] px-3.5 py-2 bg-white hover:bg-gray-50 border border-hairline rounded-xl text-xs font-semibold text-ink-heading shadow-2xs cursor-pointer transition select-none">
                                     <div class="flex items-center gap-2 min-w-0">
                                         <span class="w-2 h-2 rounded-full bg-primary shrink-0"></span>
-                                        <span x-text="slots[form.featured_order]?.label || 'Pilih Slot'" class="truncate"></span>
+                                        <span x-text="slots[form.featured_order]?.label || 'Pilih Slot'"
+                                            class="truncate"></span>
                                     </div>
                                     <svg class="w-4 h-4 text-muted transition-transform duration-200 shrink-0"
                                         :class="openSlot ? 'rotate-180' : ''" fill="none" stroke="currentColor"
@@ -388,9 +399,11 @@
                                         Posisi Slot Bento
                                     </div>
                                     <template x-for="(info, key) in slots" :key="key">
-                                        <button type="button" @click="form.featured_order = Number(key); openSlot = false"
+                                        <button type="button"
+                                            @click="form.featured_order = Number(key); openSlot = false"
                                             class="w-full text-left px-3.5 py-2 hover:bg-gray-50 text-body-strong font-medium flex items-center justify-between cursor-pointer transition"
-                                            :class="form.featured_order == key ? 'bg-primary-subtle/50 font-bold text-primary' : ''">
+                                            :class="form.featured_order == key ? 'bg-primary-subtle/50 font-bold text-primary' :
+                                                ''">
                                             <span x-text="info.label"></span>
                                             <span
                                                 class="text-[10px] text-muted font-normal bg-gray-100 px-2 py-0.5 rounded-md"
@@ -601,14 +614,16 @@
                                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-3"
                                         :class="{
                                             'lg:grid-cols-5': form.has_open_trip && form.has_private_trip,
-                                            'lg:grid-cols-3': (form.has_open_trip && !form.has_private_trip) || (!form.has_open_trip && form.has_private_trip),
+                                            'lg:grid-cols-3': (form.has_open_trip && !form.has_private_trip) || (!form
+                                                .has_open_trip && form.has_private_trip),
                                             'lg:grid-cols-1': !form.has_open_trip && !form.has_private_trip
                                         }">
                                         <!-- Open Trip Pricing (Camping & Tektok) -->
                                         <div x-show="form.has_open_trip" x-transition>
                                             <label class="block text-[11px] font-semibold text-muted mb-1">Open Trip -
                                                 Camping (Rp) <span class="text-rose-500">*</span></label>
-                                            <input type="text" inputmode="numeric" :name="`routes[${index}][price_camping_open]`"
+                                            <input type="text" inputmode="numeric"
+                                                :name="`routes[${index}][price_camping_open]`"
                                                 :value="formatPrice(r.price_camping_open)"
                                                 @input="r.price_camping_open = handlePriceInput($event, r, 'price_camping_open'); onPriceCampingChange(r)"
                                                 placeholder="500.000"
@@ -618,7 +633,8 @@
                                         <div x-show="form.has_open_trip" x-transition>
                                             <label class="block text-[11px] font-semibold text-muted mb-1">Open Trip -
                                                 Tektok (Rp)</label>
-                                            <input type="text" inputmode="numeric" :name="`routes[${index}][price_tektok_open]`"
+                                            <input type="text" inputmode="numeric"
+                                                :name="`routes[${index}][price_tektok_open]`"
                                                 :value="formatPrice(r.price_tektok_open)"
                                                 @input="r.price_tektok_open = handlePriceInput($event, r, 'price_tektok_open')"
                                                 placeholder="400.000"
@@ -629,7 +645,8 @@
                                         <div x-show="form.has_private_trip" x-transition>
                                             <label class="block text-[11px] font-semibold text-muted mb-1">Private Trip -
                                                 Camping (Rp)</label>
-                                            <input type="text" inputmode="numeric" :name="`routes[${index}][price_camping_private]`"
+                                            <input type="text" inputmode="numeric"
+                                                :name="`routes[${index}][price_camping_private]`"
                                                 :value="formatPrice(r.price_camping_private)"
                                                 @input="r.price_camping_private = handlePriceInput($event, r, 'price_camping_private')"
                                                 placeholder="750.000"
@@ -638,7 +655,8 @@
                                         <div x-show="form.has_private_trip" x-transition>
                                             <label class="block text-[11px] font-semibold text-muted mb-1">Private Trip -
                                                 Tektok (Rp)</label>
-                                            <input type="text" inputmode="numeric" :name="`routes[${index}][price_tektok_private]`"
+                                            <input type="text" inputmode="numeric"
+                                                :name="`routes[${index}][price_tektok_private]`"
                                                 :value="formatPrice(r.price_tektok_private)"
                                                 @input="r.price_tektok_private = handlePriceInput($event, r, 'price_tektok_private')"
                                                 placeholder="650.000"
@@ -648,11 +666,11 @@
                                         <!-- Booking Fee DP per Pax -->
                                         <div x-show="form.has_open_trip || form.has_private_trip" x-transition>
                                             <label class="block text-[11px] font-semibold text-muted mb-1">Booking Fee DP /
-                                                 Pax (Rp) <span class="text-rose-500">*</span></label>
-                                            <input type="text" inputmode="numeric" :name="`routes[${index}][booking_fee_per_pax]`"
+                                                Pax (Rp) <span class="text-rose-500">*</span></label>
+                                            <input type="text" inputmode="numeric"
+                                                :name="`routes[${index}][booking_fee_per_pax]`"
                                                 :value="formatPrice(r.booking_fee_per_pax)"
-                                                @input="handleBookingFeeInput($event, r)"
-                                                placeholder="150.000"
+                                                @input="handleBookingFeeInput($event, r)" placeholder="150.000"
                                                 class="w-full text-xs rounded-xl border border-hairline bg-canvas p-2.5 text-ink focus:border-primary font-semibold"
                                                 :required="form.has_open_trip">
                                             <template x-if="form.has_open_trip && r.price_camping_open">
@@ -666,10 +684,13 @@
                                         <!-- Notice when neither is checked -->
                                         <div x-show="!form.has_open_trip && !form.has_private_trip"
                                             class="sm:col-span-2 lg:col-span-5 p-3 rounded-xl bg-amber-50 border border-amber-200 text-amber-800 text-xs flex items-center gap-2">
-                                            <svg class="w-4 h-4 text-amber-600 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                                            <svg class="w-4 h-4 text-amber-600 shrink-0" fill="none"
+                                                viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
                                             </svg>
-                                            <span>Centang <strong>Open Trip</strong> atau <strong>Private Trip</strong> di Section 1 agar kolom input tarif pada jalur ini aktif.</span>
+                                            <span>Centang <strong>Open Trip</strong> atau <strong>Private Trip</strong> di
+                                                Section 1 agar kolom input tarif pada jalur ini aktif.</span>
                                         </div>
                                     </div>
                                 </div>
@@ -910,8 +931,13 @@
                                                     </div>
                                                     <div>
                                                         <div class="flex items-center justify-between mb-1">
-                                                            <label class="block text-[10px] font-bold text-muted">Jadwal Timeline</label>
-                                                            <span class="text-[9.5px] text-muted-soft">Format bebas: <code class="bg-surface-card px-1 py-0.5 rounded">08:00 - Registrasi</code> | <code class="bg-surface-card px-1 py-0.5 rounded">08.00 - 10.00 Trekking</code></span>
+                                                            <label class="block text-[10px] font-bold text-muted">Jadwal
+                                                                Timeline</label>
+                                                            <span class="text-[9.5px] text-muted-soft">Format bebas: <code
+                                                                    class="bg-surface-card px-1 py-0.5 rounded">08:00 -
+                                                                    Registrasi</code> | <code
+                                                                    class="bg-surface-card px-1 py-0.5 rounded">08.00 -
+                                                                    10.00 Trekking</code></span>
                                                         </div>
                                                         <textarea rows="4" :name="`routes[${index}][itinerary_days][${dIndex}][timeline]`" x-model="dayItem.timeline"
                                                             placeholder="08:00 - Registrasi di Basecamp&#10;09:00 - Mulai Trekking ke Pos 1&#10;12:30 - Makan Siang&#10;16:00 - Tiba di Camp Area"
@@ -919,21 +945,33 @@
 
                                                         <!-- Live Visual Timeline Preview -->
                                                         <template x-if="parseTimelinePreview(dayItem.timeline).length > 0">
-                                                            <div class="mt-2 p-2.5 rounded-xl bg-canvas border border-hairline/80 space-y-1.5">
+                                                            <div
+                                                                class="mt-2 p-2.5 rounded-xl bg-canvas border border-hairline/80 space-y-1.5">
                                                                 <div class="flex items-center justify-between">
-                                                                    <span class="text-[9.5px] font-bold text-muted uppercase tracking-wider">Pratinjau Otomatis Frontend:</span>
-                                                                    <span class="text-[9.5px] text-emerald-600 font-semibold" x-text="`${parseTimelinePreview(dayItem.timeline).length} Agenda`"></span>
+                                                                    <span
+                                                                        class="text-[9.5px] font-bold text-muted uppercase tracking-wider">Pratinjau
+                                                                        Otomatis Frontend:</span>
+                                                                    <span
+                                                                        class="text-[9.5px] text-emerald-600 font-semibold"
+                                                                        x-text="`${parseTimelinePreview(dayItem.timeline).length} Agenda`"></span>
                                                                 </div>
                                                                 <div class="space-y-1 max-h-32 overflow-y-auto pr-1">
-                                                                    <template x-for="(item, pIdx) in parseTimelinePreview(dayItem.timeline)" :key="pIdx">
+                                                                    <template
+                                                                        x-for="(item, pIdx) in parseTimelinePreview(dayItem.timeline)"
+                                                                        :key="pIdx">
                                                                         <div class="flex items-center gap-2 text-[11px]">
                                                                             <template x-if="item.time">
-                                                                                <span class="px-1.5 py-0.5 rounded bg-primary-subtle text-primary font-bold text-[9.5px] shrink-0" x-text="item.time"></span>
+                                                                                <span
+                                                                                    class="px-1.5 py-0.5 rounded bg-primary-subtle text-primary font-bold text-[9.5px] shrink-0"
+                                                                                    x-text="item.time"></span>
                                                                             </template>
                                                                             <template x-if="!item.time">
-                                                                                <span class="px-1.5 py-0.5 rounded bg-primary-subtle/40 text-primary font-semibold text-[9.5px] shrink-0">Aktivitas</span>
+                                                                                <span
+                                                                                    class="px-1.5 py-0.5 rounded bg-primary-subtle/40 text-primary font-semibold text-[9.5px] shrink-0">Aktivitas</span>
                                                                             </template>
-                                                                            <span class="text-ink truncate font-medium text-[11px]" x-text="item.activity"></span>
+                                                                            <span
+                                                                                class="text-ink truncate font-medium text-[11px]"
+                                                                                x-text="item.activity"></span>
                                                                         </div>
                                                                     </template>
                                                                 </div>
@@ -981,30 +1019,46 @@
                                             </div>
                                             <div>
                                                 <div class="flex items-center justify-between mb-1">
-                                                    <label class="block text-[11px] font-bold text-muted">Jadwal Timeline Lengkap</label>
-                                                    <span class="text-[9.5px] text-muted-soft">Format bebas: <code class="bg-surface-card px-1 py-0.5 rounded">00:00 - Registrasi</code> | <code class="bg-surface-card px-1 py-0.5 rounded">01:00 Trekking Dini Hari</code></span>
+                                                    <label class="block text-[11px] font-bold text-muted">Jadwal Timeline
+                                                        Lengkap</label>
+                                                    <span class="text-[9.5px] text-muted-soft">Format bebas: <code
+                                                            class="bg-surface-card px-1 py-0.5 rounded">00:00 -
+                                                            Registrasi</code> | <code
+                                                            class="bg-surface-card px-1 py-0.5 rounded">01:00 Trekking Dini
+                                                            Hari</code></span>
                                                 </div>
                                                 <textarea rows="5" :name="`routes[${index}][itinerary_tektok_timeline]`" x-model="r.itinerary_tektok_timeline"
                                                     placeholder="00:00 - Registrasi & Cek Medis di Basecamp&#10;01:00 - Mulai Trekking Dini Hari Menuju Pos 2&#10;05:30 - Sunrise Spektakuler di Puncak Tertinggi&#10;07:30 - Foto Bersama & Mulai Turun&#10;12:00 - Tiba Kembali di Basecamp & Penutupan"
                                                     class="w-full text-xs font-mono rounded-xl border border-hairline bg-surface-card p-3 text-ink focus:border-primary leading-relaxed"></textarea>
 
                                                 <!-- Live Visual Timeline Preview -->
-                                                <template x-if="parseTimelinePreview(r.itinerary_tektok_timeline).length > 0">
-                                                    <div class="mt-2 p-2.5 rounded-xl bg-canvas border border-hairline/80 space-y-1.5">
+                                                <template
+                                                    x-if="parseTimelinePreview(r.itinerary_tektok_timeline).length > 0">
+                                                    <div
+                                                        class="mt-2 p-2.5 rounded-xl bg-canvas border border-hairline/80 space-y-1.5">
                                                         <div class="flex items-center justify-between">
-                                                            <span class="text-[9.5px] font-bold text-muted uppercase tracking-wider">Pratinjau Otomatis Frontend:</span>
-                                                            <span class="text-[9.5px] text-emerald-600 font-semibold" x-text="`${parseTimelinePreview(r.itinerary_tektok_timeline).length} Agenda`"></span>
+                                                            <span
+                                                                class="text-[9.5px] font-bold text-muted uppercase tracking-wider">Pratinjau
+                                                                Otomatis Frontend:</span>
+                                                            <span class="text-[9.5px] text-emerald-600 font-semibold"
+                                                                x-text="`${parseTimelinePreview(r.itinerary_tektok_timeline).length} Agenda`"></span>
                                                         </div>
                                                         <div class="space-y-1 max-h-36 overflow-y-auto pr-1">
-                                                            <template x-for="(item, pIdx) in parseTimelinePreview(r.itinerary_tektok_timeline)" :key="pIdx">
+                                                            <template
+                                                                x-for="(item, pIdx) in parseTimelinePreview(r.itinerary_tektok_timeline)"
+                                                                :key="pIdx">
                                                                 <div class="flex items-center gap-2 text-[11px]">
                                                                     <template x-if="item.time">
-                                                                        <span class="px-1.5 py-0.5 rounded bg-primary-subtle text-primary font-bold text-[9.5px] shrink-0" x-text="item.time"></span>
+                                                                        <span
+                                                                            class="px-1.5 py-0.5 rounded bg-primary-subtle text-primary font-bold text-[9.5px] shrink-0"
+                                                                            x-text="item.time"></span>
                                                                     </template>
                                                                     <template x-if="!item.time">
-                                                                        <span class="px-1.5 py-0.5 rounded bg-primary-subtle/40 text-primary font-semibold text-[9.5px] shrink-0">Aktivitas</span>
+                                                                        <span
+                                                                            class="px-1.5 py-0.5 rounded bg-primary-subtle/40 text-primary font-semibold text-[9.5px] shrink-0">Aktivitas</span>
                                                                     </template>
-                                                                    <span class="text-ink truncate font-medium text-[11px]" x-text="item.activity"></span>
+                                                                    <span class="text-ink truncate font-medium text-[11px]"
+                                                                        x-text="item.activity"></span>
                                                                 </div>
                                                             </template>
                                                         </div>
@@ -1040,32 +1094,60 @@
             </button>
         </div>
 
-        <div class="space-y-4">
+        <div class="space-y-3">
+            <!-- Desktop Table Header -->
+            <div class="hidden sm:grid sm:grid-cols-12 gap-3 px-4 py-1 text-[11px] font-bold text-muted uppercase tracking-wider">
+                <div class="sm:col-span-3">Minimal Kuota (Pax)</div>
+                <div class="sm:col-span-4">Harga Camping / Pax (Rp)</div>
+                <div class="sm:col-span-4">Harga Tek-tok / Pax (Rp)</div>
+                <div class="sm:col-span-1 text-center">Aksi</div>
+            </div>
+
             <template x-for="(t, index) in priceTiers" :key="index">
                 <div
-                    class="p-4 rounded-2xl bg-canvas border border-hairline grid grid-cols-1 sm:grid-cols-12 gap-3 items-center">
+                    class="p-3.5 sm:p-4 rounded-2xl bg-canvas border border-hairline grid grid-cols-1 sm:grid-cols-12 gap-3 items-center hover:border-primary/30 transition-colors shadow-2xs">
                     <!-- Min Pax -->
-                    <div class="sm:col-span-5">
-                        <label class="block text-[11px] font-bold text-muted mb-1">Minimal Peserta (≥ Pax)</label>
-                        <input type="number" :name="`price_tiers[${index}][min_pax]`" x-model="t.min_pax"
-                            min="1" :required="form.has_open_trip" placeholder="1, 4, 7..."
-                            class="w-full text-xs rounded-xl border border-hairline bg-surface-card p-2 text-ink focus:border-primary">
+                    <div class="sm:col-span-3">
+                        <label class="block sm:hidden text-[11px] font-bold text-muted mb-1">Minimal Peserta (Pax)</label>
+                        <div class="relative flex items-center">
+                            <input type="number" :name="`price_tiers[${index}][min_pax]`" x-model="t.min_pax"
+                                min="1" :required="form.has_open_trip" placeholder="1, 4, 7..."
+                                class="w-full text-xs font-semibold rounded-xl border border-hairline bg-surface-card py-2.5 px-3 pr-12 text-ink focus:border-primary focus:ring-1 focus:ring-primary shadow-2xs">
+                            <span class="absolute right-3 text-[11px] font-bold text-muted pointer-events-none">Pax</span>
+                        </div>
                     </div>
 
-                    <!-- Price per Pax -->
-                    <div class="sm:col-span-6">
-                        <label class="block text-[11px] font-bold text-muted mb-1">Harga Final / Pax (Rp)</label>
-                        <input type="text" inputmode="numeric" :name="`price_tiers[${index}][price_per_pax]`"
-                            :value="formatPrice(t.price_per_pax)"
-                            @input="t.price_per_pax = handlePriceInput($event, t, 'price_per_pax')"
-                            :required="form.has_open_trip" placeholder="550.000"
-                            class="w-full text-xs rounded-xl border border-hairline bg-surface-card p-2 text-ink focus:border-primary font-bold">
+                    <!-- Price Camping per Pax -->
+                    <div class="sm:col-span-4">
+                        <label class="block sm:hidden text-[11px] font-bold text-muted mb-1">Harga Camping / Pax</label>
+                        <div class="relative flex items-center">
+                            <span class="absolute left-3 text-xs font-bold text-muted-soft pointer-events-none">Rp</span>
+                            <input type="text" inputmode="numeric" :name="`price_tiers[${index}][price_per_pax]`"
+                                :value="formatPrice(t.price_per_pax)"
+                                @input="t.price_per_pax = handlePriceInput($event, t, 'price_per_pax')"
+                                :required="form.has_open_trip" placeholder="550.000"
+                                class="w-full text-xs font-bold rounded-xl border border-hairline bg-surface-card py-2.5 pl-9 pr-3 text-ink focus:border-primary focus:ring-1 focus:ring-primary shadow-2xs">
+                        </div>
+                    </div>
+
+                    <!-- Price Tektok per Pax -->
+                    <div class="sm:col-span-4">
+                        <label class="block sm:hidden text-[11px] font-bold text-muted mb-1">Harga Tek-tok / Pax</label>
+                        <div class="relative flex items-center">
+                            <span class="absolute left-3 text-xs font-bold text-muted-soft pointer-events-none">Rp</span>
+                            <input type="text" inputmode="numeric" :name="`price_tiers[${index}][price_per_pax_tektok]`"
+                                :value="formatPrice(t.price_per_pax_tektok)"
+                                @input="t.price_per_pax_tektok = handlePriceInput($event, t, 'price_per_pax_tektok')"
+                                placeholder="380.000"
+                                class="w-full text-xs font-bold rounded-xl border border-hairline bg-surface-card py-2.5 pl-9 pr-3 text-ink focus:border-primary focus:ring-1 focus:ring-primary shadow-2xs">
+                        </div>
                     </div>
 
                     <!-- Remove Button -->
-                    <div class="sm:col-span-1 text-right pt-4 sm:pt-0">
+                    <div class="sm:col-span-1 flex items-center justify-end sm:justify-center pt-1 sm:pt-0">
                         <button type="button" @click="removeTier(index)"
-                            class="p-2 text-muted hover:text-rose-600 rounded-lg transition-colors" title="Hapus Tier">
+                            class="w-9 h-9 flex items-center justify-center rounded-xl border border-hairline bg-surface-card text-muted hover:text-rose-600 hover:border-rose-300 hover:bg-rose-50 transition-colors shadow-2xs cursor-pointer"
+                            title="Hapus Tier">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
@@ -1191,7 +1273,8 @@
     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-4 border-t border-hairline/60">
         <div class="flex items-center gap-2">
             <template x-if="autoSaveStatus">
-                <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-800 text-[11px] font-medium">
+                <div
+                    class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-800 text-[11px] font-medium">
                     <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
                     <span x-text="autoSaveStatus"></span>
                 </div>
@@ -1232,28 +1315,52 @@
                 },
                 openGrade: false,
                 gradeLabels: {
-                    'Grade A': { label: 'Grade A – Pemula', dot: 'bg-emerald-500', text: 'text-emerald-700' },
-                    'Grade B': { label: 'Grade B – Menengah', dot: 'bg-amber-500', text: 'text-amber-700' },
-                    'Grade C': { label: 'Grade C – Ahli', dot: 'bg-rose-500', text: 'text-rose-700' },
+                    'Grade A': {
+                        label: 'Grade A – Pemula',
+                        dot: 'bg-emerald-500',
+                        text: 'text-emerald-700'
+                    },
+                    'Grade B': {
+                        label: 'Grade B – Menengah',
+                        dot: 'bg-amber-500',
+                        text: 'text-amber-700'
+                    },
+                    'Grade C': {
+                        label: 'Grade C – Ahli',
+                        dot: 'bg-rose-500',
+                        text: 'text-rose-700'
+                    },
                 },
                 openSlot: false,
                 slots: {
-                    1: { label: 'Slot 1 (Utama)', desc: 'Kiri • Span 7' },
-                    2: { label: 'Slot 2 (Kanan Atas)', desc: 'Atas • Span 5' },
-                    3: { label: 'Slot 3 (Kanan Bawah)', desc: 'Bawah • Span 5' }
+                    1: {
+                        label: 'Slot 1 (Utama)',
+                        desc: 'Kiri • Span 7'
+                    },
+                    2: {
+                        label: 'Slot 2 (Kanan Atas)',
+                        desc: 'Atas • Span 5'
+                    },
+                    3: {
+                        label: 'Slot 3 (Kanan Bawah)',
+                        desc: 'Bawah • Span 5'
+                    }
                 },
                 routes: @js($defaultRoutes),
                 priceTiers: [{
                         min_pax: 1,
-                        price_per_pax: 650000
+                        price_per_pax: 650000,
+                        price_per_pax_tektok: 380000
                     },
                     {
                         min_pax: 4,
-                        price_per_pax: 550000
+                        price_per_pax: 550000,
+                        price_per_pax_tektok: 320000
                     },
                     {
                         min_pax: 7,
-                        price_per_pax: 480000
+                        price_per_pax: 480000,
+                        price_per_pax_tektok: 280000
                     }
                 ],
                 facilitiesIncluded: [{
@@ -1288,11 +1395,21 @@
                 init() {
                     this.checkExistingDraft();
 
-                    this.$watch('form', () => this.scheduleAutoSave(), { deep: true });
-                    this.$watch('routes', () => this.scheduleAutoSave(), { deep: true });
-                    this.$watch('priceTiers', () => this.scheduleAutoSave(), { deep: true });
-                    this.$watch('facilitiesIncluded', () => this.scheduleAutoSave(), { deep: true });
-                    this.$watch('facilitiesExcluded', () => this.scheduleAutoSave(), { deep: true });
+                    this.$watch('form', () => this.scheduleAutoSave(), {
+                        deep: true
+                    });
+                    this.$watch('routes', () => this.scheduleAutoSave(), {
+                        deep: true
+                    });
+                    this.$watch('priceTiers', () => this.scheduleAutoSave(), {
+                        deep: true
+                    });
+                    this.$watch('facilitiesIncluded', () => this.scheduleAutoSave(), {
+                        deep: true
+                    });
+                    this.$watch('facilitiesExcluded', () => this.scheduleAutoSave(), {
+                        deep: true
+                    });
 
                     window.addEventListener('beforeunload', (e) => {
                         if (!this.isSubmitting && this.isDirty()) {
@@ -1307,7 +1424,8 @@
                         (this.form.name && this.form.name.trim() !== '') ||
                         (this.form.elevation && this.form.elevation.toString().trim() !== '') ||
                         (this.form.province && this.form.province.trim() !== '') ||
-                        (this.routes && this.routes.length > 0 && this.routes[0]?.name && this.routes[0].name.trim() !== '')
+                        (this.routes && this.routes.length > 0 && this.routes[0]?.name && this.routes[0].name.trim() !==
+                            '')
                     );
                 },
 
@@ -1332,7 +1450,11 @@
                         };
                         localStorage.setItem(DRAFT_KEY, JSON.stringify(payload));
                         const now = new Date();
-                        const timeStr = now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+                        const timeStr = now.toLocaleTimeString('id-ID', {
+                            hour: '2-digit',
+                            minute: '2-digit',
+                            second: '2-digit'
+                        });
                         this.autoSaveStatus = 'Draf otomatis tersimpan (' + timeStr + ')';
                     } catch (e) {
                         console.warn('Gagal menyimpan draf ke localStorage:', e);
@@ -1353,7 +1475,14 @@
                                 this.hasDraft = true;
                                 if (parsed.savedAt) {
                                     const date = new Date(parsed.savedAt);
-                                    this.draftSavedAt = date.toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' }) + ' ' + date.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
+                                    this.draftSavedAt = date.toLocaleDateString('id-ID', {
+                                        day: 'numeric',
+                                        month: 'short',
+                                        year: 'numeric'
+                                    }) + ' ' + date.toLocaleTimeString('id-ID', {
+                                        hour: '2-digit',
+                                        minute: '2-digit'
+                                    });
                                 } else {
                                     this.draftSavedAt = 'Sesi sebelumnya';
                                 }
@@ -1373,8 +1502,10 @@
                             if (parsed.form) this.form = Object.assign({}, this.form, parsed.form);
                             if (parsed.routes && Array.isArray(parsed.routes)) this.routes = parsed.routes;
                             if (parsed.priceTiers && Array.isArray(parsed.priceTiers)) this.priceTiers = parsed.priceTiers;
-                            if (parsed.facilitiesIncluded && Array.isArray(parsed.facilitiesIncluded)) this.facilitiesIncluded = parsed.facilitiesIncluded;
-                            if (parsed.facilitiesExcluded && Array.isArray(parsed.facilitiesExcluded)) this.facilitiesExcluded = parsed.facilitiesExcluded;
+                            if (parsed.facilitiesIncluded && Array.isArray(parsed.facilitiesIncluded)) this
+                                .facilitiesIncluded = parsed.facilitiesIncluded;
+                            if (parsed.facilitiesExcluded && Array.isArray(parsed.facilitiesExcluded)) this
+                                .facilitiesExcluded = parsed.facilitiesExcluded;
 
                             this.hasDraft = false;
                             this.isRestored = true;
@@ -1506,7 +1637,8 @@
                     let nextMin = lastTier ? parseInt(lastTier.min_pax) + 3 : 1;
                     this.priceTiers.push({
                         min_pax: nextMin,
-                        price_per_pax: ''
+                        price_per_pax: '',
+                        price_per_pax_tektok: ''
                     });
                 },
                 removeTier(index) {
@@ -1565,7 +1697,9 @@
                         .map(l => l.trim())
                         .filter(l => l.length > 0)
                         .map(line => {
-                            const match = line.match(/^(\d{1,2}[:.]\d{2}(?:\s*[-–—]\s*\d{1,2}[:.]\d{2})?(?:\s*(?:WIB|WITA|WIT))?)\s*(?:[-:–—•]\s*|\s+)(.+)$/i);
+                            const match = line.match(
+                                /^(\d{1,2}[:.]\d{2}(?:\s*[-–—]\s*\d{1,2}[:.]\d{2})?(?:\s*(?:WIB|WITA|WIT))?)\s*(?:[-:–—•]\s*|\s+)(.+)$/i
+                            );
                             if (match) {
                                 return {
                                     time: match[1].replace(/(\d{1,2})\.(\d{2})/g, '$1:$2'),

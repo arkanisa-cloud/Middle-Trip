@@ -131,11 +131,11 @@ class BookingService
                 if ($hikingType === 'tektok') {
                     $lockedPricePerPax = $route->price_tektok_private
                         ?? ($route->price_camping_private ? (int) round($route->price_camping_private * 0.85) : null)
-                        ?? $mountain->getTierPriceForPax($paxCount, $hikingType);
+                        ?? ($mountain->price_private_tektok ?? $mountain->effective_price_private_tektok);
                 } else {
                     $lockedPricePerPax = $route->price_camping_private
                         ?? ($route->price_camping_open ? (int) round($route->price_camping_open * 1.5) : null)
-                        ?? $mountain->getTierPriceForPax($paxCount, $hikingType);
+                        ?? ($mountain->price_private ?? $mountain->getTierPriceForPax($paxCount, $hikingType));
                 }
 
                 $tripCost = $lockedPricePerPax * $paxCount;
@@ -249,7 +249,7 @@ class BookingService
             }
 
             $paxCount = max(1, (int) $lockedExpedition->quota_booked);
-            $lockedPrice = $lockedExpedition->mountain->getTierPriceForPax($paxCount);
+            $lockedPrice = $lockedExpedition->calculatePriceLockPrice();
 
             $lockedExpedition->update([
                 'current_locked_price' => $lockedPrice,

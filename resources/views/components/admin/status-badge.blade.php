@@ -1,12 +1,14 @@
-@props(['status'])
+@props(['status', 'context' => 'booking'])
 
 @php
     $normalized = strtolower(trim($status ?? ''));
+    $isExpedition = in_array($context, ['expedition', 'batch']);
+
     $config = match($normalized) {
         'open' => [
-            'bg' => 'bg-amber-50 text-amber-800 border-amber-200',
-            'dot' => 'bg-amber-500',
-            'label' => 'Menunggu DP'
+            'bg' => $isExpedition ? 'bg-emerald-50 text-emerald-800 border-emerald-200' : 'bg-amber-50 text-amber-800 border-amber-200',
+            'dot' => $isExpedition ? 'bg-emerald-500' : 'bg-amber-500',
+            'label' => $isExpedition ? 'Batch Dibuka' : 'Menunggu DP'
         ],
         'reserved' => [
             'bg' => 'bg-blue-50 text-blue-700 border-blue-200',
@@ -14,12 +16,12 @@
             'label' => 'DP Terbayar (Reserved)'
         ],
         'price_locked' => [
-            'bg' => 'bg-orange-50 text-orange-800 border-orange-200',
-            'dot' => 'bg-orange-500',
-            'label' => 'Menunggu Pelunasan'
+            'bg' => 'bg-amber-50 text-amber-800 border-amber-200',
+            'dot' => 'bg-amber-500',
+            'label' => $isExpedition ? 'Price Locked' : 'Menunggu Pelunasan'
         ],
         'paid' => [
-            'bg' => 'bg-emerald-100 text-emerald-800 border-emerald-300 font-bold',
+            'bg' => 'bg-emerald-50 text-emerald-800 border-emerald-300 font-bold',
             'dot' => 'bg-emerald-600',
             'label' => 'Lunas'
         ],
@@ -46,7 +48,7 @@
     };
 @endphp
 
-<span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold font-outfit border {{ $config['bg'] }}">
-    <span class="w-1.5 h-1.5 rounded-full {{ $config['dot'] }}"></span>
-    {{ $config['label'] }}
+<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold font-outfit border whitespace-nowrap shadow-2xs {{ $config['bg'] }}">
+    <span class="w-1.5 h-1.5 rounded-full shrink-0 {{ $config['dot'] }}"></span>
+    <span>{{ $config['label'] }}</span>
 </span>

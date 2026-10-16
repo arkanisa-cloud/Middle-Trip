@@ -90,15 +90,24 @@
                                     </td>
 
                                     <!-- Elevation -->
-                                    <td class="py-4 px-5 font-semibold text-ink-heading">
-                                        {{ number_format($m->elevation) }} MDPL
+                                    <td class="py-4 px-5 whitespace-nowrap">
+                                        <div class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-canvas border border-hairline shadow-2xs font-bold text-xs text-ink-heading font-outfit">
+                                            <svg class="w-3.5 h-3.5 text-primary shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+                                            </svg>
+                                            <span>{{ number_format($m->elevation, 0, ',', '.') }}</span>
+                                            <span class="text-[10px] text-muted font-medium">MDPL</span>
+                                        </div>
                                     </td>
 
                                     <!-- Routes & Grades -->
                                     <td class="py-4 px-5">
                                         <div class="flex flex-wrap gap-1.5 max-w-xs">
                                             @forelse($m->routes as $r)
-                                                <x-admin.grade-badge :grade="$r->grade->value ?? $r->grade" />
+                                                <div class="inline-flex items-center gap-1.5 bg-surface-card border border-hairline/80 px-2 py-0.5 rounded-lg shadow-2xs">
+                                                    <span class="text-[11px] font-medium text-ink truncate max-w-[110px]">{{ $r->name }}</span>
+                                                    <x-admin.grade-badge :grade="$r->grade->value ?? $r->grade" :short="true" />
+                                                </div>
                                             @empty
                                                 <span class="text-xs text-muted italic">Belum ada jalur</span>
                                             @endforelse
@@ -106,30 +115,35 @@
                                     </td>
 
                                     <!-- DP -->
-                                    <td class="py-4 px-5 font-bold text-ink-heading">
+                                    <td class="py-4 px-5 font-bold text-ink-heading whitespace-nowrap">
                                         Rp {{ number_format($m->booking_fee_per_pax, 0, ',', '.') }}
                                         <span class="block text-[10px] text-muted font-normal">per orang</span>
                                     </td>
 
                                     <!-- Price Lock Days -->
-                                    <td class="py-4 px-5">
+                                    <td class="py-4 px-5 whitespace-nowrap">
                                         <span
-                                            class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-canvas border border-hairline text-ink">
-                                            H-{{ $m->price_lock_days_before_departure }} Hari
+                                            class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold bg-amber-50 text-amber-800 border border-amber-200 shadow-2xs font-outfit">
+                                            <svg class="w-3.5 h-3.5 text-amber-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                                            </svg>
+                                            <span>H-{{ $m->price_lock_days_before_departure }}</span>
+                                            <span class="text-[10px] text-amber-700/80 font-normal">Hari</span>
                                         </span>
                                     </td>
 
                                     <!-- Active Badge -->
-                                    <td class="py-4 px-5">
+                                    <td class="py-4 px-5 whitespace-nowrap">
                                         @if ($m->is_active)
                                             <span
-                                                class="inline-flex items-center gap-1 text-[11px] font-bold text-emerald-700 bg-emerald-50 px-2.5 py-0.5 rounded-full border border-emerald-200">
-                                                <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> Aktif
+                                                class="inline-flex items-center gap-1 text-[11px] font-bold text-emerald-700 bg-emerald-50 px-2.5 py-0.5 rounded-full border border-emerald-200 shadow-2xs">
+                                                <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 shrink-0"></span> Aktif
                                             </span>
                                         @else
                                             <span
-                                                class="inline-flex items-center gap-1 text-[11px] font-bold text-gray-500 bg-gray-100 px-2.5 py-0.5 rounded-full border border-gray-200">
-                                                <span class="w-1.5 h-1.5 rounded-full bg-gray-400"></span> Nonaktif
+                                                class="inline-flex items-center gap-1 text-[11px] font-bold text-gray-500 bg-gray-100 px-2.5 py-0.5 rounded-full border border-gray-200 shadow-2xs">
+                                                <span class="w-1.5 h-1.5 rounded-full bg-gray-400 shrink-0"></span> Nonaktif
                                             </span>
                                         @endif
                                     </td>

@@ -145,6 +145,7 @@ class MountainController extends Controller
             'price_tiers.*.min_pax' => 'required_with:price_tiers|integer|min:1',
             'price_tiers.*.max_pax' => 'nullable|integer',
             'price_tiers.*.price_per_pax' => 'required_with:price_tiers|integer|min:0',
+            'price_tiers.*.price_per_pax_tektok' => 'nullable|integer|min:0',
             'gallery_files' => 'nullable|array|max:10',
             'gallery_files.*' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:5120',
             'gallery_file_captions' => 'nullable|array',
@@ -273,6 +274,7 @@ class MountainController extends Controller
                         'min_pax' => $tierData['min_pax'],
                         'max_pax' => null,
                         'price_per_pax' => $tierData['price_per_pax'],
+                        'price_per_pax_tektok' => $tierData['price_per_pax_tektok'] ?? null,
                     ]);
                 }
             }
@@ -315,7 +317,7 @@ class MountainController extends Controller
         $windNote = $mountain->elevation_checkpoints['wind_note'] ?? 'Waspada terpaan angin kencang di punggungan';
         $signalNote = $mountain->elevation_checkpoints['signal_note'] ?? 'Stabil di Basecamp & Pos 1';
 
-        $routesData = $mountain->routes->map(function ($r, $index) use ($checkpoints, $waterNote, $windNote, $signalNote) {
+        $routesData = $mountain->routes->map(function ($r, $index) use ($mountain, $checkpoints, $waterNote, $windNote, $signalNote) {
             $rPoints = null;
             if (! empty($r->elevation_checkpoints)) {
                 if (isset($r->elevation_checkpoints['points']) && is_array($r->elevation_checkpoints['points'])) {
@@ -410,11 +412,11 @@ class MountainController extends Controller
                 'duration_hours' => $r->duration_hours,
                 'grade' => $r->grade?->value ?? (string) $r->grade,
                 'is_primary' => (bool) $r->is_primary,
-                'price_camping_open' => $r->price_camping_open,
-                'price_tektok_open' => $r->price_tektok_open,
-                'price_camping_private' => $r->price_camping_private,
-                'price_tektok_private' => $r->price_tektok_private,
-                'booking_fee_per_pax' => $r->booking_fee_per_pax,
+                'price_camping_open' => $r->price_camping_open ?? $mountain->base_price,
+                'price_tektok_open' => $r->price_tektok_open ?? $mountain->price_tektok,
+                'price_camping_private' => $r->price_camping_private ?? $mountain->price_private,
+                'price_tektok_private' => $r->price_tektok_private ?? $mountain->price_private_tektok,
+                'booking_fee_per_pax' => $r->booking_fee_per_pax ?? $mountain->booking_fee_per_pax,
                 'isOpen' => $r->is_primary || $index === 0,
                 'activeSubTab' => 'elevation',
                 'bookings_count' => $bookingsCount,
@@ -432,6 +434,33 @@ class MountainController extends Controller
                 'itinerary_tektok_timeline' => $tektokTimeline,
             ];
         })->values()->toArray();
+
+        // Price Tiers preparation with existing / legacy fallback
+        $priceTiersData = $mountain->priceTiers->sortBy('min_pax')->values()->map(function ($t) use ($mountain) {
+            return [
+                'id' => $t->id,
+                'min_pax' => $t->min_pax,
+                'price_per_pax' => $t->price_per_pax,
+                'price_per_pax_tektok' => $t->price_per_pax_tektok ?? ($t->price_per_pax ? (int) round($t->price_per_pax * 0.5) : ($mountain->price_tektok ?? null)),
+            ];
+        })->toArray();
+
+        if (empty($priceTiersData)) {
+            $baseCamping = $mountain->base_price ?: 650000;
+            $baseTektok = $mountain->price_tektok ?: ($mountain->base_price ? (int) round($mountain->base_price * 0.5) : 380000);
+            $priceTiersData = [
+                ['id' => null, 'min_pax' => 1, 'price_per_pax' => $baseCamping, 'price_per_pax_tektok' => $baseTektok],
+                ['id' => null, 'min_pax' => 4, 'price_per_pax' => (int) round($baseCamping * 0.85), 'price_per_pax_tektok' => (int) round($baseTektok * 0.85)],
+                ['id' => null, 'min_pax' => 7, 'price_per_pax' => (int) round($baseCamping * 0.75), 'price_per_pax_tektok' => (int) round($baseTektok * 0.75)],
+            ];
+        }
+
+        if (old('routes')) {
+            $routesData = old('routes');
+        }
+        if (old('price_tiers')) {
+            $priceTiersData = old('price_tiers');
+        }
 
         // Facilities preparation
         $facilitiesIncluded = [];
@@ -470,6 +499,7 @@ class MountainController extends Controller
             'grades',
             'defaultGrade',
             'routesData',
+            'priceTiersData',
             'checkpoints',
             'waterNote',
             'windNote',
@@ -570,6 +600,7 @@ class MountainController extends Controller
             'price_tiers.*.min_pax' => 'required_with:price_tiers|integer|min:1',
             'price_tiers.*.max_pax' => 'nullable|integer',
             'price_tiers.*.price_per_pax' => 'required_with:price_tiers|integer|min:0',
+            'price_tiers.*.price_per_pax_tektok' => 'nullable|integer|min:0',
             'existing_gallery' => 'nullable|array',
             'existing_gallery.*.url' => 'required|string',
             'existing_gallery.*.caption' => 'nullable|string|max:150',
@@ -770,6 +801,7 @@ class MountainController extends Controller
                         'min_pax' => $tierData['min_pax'],
                         'max_pax' => null,
                         'price_per_pax' => $tierData['price_per_pax'],
+                        'price_per_pax_tektok' => $tierData['price_per_pax_tektok'] ?? null,
                     ]);
                 }
             }
@@ -1169,7 +1201,7 @@ class MountainController extends Controller
         // 4. Sanitasi price tiers
         if (isset($input['price_tiers']) && is_array($input['price_tiers'])) {
             foreach ($input['price_tiers'] as $ptIdx => $pt) {
-                foreach (['min_pax', 'max_pax', 'price_per_pax'] as $pf) {
+                foreach (['min_pax', 'max_pax', 'price_per_pax', 'price_per_pax_tektok'] as $pf) {
                     if (isset($pt[$pf]) && is_string($pt[$pf])) {
                         $clean = preg_replace('/[^0-9]/', '', $pt[$pf]);
                         $input['price_tiers'][$ptIdx][$pf] = $clean === '' ? null : (int) $clean;

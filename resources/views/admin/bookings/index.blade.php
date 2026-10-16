@@ -136,7 +136,7 @@
                                 </td>
 
                                 <!-- Status Badge -->
-                                <td class="py-4 px-5">
+                                <td class="py-4 px-5 whitespace-nowrap">
                                     <x-admin.status-badge :status="$b->status" />
                                 </td>
 

@@ -64,7 +64,8 @@
                         <label class="block text-xs font-bold text-ink-heading uppercase tracking-wider mb-2">
                             Ketinggian (MDPL) <span class="text-rose-500">*</span>
                         </label>
-                        <input type="text" inputmode="numeric" name="elevation" value="{{ old('elevation', $mountain->elevation) }}"
+                        <input type="text" inputmode="numeric" name="elevation"
+                            value="{{ old('elevation', $mountain->elevation) }}"
                             oninput="this.value = this.value.replace(/[^0-9]/g, '')" required
                             class="w-full text-xs rounded-xl border border-hairline bg-canvas p-3 text-ink focus:border-primary focus:ring-1 focus:ring-primary shadow-xs">
                     </div>
@@ -201,16 +202,22 @@
                             }
                         }" class="space-y-3">
                             <div class="flex items-center gap-4">
-                                <div class="relative w-24 h-20 rounded-2xl overflow-hidden border border-hairline shadow-xs shrink-0 bg-canvas flex items-center justify-center">
+                                <div
+                                    class="relative w-24 h-20 rounded-2xl overflow-hidden border border-hairline shadow-xs shrink-0 bg-canvas flex items-center justify-center">
                                     <template x-if="preview">
-                                        <img :src="preview" alt="Preview Foto Sampul" class="w-full h-full object-cover">
+                                        <img :src="preview" alt="Preview Foto Sampul"
+                                            class="w-full h-full object-cover">
                                     </template>
                                     <template x-if="!preview">
-                                        <div class="flex flex-col items-center justify-center text-muted p-2 text-center select-none">
-                                            <svg class="w-6 h-6 text-muted-soft" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                        <div
+                                            class="flex flex-col items-center justify-center text-muted p-2 text-center select-none">
+                                            <svg class="w-6 h-6 text-muted-soft" fill="none" viewBox="0 0 24 24"
+                                                stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                                                    d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                                             </svg>
-                                            <span class="text-[9.5px] font-medium text-muted mt-1 leading-tight">Pratinjau</span>
+                                            <span
+                                                class="text-[9.5px] font-medium text-muted mt-1 leading-tight">Pratinjau</span>
                                         </div>
                                     </template>
                                 </div>
@@ -421,7 +428,7 @@
                     </div>
 
                     <!-- Toggles & Status Destinasi -->
-                    <div class="md:col-span-2 space-y-3 pt-4 border-t border-hairline" x-data="{ 
+                    <div class="md:col-span-2 space-y-3 pt-4 border-t border-hairline" x-data="{
                         isFeatured: {{ old('is_featured', $mountain->is_featured) ? 'true' : 'false' }},
                         openSlot: false,
                         slotVal: {{ old('featured_order', $mountain->featured_order ?? 1) }},
@@ -460,7 +467,8 @@
                             class="p-4 bg-primary-subtle/30 border border-primary/20 rounded-2xl flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
                             <div>
                                 <span class="font-bold text-ink-heading block">Posisi Bento Grid</span>
-                                <span class="text-[11px] text-muted">Pilih slot tampilan kartu di section bento beranda</span>
+                                <span class="text-[11px] text-muted">Pilih slot tampilan kartu di section bento
+                                    beranda</span>
                             </div>
                             <div class="relative shrink-0">
                                 <input type="hidden" name="featured_order" :value="slotVal">
@@ -470,8 +478,11 @@
                                         <span class="w-2 h-2 rounded-full bg-primary shrink-0"></span>
                                         <span x-text="slots[slotVal]?.label || 'Pilih Slot'" class="truncate"></span>
                                     </div>
-                                    <svg class="w-4 h-4 text-muted transition-transform duration-200 shrink-0" :class="openSlot ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                                    <svg class="w-4 h-4 text-muted transition-transform duration-200 shrink-0"
+                                        :class="openSlot ? 'rotate-180' : ''" fill="none" stroke="currentColor"
+                                        viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M19 9l-7 7-7-7" />
                                     </svg>
                                 </button>
 
@@ -484,16 +495,18 @@
                                     x-transition:leave-start="opacity-100 scale-100"
                                     x-transition:leave-end="opacity-0 scale-95"
                                     class="absolute right-0 mt-2 w-64 bg-white border border-hairline rounded-2xl shadow-xl py-2 z-30 text-xs">
-                                    <div class="px-3 py-1.5 text-[10px] uppercase font-bold text-muted-soft tracking-wider">
+                                    <div
+                                        class="px-3 py-1.5 text-[10px] uppercase font-bold text-muted-soft tracking-wider">
                                         Posisi Slot Bento
                                     </div>
                                     <template x-for="(info, key) in slots" :key="key">
-                                        <button type="button"
-                                            @click="slotVal = Number(key); openSlot = false"
+                                        <button type="button" @click="slotVal = Number(key); openSlot = false"
                                             class="w-full text-left px-3.5 py-2 hover:bg-gray-50 text-body-strong font-medium flex items-center justify-between cursor-pointer transition"
                                             :class="slotVal == key ? 'bg-primary-subtle/50 font-bold text-primary' : ''">
                                             <span x-text="info.label"></span>
-                                            <span class="text-[10px] text-muted font-normal bg-gray-100 px-2 py-0.5 rounded-md" x-text="info.desc"></span>
+                                            <span
+                                                class="text-[10px] text-muted font-normal bg-gray-100 px-2 py-0.5 rounded-md"
+                                                x-text="info.desc"></span>
                                         </button>
                                     </template>
                                 </div>
@@ -622,44 +635,46 @@
                                     }
                                 }" @click.outside="open = false" class="relative">
                                     <label class="block text-[11px] font-bold text-muted mb-1">Grade Kesulitan</label>
-                                    <input type="hidden" :name="`routes[${index}][grade]`" :value="r.grade || 'Grade A'">
+                                    <input type="hidden" :name="`routes[${index}][grade]`"
+                                        :value="r.grade || 'Grade A'">
 
                                     <button type="button" @click="open = !open"
                                         class="w-full text-xs rounded-xl border border-hairline bg-surface-card p-2.5 text-ink flex items-center justify-between cursor-pointer focus:border-primary shadow-2xs font-semibold transition select-none">
                                         <span class="flex items-center gap-2">
-                                            <span class="w-2 h-2 rounded-full shrink-0" :class="getGradeDot(r.grade)"></span>
-                                            <span x-text="getGradeLabel(r.grade)" class="text-ink-heading truncate text-[11.5px]"></span>
+                                            <span class="w-2 h-2 rounded-full shrink-0"
+                                                :class="getGradeDot(r.grade)"></span>
+                                            <span x-text="getGradeLabel(r.grade)"
+                                                class="text-ink-heading truncate text-[11.5px]"></span>
                                         </span>
                                         <svg class="w-3.5 h-3.5 text-muted transition-transform duration-200 shrink-0"
-                                            :class="open ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                                            :class="open ? 'rotate-180' : ''" fill="none" stroke="currentColor"
+                                            viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M19 9l-7 7-7-7" />
                                         </svg>
                                     </button>
 
-                                    <div x-show="open" x-cloak
-                                        x-transition:enter="transition ease-out duration-100"
+                                    <div x-show="open" x-cloak x-transition:enter="transition ease-out duration-100"
                                         x-transition:enter-start="transform opacity-0 scale-95"
                                         x-transition:enter-end="transform opacity-100 scale-100"
                                         class="absolute left-0 right-0 mt-1.5 bg-white border border-hairline rounded-2xl shadow-xl py-1.5 z-50 text-xs min-w-[180px]">
-                                        <div class="px-3 py-1 text-[10px] uppercase font-bold text-muted-soft tracking-wider border-b border-hairline/60 mb-1">
+                                        <div
+                                            class="px-3 py-1 text-[10px] uppercase font-bold text-muted-soft tracking-wider border-b border-hairline/60 mb-1">
                                             Pilih Grade
                                         </div>
-                                        <button type="button"
-                                            @click="r.grade = 'Grade A'; open = false;"
+                                        <button type="button" @click="r.grade = 'Grade A'; open = false;"
                                             class="w-full text-left px-3.5 py-1.5 hover:bg-gray-50 text-body-strong font-medium flex items-center justify-between cursor-pointer"
                                             :class="r.grade === 'Grade A' ? 'bg-primary-subtle/50 font-bold' : ''">
                                             <span class="text-emerald-700 text-xs">Grade A – Pemula</span>
                                             <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
                                         </button>
-                                        <button type="button"
-                                            @click="r.grade = 'Grade B'; open = false;"
+                                        <button type="button" @click="r.grade = 'Grade B'; open = false;"
                                             class="w-full text-left px-3.5 py-1.5 hover:bg-gray-50 text-body-strong font-medium flex items-center justify-between cursor-pointer"
                                             :class="r.grade === 'Grade B' ? 'bg-primary-subtle/50 font-bold' : ''">
                                             <span class="text-amber-700 text-xs">Grade B – Menengah</span>
                                             <span class="w-2 h-2 rounded-full bg-amber-500"></span>
                                         </button>
-                                        <button type="button"
-                                            @click="r.grade = 'Grade C'; open = false;"
+                                        <button type="button" @click="r.grade = 'Grade C'; open = false;"
                                             class="w-full text-left px-3.5 py-1.5 hover:bg-gray-50 text-body-strong font-medium flex items-center justify-between cursor-pointer"
                                             :class="r.grade === 'Grade C' ? 'bg-primary-subtle/50 font-bold' : ''">
                                             <span class="text-rose-700 text-xs">Grade C – Ahli</span>
@@ -685,26 +700,34 @@
                                 </div>
 
                                 <!-- Route Pricing Section (Open & Private, Camping & Tektok + Booking Fee DP) -->
-                                <div class="sm:col-span-2 lg:col-span-5 p-4 rounded-2xl bg-surface-card border border-hairline/80 mt-1 space-y-3">
+                                <div
+                                    class="sm:col-span-2 lg:col-span-5 p-4 rounded-2xl bg-surface-card border border-hairline/80 mt-1 space-y-3">
                                     <div class="flex items-center justify-between border-b border-hairline/60 pb-2">
                                         <div class="flex items-center gap-2">
-                                            <svg class="w-4 h-4 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                            <svg class="w-4 h-4 text-primary" fill="none" stroke="currentColor"
+                                                viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                                             </svg>
-                                            <span class="text-xs font-bold text-ink-heading">Tarif & Booking Fee Jalur Ini (Per Via)</span>
+                                            <span class="text-xs font-bold text-ink-heading">Tarif & Booking Fee Jalur Ini
+                                                (Per Via)</span>
                                         </div>
-                                        <span class="text-[10px] text-muted">Pengaturan harga trip dan DP per pax untuk via ini</span>
+                                        <span class="text-[10px] text-muted">Pengaturan harga trip dan DP per pax untuk via
+                                            ini</span>
                                     </div>
                                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-3"
                                         :class="{
                                             'lg:grid-cols-5': has_open_trip && has_private_trip,
-                                            'lg:grid-cols-3': (has_open_trip && !has_private_trip) || (!has_open_trip && has_private_trip),
+                                            'lg:grid-cols-3': (has_open_trip && !has_private_trip) || (!has_open_trip &&
+                                                has_private_trip),
                                             'lg:grid-cols-1': !has_open_trip && !has_private_trip
                                         }">
                                         <!-- Open Trip Pricing (Camping & Tektok) -->
                                         <div x-show="has_open_trip" x-transition>
-                                            <label class="block text-[11px] font-semibold text-muted mb-1">Open Trip - Camping (Rp) <span class="text-rose-500">*</span></label>
-                                            <input type="text" inputmode="numeric" :name="`routes[${index}][price_camping_open]`"
+                                            <label class="block text-[11px] font-semibold text-muted mb-1">Open Trip -
+                                                Camping (Rp) <span class="text-rose-500">*</span></label>
+                                            <input type="text" inputmode="numeric"
+                                                :name="`routes[${index}][price_camping_open]`"
                                                 :value="formatPrice(r.price_camping_open)"
                                                 @input="r.price_camping_open = handlePriceInput($event, r, 'price_camping_open'); onPriceCampingChange(r)"
                                                 placeholder="500.000"
@@ -712,8 +735,10 @@
                                                 :required="has_open_trip">
                                         </div>
                                         <div x-show="has_open_trip" x-transition>
-                                            <label class="block text-[11px] font-semibold text-muted mb-1">Open Trip - Tektok (Rp)</label>
-                                            <input type="text" inputmode="numeric" :name="`routes[${index}][price_tektok_open]`"
+                                            <label class="block text-[11px] font-semibold text-muted mb-1">Open Trip -
+                                                Tektok (Rp)</label>
+                                            <input type="text" inputmode="numeric"
+                                                :name="`routes[${index}][price_tektok_open]`"
                                                 :value="formatPrice(r.price_tektok_open)"
                                                 @input="r.price_tektok_open = handlePriceInput($event, r, 'price_tektok_open')"
                                                 placeholder="400.000"
@@ -722,16 +747,20 @@
 
                                         <!-- Private Trip Pricing (Camping & Tektok) -->
                                         <div x-show="has_private_trip" x-transition>
-                                            <label class="block text-[11px] font-semibold text-muted mb-1">Private Trip - Camping (Rp)</label>
-                                            <input type="text" inputmode="numeric" :name="`routes[${index}][price_camping_private]`"
+                                            <label class="block text-[11px] font-semibold text-muted mb-1">Private Trip -
+                                                Camping (Rp)</label>
+                                            <input type="text" inputmode="numeric"
+                                                :name="`routes[${index}][price_camping_private]`"
                                                 :value="formatPrice(r.price_camping_private)"
                                                 @input="r.price_camping_private = handlePriceInput($event, r, 'price_camping_private')"
                                                 placeholder="750.000"
                                                 class="w-full text-xs rounded-xl border border-hairline bg-canvas p-2.5 text-ink focus:border-primary">
                                         </div>
                                         <div x-show="has_private_trip" x-transition>
-                                            <label class="block text-[11px] font-semibold text-muted mb-1">Private Trip - Tektok (Rp)</label>
-                                            <input type="text" inputmode="numeric" :name="`routes[${index}][price_tektok_private]`"
+                                            <label class="block text-[11px] font-semibold text-muted mb-1">Private Trip -
+                                                Tektok (Rp)</label>
+                                            <input type="text" inputmode="numeric"
+                                                :name="`routes[${index}][price_tektok_private]`"
                                                 :value="formatPrice(r.price_tektok_private)"
                                                 @input="r.price_tektok_private = handlePriceInput($event, r, 'price_tektok_private')"
                                                 placeholder="650.000"
@@ -740,16 +769,18 @@
 
                                         <!-- Booking Fee DP per Pax -->
                                         <div x-show="has_open_trip || has_private_trip" x-transition>
-                                            <label class="block text-[11px] font-semibold text-muted mb-1">Booking Fee DP / Pax (Rp) <span class="text-rose-500">*</span></label>
-                                            <input type="text" inputmode="numeric" :name="`routes[${index}][booking_fee_per_pax]`"
+                                            <label class="block text-[11px] font-semibold text-muted mb-1">Booking Fee DP /
+                                                Pax (Rp) <span class="text-rose-500">*</span></label>
+                                            <input type="text" inputmode="numeric"
+                                                :name="`routes[${index}][booking_fee_per_pax]`"
                                                 :value="formatPrice(r.booking_fee_per_pax)"
-                                                @input="handleBookingFeeInput($event, r)"
-                                                placeholder="150.000"
+                                                @input="handleBookingFeeInput($event, r)" placeholder="150.000"
                                                 class="w-full text-xs rounded-xl border border-hairline bg-canvas p-2.5 text-ink focus:border-primary font-semibold"
                                                 :required="has_open_trip">
                                             <template x-if="has_open_trip && r.price_camping_open">
                                                 <span class="text-[10px] text-amber-600 font-medium mt-1 block">
-                                                    Maks. 50%: Rp <span x-text="new Intl.NumberFormat('id-ID').format(Math.floor((Number(r.price_camping_open) || 0) / 2))"></span>
+                                                    Maks. 50%: Rp <span
+                                                        x-text="new Intl.NumberFormat('id-ID').format(Math.floor((Number(r.price_camping_open) || 0) / 2))"></span>
                                                 </span>
                                             </template>
                                         </div>
@@ -757,10 +788,13 @@
                                         <!-- Notice when neither is checked -->
                                         <div x-show="!has_open_trip && !has_private_trip"
                                             class="sm:col-span-2 lg:col-span-5 p-3 rounded-xl bg-amber-50 border border-amber-200 text-amber-800 text-xs flex items-center gap-2">
-                                            <svg class="w-4 h-4 text-amber-600 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                                            <svg class="w-4 h-4 text-amber-600 shrink-0" fill="none"
+                                                viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
                                             </svg>
-                                            <span>Centang <strong>Open Trip</strong> atau <strong>Private Trip</strong> di Section 1 agar kolom input tarif pada jalur ini aktif.</span>
+                                            <span>Centang <strong>Open Trip</strong> atau <strong>Private Trip</strong> di
+                                                Section 1 agar kolom input tarif pada jalur ini aktif.</span>
                                         </div>
                                     </div>
                                 </div>
@@ -1003,8 +1037,13 @@
                                                     </div>
                                                     <div>
                                                         <div class="flex items-center justify-between mb-1">
-                                                            <label class="block text-[10px] font-bold text-muted">Jadwal Timeline</label>
-                                                            <span class="text-[9.5px] text-muted-soft">Format bebas: <code class="bg-surface-card px-1 py-0.5 rounded">08:00 - Registrasi</code> | <code class="bg-surface-card px-1 py-0.5 rounded">08.00 - 10.00 Trekking</code></span>
+                                                            <label class="block text-[10px] font-bold text-muted">Jadwal
+                                                                Timeline</label>
+                                                            <span class="text-[9.5px] text-muted-soft">Format bebas: <code
+                                                                    class="bg-surface-card px-1 py-0.5 rounded">08:00 -
+                                                                    Registrasi</code> | <code
+                                                                    class="bg-surface-card px-1 py-0.5 rounded">08.00 -
+                                                                    10.00 Trekking</code></span>
                                                         </div>
                                                         <textarea rows="4" :name="`routes[${index}][itinerary_days][${dIndex}][timeline]`" x-model="dayItem.timeline"
                                                             placeholder="08:00 - Registrasi di Basecamp&#10;09:00 - Mulai Trekking ke Pos 1&#10;12:30 - Makan Siang&#10;16:00 - Tiba di Camp Area"
@@ -1012,21 +1051,33 @@
 
                                                         <!-- Live Visual Timeline Preview -->
                                                         <template x-if="parseTimelinePreview(dayItem.timeline).length > 0">
-                                                            <div class="mt-2 p-2.5 rounded-xl bg-canvas border border-hairline/80 space-y-1.5">
+                                                            <div
+                                                                class="mt-2 p-2.5 rounded-xl bg-canvas border border-hairline/80 space-y-1.5">
                                                                 <div class="flex items-center justify-between">
-                                                                    <span class="text-[9.5px] font-bold text-muted uppercase tracking-wider">Pratinjau Otomatis Frontend:</span>
-                                                                    <span class="text-[9.5px] text-emerald-600 font-semibold" x-text="`${parseTimelinePreview(dayItem.timeline).length} Agenda`"></span>
+                                                                    <span
+                                                                        class="text-[9.5px] font-bold text-muted uppercase tracking-wider">Pratinjau
+                                                                        Otomatis Frontend:</span>
+                                                                    <span
+                                                                        class="text-[9.5px] text-emerald-600 font-semibold"
+                                                                        x-text="`${parseTimelinePreview(dayItem.timeline).length} Agenda`"></span>
                                                                 </div>
                                                                 <div class="space-y-1 max-h-32 overflow-y-auto pr-1">
-                                                                    <template x-for="(item, pIdx) in parseTimelinePreview(dayItem.timeline)" :key="pIdx">
+                                                                    <template
+                                                                        x-for="(item, pIdx) in parseTimelinePreview(dayItem.timeline)"
+                                                                        :key="pIdx">
                                                                         <div class="flex items-center gap-2 text-[11px]">
                                                                             <template x-if="item.time">
-                                                                                <span class="px-1.5 py-0.5 rounded bg-primary-subtle text-primary font-bold text-[9.5px] shrink-0" x-text="item.time"></span>
+                                                                                <span
+                                                                                    class="px-1.5 py-0.5 rounded bg-primary-subtle text-primary font-bold text-[9.5px] shrink-0"
+                                                                                    x-text="item.time"></span>
                                                                             </template>
                                                                             <template x-if="!item.time">
-                                                                                <span class="px-1.5 py-0.5 rounded bg-primary-subtle/40 text-primary font-semibold text-[9.5px] shrink-0">Aktivitas</span>
+                                                                                <span
+                                                                                    class="px-1.5 py-0.5 rounded bg-primary-subtle/40 text-primary font-semibold text-[9.5px] shrink-0">Aktivitas</span>
                                                                             </template>
-                                                                            <span class="text-ink truncate font-medium text-[11px]" x-text="item.activity"></span>
+                                                                            <span
+                                                                                class="text-ink truncate font-medium text-[11px]"
+                                                                                x-text="item.activity"></span>
                                                                         </div>
                                                                     </template>
                                                                 </div>
@@ -1074,30 +1125,46 @@
                                             </div>
                                             <div>
                                                 <div class="flex items-center justify-between mb-1">
-                                                    <label class="block text-[11px] font-bold text-muted">Jadwal Timeline Lengkap</label>
-                                                    <span class="text-[9.5px] text-muted-soft">Format bebas: <code class="bg-surface-card px-1 py-0.5 rounded">00:00 - Registrasi</code> | <code class="bg-surface-card px-1 py-0.5 rounded">01:00 Trekking Dini Hari</code></span>
+                                                    <label class="block text-[11px] font-bold text-muted">Jadwal Timeline
+                                                        Lengkap</label>
+                                                    <span class="text-[9.5px] text-muted-soft">Format bebas: <code
+                                                            class="bg-surface-card px-1 py-0.5 rounded">00:00 -
+                                                            Registrasi</code> | <code
+                                                            class="bg-surface-card px-1 py-0.5 rounded">01:00 Trekking Dini
+                                                            Hari</code></span>
                                                 </div>
                                                 <textarea rows="5" :name="`routes[${index}][itinerary_tektok_timeline]`" x-model="r.itinerary_tektok_timeline"
                                                     placeholder="00:00 - Registrasi & Cek Medis di Basecamp&#10;01:00 - Mulai Trekking Dini Hari Menuju Pos 2&#10;05:30 - Sunrise Spektakuler di Puncak Tertinggi&#10;07:30 - Foto Bersama & Mulai Turun&#10;12:00 - Tiba Kembali di Basecamp & Penutupan"
                                                     class="w-full text-xs font-mono rounded-xl border border-hairline bg-surface-card p-3 text-ink focus:border-primary leading-relaxed"></textarea>
 
                                                 <!-- Live Visual Timeline Preview -->
-                                                <template x-if="parseTimelinePreview(r.itinerary_tektok_timeline).length > 0">
-                                                    <div class="mt-2 p-2.5 rounded-xl bg-canvas border border-hairline/80 space-y-1.5">
+                                                <template
+                                                    x-if="parseTimelinePreview(r.itinerary_tektok_timeline).length > 0">
+                                                    <div
+                                                        class="mt-2 p-2.5 rounded-xl bg-canvas border border-hairline/80 space-y-1.5">
                                                         <div class="flex items-center justify-between">
-                                                            <span class="text-[9.5px] font-bold text-muted uppercase tracking-wider">Pratinjau Otomatis Frontend:</span>
-                                                            <span class="text-[9.5px] text-emerald-600 font-semibold" x-text="`${parseTimelinePreview(r.itinerary_tektok_timeline).length} Agenda`"></span>
+                                                            <span
+                                                                class="text-[9.5px] font-bold text-muted uppercase tracking-wider">Pratinjau
+                                                                Otomatis Frontend:</span>
+                                                            <span class="text-[9.5px] text-emerald-600 font-semibold"
+                                                                x-text="`${parseTimelinePreview(r.itinerary_tektok_timeline).length} Agenda`"></span>
                                                         </div>
                                                         <div class="space-y-1 max-h-36 overflow-y-auto pr-1">
-                                                            <template x-for="(item, pIdx) in parseTimelinePreview(r.itinerary_tektok_timeline)" :key="pIdx">
+                                                            <template
+                                                                x-for="(item, pIdx) in parseTimelinePreview(r.itinerary_tektok_timeline)"
+                                                                :key="pIdx">
                                                                 <div class="flex items-center gap-2 text-[11px]">
                                                                     <template x-if="item.time">
-                                                                        <span class="px-1.5 py-0.5 rounded bg-primary-subtle text-primary font-bold text-[9.5px] shrink-0" x-text="item.time"></span>
+                                                                        <span
+                                                                            class="px-1.5 py-0.5 rounded bg-primary-subtle text-primary font-bold text-[9.5px] shrink-0"
+                                                                            x-text="item.time"></span>
                                                                     </template>
                                                                     <template x-if="!item.time">
-                                                                        <span class="px-1.5 py-0.5 rounded bg-primary-subtle/40 text-primary font-semibold text-[9.5px] shrink-0">Aktivitas</span>
+                                                                        <span
+                                                                            class="px-1.5 py-0.5 rounded bg-primary-subtle/40 text-primary font-semibold text-[9.5px] shrink-0">Aktivitas</span>
                                                                     </template>
-                                                                    <span class="text-ink truncate font-medium text-[11px]" x-text="item.activity"></span>
+                                                                    <span class="text-ink truncate font-medium text-[11px]"
+                                                                        x-text="item.activity"></span>
                                                                 </div>
                                                             </template>
                                                         </div>
@@ -1133,34 +1200,62 @@
             </button>
         </div>
 
-        <div class="space-y-4">
+        <div class="space-y-3">
+            <!-- Desktop Table Header -->
+            <div class="hidden sm:grid sm:grid-cols-12 gap-3 px-4 py-1 text-[11px] font-bold text-muted uppercase tracking-wider">
+                <div class="sm:col-span-3">Minimal Kuota (Pax)</div>
+                <div class="sm:col-span-4">Harga Camping / Pax (Rp)</div>
+                <div class="sm:col-span-4">Harga Tek-tok / Pax (Rp)</div>
+                <div class="sm:col-span-1 text-center">Aksi</div>
+            </div>
+
             <template x-for="(t, index) in priceTiers" :key="index">
                 <div
-                    class="p-4 rounded-2xl bg-canvas border border-hairline grid grid-cols-1 sm:grid-cols-12 gap-3 items-center">
+                    class="p-3.5 sm:p-4 rounded-2xl bg-canvas border border-hairline grid grid-cols-1 sm:grid-cols-12 gap-3 items-center hover:border-primary/30 transition-colors shadow-2xs">
                     <input type="hidden" :name="`price_tiers[${index}][id]`" :value="t.id">
 
                     <!-- Min Pax -->
-                    <div class="sm:col-span-5">
-                        <label class="block text-[11px] font-bold text-muted mb-1">Minimal Peserta (≥ Pax)</label>
-                        <input type="number" :name="`price_tiers[${index}][min_pax]`" x-model="t.min_pax"
-                            min="1" :required="has_open_trip"
-                            class="w-full text-xs rounded-xl border border-hairline bg-surface-card p-2 text-ink focus:border-primary">
+                    <div class="sm:col-span-3">
+                        <label class="block sm:hidden text-[11px] font-bold text-muted mb-1">Minimal Peserta (Pax)</label>
+                        <div class="relative flex items-center">
+                            <input type="number" :name="`price_tiers[${index}][min_pax]`" x-model="t.min_pax"
+                                min="1" :required="has_open_trip" placeholder="1, 4, 7..."
+                                class="w-full text-xs font-semibold rounded-xl border border-hairline bg-surface-card py-2.5 px-3 pr-12 text-ink focus:border-primary focus:ring-1 focus:ring-primary shadow-2xs">
+                            <span class="absolute right-3 text-[11px] font-bold text-muted pointer-events-none">Pax</span>
+                        </div>
                     </div>
 
-                    <!-- Price per Pax -->
-                    <div class="sm:col-span-6">
-                        <label class="block text-[11px] font-bold text-muted mb-1">Harga Final / Pax (Rp)</label>
-                        <input type="text" inputmode="numeric" :name="`price_tiers[${index}][price_per_pax]`"
-                            :value="formatPrice(t.price_per_pax)"
-                            @input="t.price_per_pax = handlePriceInput($event, t, 'price_per_pax')"
-                            :required="has_open_trip" placeholder="550.000"
-                            class="w-full text-xs rounded-xl border border-hairline bg-surface-card p-2 text-ink focus:border-primary font-bold">
+                    <!-- Price Camping per Pax -->
+                    <div class="sm:col-span-4">
+                        <label class="block sm:hidden text-[11px] font-bold text-muted mb-1">Harga Camping / Pax</label>
+                        <div class="relative flex items-center">
+                            <span class="absolute left-3 text-xs font-bold text-muted-soft pointer-events-none">Rp</span>
+                            <input type="text" inputmode="numeric" :name="`price_tiers[${index}][price_per_pax]`"
+                                :value="formatPrice(t.price_per_pax)"
+                                @input="t.price_per_pax = handlePriceInput($event, t, 'price_per_pax')"
+                                :required="has_open_trip" placeholder="550.000"
+                                class="w-full text-xs font-bold rounded-xl border border-hairline bg-surface-card py-2.5 pl-9 pr-3 text-ink focus:border-primary focus:ring-1 focus:ring-primary shadow-2xs">
+                        </div>
+                    </div>
+
+                    <!-- Price Tektok per Pax -->
+                    <div class="sm:col-span-4">
+                        <label class="block sm:hidden text-[11px] font-bold text-muted mb-1">Harga Tek-tok / Pax</label>
+                        <div class="relative flex items-center">
+                            <span class="absolute left-3 text-xs font-bold text-muted-soft pointer-events-none">Rp</span>
+                            <input type="text" inputmode="numeric" :name="`price_tiers[${index}][price_per_pax_tektok]`"
+                                :value="formatPrice(t.price_per_pax_tektok)"
+                                @input="t.price_per_pax_tektok = handlePriceInput($event, t, 'price_per_pax_tektok')"
+                                placeholder="380.000"
+                                class="w-full text-xs font-bold rounded-xl border border-hairline bg-surface-card py-2.5 pl-9 pr-3 text-ink focus:border-primary focus:ring-1 focus:ring-primary shadow-2xs">
+                        </div>
                     </div>
 
                     <!-- Remove Button -->
-                    <div class="sm:col-span-1 text-right pt-4 sm:pt-0">
+                    <div class="sm:col-span-1 flex items-center justify-end sm:justify-center pt-1 sm:pt-0">
                         <button type="button" @click="removeTier(index)"
-                            class="p-2 text-muted hover:text-rose-600 rounded-lg transition-colors" title="Hapus Tier">
+                            class="w-9 h-9 flex items-center justify-center rounded-xl border border-hairline bg-surface-card text-muted hover:text-rose-600 hover:border-rose-300 hover:bg-rose-50 transition-colors shadow-2xs cursor-pointer"
+                            title="Hapus Tier">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
@@ -1304,15 +1399,7 @@
                 has_open_trip: @js(old('has_open_trip', $mountain->has_open_trip ? '1' : '0') == '1'),
                 has_private_trip: @js(old('has_private_trip', $mountain->has_private_trip ? '1' : '0') == '1'),
                 routes: @js($routesData),
-                priceTiers: @js(
-    $mountain->priceTiers->map(
-        fn($t) => [
-            'id' => $t->id,
-            'min_pax' => $t->min_pax,
-            'price_per_pax' => $t->price_per_pax,
-        ],
-    ),
-),
+                priceTiers: @js($priceTiersData),
                 facilitiesIncluded: @js($facilitiesIncluded),
                 facilitiesExcluded: @js($facilitiesExcluded),
                 addRoute() {
@@ -1442,7 +1529,8 @@
                     this.priceTiers.push({
                         id: null,
                         min_pax: nextMin,
-                        price_per_pax: ''
+                        price_per_pax: '',
+                        price_per_pax_tektok: ''
                     });
                 },
                 removeTier(index) {
@@ -1501,7 +1589,9 @@
                         .map(l => l.trim())
                         .filter(l => l.length > 0)
                         .map(line => {
-                            const match = line.match(/^(\d{1,2}[:.]\d{2}(?:\s*[-–—]\s*\d{1,2}[:.]\d{2})?(?:\s*(?:WIB|WITA|WIT))?)\s*(?:[-:–—•]\s*|\s+)(.+)$/i);
+                            const match = line.match(
+                                /^(\d{1,2}[:.]\d{2}(?:\s*[-–—]\s*\d{1,2}[:.]\d{2})?(?:\s*(?:WIB|WITA|WIT))?)\s*(?:[-:–—•]\s*|\s+)(.+)$/i
+                            );
                             if (match) {
                                 return {
                                     time: match[1].replace(/(\d{1,2})\.(\d{2})/g, '$1:$2'),

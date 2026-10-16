@@ -126,7 +126,7 @@
                                             <td class="py-3 px-4 font-bold text-ink-heading">
                                                 {{ $b->pax_count }} Org
                                             </td>
-                                            <td class="py-3 px-4">
+                                            <td class="py-3 px-4 whitespace-nowrap">
                                                 <x-admin.status-badge :status="$b->status" />
                                             </td>
                                             <td class="py-3 px-4 text-right">

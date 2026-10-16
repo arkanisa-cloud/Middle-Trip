@@ -21,6 +21,7 @@ class ExpeditionPriceTier extends Model
             'min_pax' => 'integer',
             'max_pax' => 'integer',
             'price_per_pax' => 'integer',
+            'price_per_pax_tektok' => 'integer',
         ];
     }
 
