@@ -90,11 +90,11 @@
                         request rombongan. Rata-rata respon &lt; 15 menit.
                     </p>
 
-                    <a href="https://wa.me/6281234567890?text=Halo%20MiddleTrip%2C%20saya%20ingin%20bertanya%20seputar%20trip%20pendakian"
+                    <a href="https://wa.me/628159944140?text=Halo%20MiddleTrip%2C%20saya%20ingin%20bertanya%20seputar%20trip%20pendakian"
                         target="_blank" rel="noopener noreferrer"
                         class="inline-flex items-center justify-between w-full px-3.5 sm:px-4 py-2 sm:py-2.5 bg-emerald-50/70 hover:bg-emerald-100 text-emerald-900 border border-emerald-200/80 rounded-xl sm:rounded-2xl font-bold text-xs transition-colors">
                         <span class="flex items-center gap-2">
-                            <span>+62 857-2578-0424</span>
+                            <span>+62 815-9944-140</span>
                         </span>
                         <span class="text-emerald-700 group-hover:translate-x-0.5 transition-transform font-bold">Buka
                             WhatsApp →</span>
@@ -166,7 +166,7 @@
                     <div
                         class="flex flex-col sm:flex-row sm:items-center justify-between gap-1 p-2.5 sm:p-3 rounded-xl sm:rounded-2xl bg-surface-forest-card border border-surface-forest-border text-xs font-mono">
                         <span class="text-muted-soft text-[10.5px] sm:text-xs">Emergency Hotline:</span>
-                        <span class="text-rose-300 font-bold tracking-wider text-xs sm:text-sm">+62 857-2578-0424</span>
+                        <span class="text-rose-300 font-bold tracking-wider text-xs sm:text-sm">+62 815-9944-140</span>
                     </div>
                 </div>
 
@@ -419,7 +419,7 @@ ${message}
 
 Mohon informasinya ya min, terima kasih! 🏔️`;
 
-            const adminWhatsAppNumber = '6281234567890';
+            const adminWhatsAppNumber = '628159944140';
             const encodedUrl = `https://wa.me/${adminWhatsAppNumber}?text=${encodeURIComponent(waText)}`;
 
             // Buka WhatsApp di tab baru

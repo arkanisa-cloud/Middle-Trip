@@ -287,7 +287,7 @@
                     </div>
                     <div class="p-3.5 rounded-xl bg-white/10 border border-white/15 space-y-1">
                         <span class="text-[10px] uppercase tracking-wider text-emerald-300 font-bold block">WhatsApp Operasional</span>
-                        <a href="https://wa.me/6285725780424" target="_blank" rel="noopener noreferrer" class="text-white font-semibold hover:text-emerald-300 transition">+62 857-2578-0424</a>
+                        <a href="https://wa.me/628159944140" target="_blank" rel="noopener noreferrer" class="text-white font-semibold hover:text-emerald-300 transition">+62 815-9944-140</a>
                         <p class="text-[11px] text-slate-300">Setiap hari (08.00–21.00 WIB)</p>
                     </div>
                 </div>

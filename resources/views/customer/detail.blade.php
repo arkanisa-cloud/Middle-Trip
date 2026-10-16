@@ -1512,7 +1512,7 @@
                         </button>
 
                         <!-- Tanya Via Whatsapp -->
-                        <a href="https://wa.me/?text=Halo%20MiddleTrip,%20saya%20ingin%20tanya%20tentang%20{{ urlencode($expedition['title']) }}"
+                        <a href="https://wa.me/628159944140?text=Halo%20MiddleTrip,%20saya%20ingin%20tanya%20tentang%20{{ urlencode($expedition['title']) }}"
                             target="_blank" rel="noopener noreferrer"
                             class="w-full bg-white hover:bg-emerald-50 border border-emerald-500 text-emerald-600 py-2.5 px-4 rounded-xl font-semibold text-xs transition-all flex items-center justify-center gap-1.5 shadow-2xs cursor-pointer">
                             <svg class="w-3.5 h-3.5 text-emerald-500" fill="currentColor" viewBox="0 0 24 24">

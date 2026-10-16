@@ -30,7 +30,7 @@
              1. LEFT PANEL: EDITORIAL EXPEDITION SHOWCASE (Desktop)
         ===================================================================== -->
         <div class="hidden lg:flex lg:w-5/12 xl:w-1/2 h-full relative bg-cover bg-center flex-col justify-between p-8 xl:p-12 overflow-hidden"
-            style="background-image: linear-gradient(180deg, rgba(7, 26, 22, 0.15) 0%, rgba(7, 26, 22, 0.55) 100%), url('{{ asset('storage/mountains/login.jpg') }}');">
+            style="background-image: linear-gradient(180deg, rgba(7, 26, 22, 0.15) 0%, rgba(7, 26, 22, 0.55) 100%), url('{{ asset('storage/mountains/login.webp') }}');">
 
             <!-- Decorative Topographic Accent Overlay -->
             <div class="absolute inset-0 topo-pattern pointer-events-none opacity-20"></div>

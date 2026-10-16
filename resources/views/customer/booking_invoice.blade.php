@@ -71,7 +71,7 @@
                 <div>
                     <h1 class="text-xl sm:text-2xl font-black font-outfit text-slate-900 tracking-tight leading-none">MiddleTrip</h1>
                     <p class="text-[11px] font-bold text-emerald-800 uppercase tracking-wider mt-1">E-Tiket &amp; Invoice Resmi Ekspedisi</p>
-                    <p class="text-[10px] text-slate-400">Website: middletrip.id • CS WhatsApp: +62 812-3456-7890</p>
+                    <p class="text-[10px] text-slate-400">Website: middletrip.id • CS WhatsApp: +62 815-9944-140</p>
                 </div>
             </div>
 
